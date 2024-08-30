@@ -3,18 +3,23 @@ from src import calculator
 def main():
     try:
         num1 = float(input("Enter first number: "))
-        num2 = float(input("Enter second number: "))
-        operator = input("Enter operator: ")
+    except ValueError:
+        print("Invalid input! Please enter a valid number for the first input.")
+        return
 
+    try:
+        num2 = float(input("Enter second number: "))
+    except ValueError:
+        print("Invalid input! Please enter a valid number for the second input.")
+        return
+
+    operator = input("Enter operator: ")
+
+    try:
         result = calculator.calculate(num1, num2, operator)
         print(f"Result: {result}")
-
-    except ValueError:
-        print("Invalid input. Please enter numbers only.")
-    except ZeroDivisionError:
-        print("Error: Division by zero is not allowed.")
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main()
