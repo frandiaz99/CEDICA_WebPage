@@ -5,6 +5,8 @@ def calculate(a,b, operator):
         return division(a,b)
     elif operator == "-": 
         return resta(a,b)
+    elif operator == "+":
+        return suma(a,b)
     else:
         raise ValueError(f"Operador no valido: {operator}")
 
@@ -18,3 +20,6 @@ def division(a,b):
 
 def resta(a,b):
     return a - b
+
+def suma(a,b):
+    return a + b
