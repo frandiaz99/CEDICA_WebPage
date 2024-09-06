@@ -2,7 +2,7 @@
 name = "web"
 version = "0.1.0"
 description = ""
-authors = ["MATIAS DURAN <matiduran03@gmail.com~>"]
+authors = ["MATIAS DURAN <matiduran03@gmail.com~>", "FRANCISCO DIAZ MALBRAN <fdmalbran@alu.ing.unlp.edu.ar~>"]
 readme = "README.md"
 packages = [{include = "web", from = "src"}]
 
