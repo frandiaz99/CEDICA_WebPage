@@ -1,11 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Error</title>
+    {% block head %}
+        <link rel="stylesheet" href="{{url_for('static', filename='error.css') }}">
+    {% endblock %}
 </head>
 <body>
-    
+    <div class="error-container">
+        <div class="error-code">{{error.code}}</div>
+        <div class="error-message">{{error.message}}</div>
+        <div class="error-details">{{error.description}}</div>
+    </div>
 </body>
 </html>
