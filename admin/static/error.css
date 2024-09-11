@@ -1,0 +1,34 @@
+/* Estilo para el contenedor de errores */
+.error-container {
+    border: 1px solid #f44336; /* Borde rojo para errores */
+    background-color: #fdd; /* Fondo rojo pálido */
+    padding: 16px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Estilo para el código de error */
+  .error-code {
+    font-size: 24px;
+    font-weight: bold;
+    color: #f44336; /* Color rojo para el código de error */
+    margin-bottom: 8px;
+  }
+  
+  /* Estilo para el mensaje de error */
+  .error-message {
+    font-size: 18px;
+    color: #333; /* Color oscuro para el texto */
+    margin-bottom: 12px;
+  }
+  
+  /* Estilo para los detalles del error */
+  .error-details {
+    font-size: 14px;
+    color: #555; /* Color gris oscuro para detalles */
+    background-color: #f9f9f9; /* Fondo gris claro para detalles */
+    border: 1px solid #ddd; /* Borde gris claro para detalles */
+    padding: 8px;
+    border-radius: 4px;
+  }
