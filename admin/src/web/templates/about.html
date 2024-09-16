@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}About{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<h1>About</h1>
+<p>algo</p>
+<a href="{{ url_for('home') }}">Volver a inicio</a>
+
+{% endblock %}
