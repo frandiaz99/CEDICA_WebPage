@@ -12,3 +12,10 @@ def create_issue(**kwargs):
     db.session.commit()
 
     return issue
+
+def assign_user(issue, user):
+    issue.user = user
+    db.session.add(issue)
+    db.session.commit()
+
+    return issue
