@@ -2,6 +2,7 @@ from flask import Flask
 from flask import render_template
 from src.web.handlers import error
 from src.web.controllers.issues import bp as issues_bp
+from src.web.controllers.equipo import equipo_bp
 from src.core import database
 from src.core.config import config
 from src.core import seeds
@@ -31,13 +32,11 @@ def create_app(env="development", static_folder="../../static"):
     def jinetes_amazonas():
         return render_template("jinetes_amazonas.html")
     
-    @app.route("/equipo")
-    def equipo():
-        return render_template("equipo.html")
-    
     app.register_error_handler(404, error.not_found_error)
     
     app.register_blueprint(issues_bp)
+
+    app.register_blueprint(equipo_bp)
 
     @app.cli.command(name="reset-db")
     def reset_db():
