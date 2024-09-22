@@ -7,6 +7,7 @@ from src.core.config import config
 from src.core import seeds
 
 
+
 def create_app(env="development", static_folder="../../static"):
     app = Flask(__name__, static_folder=static_folder)
 
@@ -16,10 +17,23 @@ def create_app(env="development", static_folder="../../static"):
     @app.route("/")
     def home():
         return render_template("home.html")
+        
     
     @app.route("/about")
     def about():
         return render_template("about.html")
+    
+    @app.route("/encuestre")
+    def encuestre():
+        return render_template("encuestre.html")
+    
+    @app.route("/jinetes_amazonas")
+    def jinetes_amazonas():
+        return render_template("jinetes_amazonas.html")
+    
+    @app.route("/equipo")
+    def equipo():
+        return render_template("equipo.html")
     
     app.register_error_handler(404, error.not_found_error)
     
