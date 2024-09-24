@@ -1,9 +1,3 @@
-from flask import Blueprint, render_template, jsonify, request
-from sqlalchemy import asc, desc
-from src.core import equipo
-
-
-equipo_bp = Blueprint('equipo', __name__, url_prefix='/equipo')
 
 from flask import Blueprint, render_template, request
 from sqlalchemy import asc, desc

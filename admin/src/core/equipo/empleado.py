@@ -29,5 +29,8 @@ class Empleado(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # Asociación opcional
     user = db.relationship('User', backref='empleado', lazy=True)
 
+    # Relación con Encuestre
+    encuestres = db.relationship("Encuestre", back_populates="entrenadores_conductores", lazy=True)
+
     documentos = db.relationship('Documento', backref='empleado', lazy=True)
 

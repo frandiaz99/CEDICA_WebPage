@@ -1,4 +1,5 @@
-from src.core import board, auth, equipo  # Importa el módulo equipo
+from src.core import board, auth, equipo, encuestre  # Importa el módulo equipo
+from datetime import datetime 
 
 def run():
     # Crear issues
@@ -42,6 +43,8 @@ def run():
     board.assign_labels(issue1, [label1, label2])
     board.assign_labels(issue2, [label3, label4])
     board.assign_labels(issue3, [label1, label3])
+
+
 
     # Crear empleados y asociarlos con usuarios
     empleado1 = equipo.create_empleado(
@@ -94,3 +97,35 @@ def run():
         condicion="Personal Rentado", 
         user_id=miguel.id
     )
+
+    caballo1 = encuestre.create_encuestre(
+        nombre="Juancito el caballo veloz",
+        fecha_nacimiento=datetime(2015, 5, 1),
+        sexo="Macho",
+        raza="Pura Sangre",
+        pelaje="Castaño",
+        compra_donacion="Compra",
+        fecha_ingreso=datetime.now(),
+        #entrenadores_conductores = fede, 
+        sede_asignada = "la plata",
+        tipo_ja_asignado="Hipoterapia",
+        entrenador_id=empleado1.id
+    )
+    
+    caballo2 = encuestre.create_encuestre(
+        nombre="Rocinante el caballo fiel",
+        fecha_nacimiento=datetime(2012, 3, 15),
+        sexo="Macho",
+        raza="Criollo",
+        pelaje="Blanco",
+        compra_donacion="Donación",
+        fecha_ingreso=datetime.now(),
+        #entrenadores_conductores = mati,
+        sede_asignada = "la plata",
+        tipo_ja_asignado="Monta Terapeutica",
+        entrenador_id=empleado2.id
+    )
+
+    # Asignar entrenadores a encuestres
+    encuestre.assign_empleado(empleado1, caballo1)
+    encuestre.assign_empleado(empleado2, caballo2)

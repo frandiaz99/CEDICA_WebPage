@@ -11,10 +11,16 @@ class Encuestre(db.Model):
     pelaje = db.Column(db.String(80), nullable=False)
     compra_donacion = db.Column(db.String(80), nullable=False)
     fecha_ingreso = db.Column(db.DateTime, default=datetime.now())
-    #sede_asignada = db.relationship("Sede", back_populates="encuestre")
-    #tipo_ja_asignado = db.relationship("JA", back_populates="encuestre")
+
+    entrenadores_conductores = db.relationship("Empleado", back_populates="encuestres")
+
+    sede_asignada = db.Column(db.String(100), nullable=True)
+    tipo_ja_asignado = db.Column(db.String(80), nullable = False)
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+
+    # Agregar una columna de clave foránea para vincular con Empleado
+    entrenador_id = db.Column(db.Integer, db.ForeignKey('empleados.id'), nullable=False)
 
     def __repr__(self):
         return f'<Encuestre #{self.id}">'
