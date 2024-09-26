@@ -3,73 +3,83 @@
 {% block title %}Encuestre{% endblock %}
 
 {% block content %}
-<div class="bg-green-100">
-    <h1>Lista de Encuestres</h1>
+<div class="bg-green-100 p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-4">Lista de Encuestres</h1>
 
-    <!-- Formulario de búsqueda -->
-    <form method="GET">
-        <input type="text" name="search" placeholder="Buscar..." value="{{ search }}">
+    <!-- Contenedor para el botón y filtros -->
+    <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Botón de registro -->
+        <div class="flex justify-start ">
+            <!--<a href="{{ url_for('encuestre.registrar_encuestre') }}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 md:text-center">Registrar Nuevo Encuestre</a>-->
+            <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 text-center md:w-auto w-auto" onclick="redirectToRegistrarEncuestre()">
+                Registrar Nuevo Encuestre
+            </button>
+        </div>
 
-        <select name="filter_by">
-            <option value="nombre" {% if filter_by=='nombre' %}selected{% endif %}>Nombre</option>
-            <option value="tipo_ja_asignado" {% if filter_by=='tipo_ja_asignado' %}selected{% endif %}>Tipo de J&A asignado</option>
-        </select>
+        <!-- Formulario de búsqueda y filtros -->
+        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 w-full">
+            <input type="text" name="search" placeholder="Buscar..." value="{{ search }}" class="border border-gray-300 rounded px-3 py-2 w-full">
 
+            <select name="filter_by" class="border border-gray-300 rounded px-3 py-2 w-full">
+                <option value="nombre" {% if filter_by=='nombre' %}selected{% endif %}>Nombre</option>
+                <option value="tipo_ja_asignado" {% if filter_by=='tipo_ja_asignado' %}selected{% endif %}>Tipo de J&A asignado</option>
+            </select>
 
-        <label for="order" class="block text-sm font-medium text-gray-700">Ordenar por:</label>
-        <select id="order_prop" name="order_prop">
-            <option value="nombre" {% if order_prop=='nombre' %}selected{% endif %}>Nombre</option>
-            <option value="fecha_nacimiento" {% if order_prop=='fecha_nacimiento' %}selected{% endif %}>Fecha de Nacimiento</option>
-            <option value="inserted_at" {% if order_prop=='fecha_ingreso' %}selected{% endif %}>Fecha de Ingreso</option>
-        </select>
-        <select name="order">
-            <option value="asc" {% if order=='asc' %}selected{% endif %}>Ascendente</option>
-            <option value="desc" {% if order=='desc' %}selected{% endif %}>Descendente</option>
-        </select>
+            <select id="order_prop" name="order_prop" class="border border-gray-300 rounded px-3 py-2 w-full">
+                <option value="nombre" {% if order_prop=='nombre' %}selected{% endif %}>Nombre</option>
+                <option value="fecha_nacimiento" {% if order_prop=='fecha_nacimiento' %}selected{% endif %}>Fecha de Nacimiento</option>
+                <option value="inserted_at" {% if order_prop=='inserted_at' %}selected{% endif %}>Fecha de Ingreso</option>
+            </select>
 
-        <!-- Dropdown de Ordenar por -->
-        
-        
+            <select name="order" class="border border-gray-300 rounded px-3 py-2 w-full">
+                <option value="asc" {% if order=='asc' %}selected{% endif %}>Ascendente</option>
+                <option value="desc" {% if order=='desc' %}selected{% endif %}>Descendente</option>
+            </select>
 
-        <button type="submit">Buscar</button>
-    </form>
+            <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 w-full">Buscar</button>
+        </form>
+    </div>
 
     <!-- Tabla de resultados -->
-    <table class="table-auto w-full">
-        <thead>
-            <tr >
-                <th>Nombre</th>
-                <th>Fecha de Nacimiento</th>
-                <th>Sexo</th>
-                <th>Raza</th>
-                <th>Pelaje</th>
-                <th>Compra/Donacion</th>
-                <th>Fecha Ingreso</th>
-                <th>Sede Asignada</th>
-                <th>Entrenadores/Conductores Asignados</th>
-                <th>Tipo de J&A</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for encuestre in encuestres %}
-            <tr  class="cursor-pointer hover:bg-gray-200">
-            
-            
-                <td><a href="{{url_for('encuestre.detalle_encuestre', id=encuestre.id)}}">{{ encuestre.nombre }}</a></td>
-                
-                <td>{{ encuestre.fecha_nacimiento }}</td>
-                <td>{{ encuestre.sexo }}</td>
-                <td>{{ encuestre.raza }}</td>
-                <td>{{ encuestre.pelaje }}</td>
-                <td>{{ encuestre.compra_donacion }}</td>
-                <td>{{ encuestre.fecha_ingreso }}</td>
-                <td>{{ encuestre.sede_asignada }}</td>
-                <td>{{ encuestre.entrenador_id }}</td>
-                <td>{{ encuestre.tipo_ja_asignado }}</td>
-               
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="overflow-x-auto">
+        <table class="table-auto w-full bg-white shadow-md rounded-lg">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="px-4 py-2">Nombre</th>
+                    <th class="px-4 py-2">Fecha de Nacimiento</th>
+                    <th class="px-4 py-2">Sexo</th>
+                    <th class="px-4 py-2">Raza</th>
+                    <th class="px-4 py-2">Pelaje</th>
+                    <th class="px-4 py-2">Compra/Donación</th>
+                    <th class="px-4 py-2">Fecha Ingreso</th>
+                    <th class="px-4 py-2">Sede Asignada</th>
+                    <th class="px-4 py-2">Entrenadores/Conductores Asignados</th>
+                    <th class="px-4 py-2">Tipo de J&A</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for encuestre in encuestres %}
+                <tr class="cursor-pointer hover:bg-gray-100">
+                    <td class="px-4 py-2"><a href="{{ url_for('encuestre.detalle_encuestre', id=encuestre.id) }}" class="text-blue-600 hover:underline">{{ encuestre.nombre }}</a></td>
+                    <td class="px-4 py-2">{{ encuestre.fecha_nacimiento }}</td>
+                    <td class="px-4 py-2">{{ encuestre.sexo }}</td>
+                    <td class="px-4 py-2">{{ encuestre.raza }}</td>
+                    <td class="px-4 py-2">{{ encuestre.pelaje }}</td>
+                    <td class="px-4 py-2">{{ encuestre.compra_donacion }}</td>
+                    <td class="px-4 py-2">{{ encuestre.fecha_ingreso }}</td>
+                    <td class="px-4 py-2">{{ encuestre.sede_asignada }}</td>
+                    <td class="px-4 py-2">{{ encuestre.entrenador_id }}</td>
+                    <td class="px-4 py-2">{{ encuestre.tipo_ja_asignado }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<script>
+    function redirectToRegistrarEncuestre() {
+        window.location.href = "{{ url_for('encuestre.registrar_encuestre') }}";
+    }
+</script>
 {% endblock %}

@@ -3,7 +3,6 @@ from sqlalchemy import asc, desc
 
 from src.core import encuestre
 
-
 encuestre_bp = Blueprint('encuestre', __name__, url_prefix='/encuestre')
 
 @encuestre_bp.get("/")
@@ -67,3 +66,8 @@ def detalle_encuestre(id):
     if e is None:
         abort(404)  # error 404 si no se encuentra el encuestre
     return render_template('encuestre/detalle_encuestre.html', encuestre=e)
+
+@encuestre_bp.route('/registrar', methods=['GET', 'POST'])
+def registrar_encuestre():
+    # Lógica para manejar el registro
+    return render_template('encuestre/registrar_encuestre.html')
