@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template, jsonify, request, abort
 from sqlalchemy import asc, desc
 
 from src.core import encuestre
@@ -26,15 +26,21 @@ def index():
             query = query.filter(encuestre.Encuestre.tipo_ja_asignado.ilike(f'%{search}%'))
     
     # Ordenar los resultados por el campo seleccionado y en el orden indicado
-    if order == 'asc':
-        query = query.order_by(asc(getattr(encuestre.Encuestre, filter_by)))
-    else:
-        query = query.order_by(desc(getattr(encuestre.Encuestre, filter_by)))
+    #if order == 'asc':
+    #    query = query.order_by(asc(getattr(encuestre.Encuestre, filter_by)))
+    #else:
+    #    query = query.order_by(desc(getattr(encuestre.Encuestre, filter_by)))
     
+    if order_prop != filter_by:
+        if order == 'asc':
+            query = query.order_by(asc(getattr(encuestre.Encuestre, order_prop)))
+        else:
+            query = query.order_by(desc(getattr(encuestre.Encuestre, order_prop)))
+
     # Si se quiere ordenar por nombre, apellido o fecha de creación adicionalmente
     if order_prop == 'nombre':
         query = query.order_by(asc(encuestre.Encuestre.nombre)) if order == 'asc' else query.order_by(desc(encuestre.Encuestre.nombre))
-    elif order_prop == 'fecha_nacimineto':
+    elif order_prop == 'fecha_nacimiento':
         query = query.order_by(asc(encuestre.Encuestre.fecha_nacimiento)) if order == 'asc' else query.order_by(desc(encuestre.Encuestre.fecha_nacimiento))
     elif order_prop == 'fecha_ingreso':
         query = query.order_by(asc(encuestre.Encuestre.inserted_at)) if order == 'asc' else query.order_by(desc(encuestre.Encuestre.inserted_at))
@@ -44,10 +50,20 @@ def index():
     
     # Renderizar la plantilla y pasar los empleados y los parámetros
     return render_template(
-        "encuestre.html", 
+        "encuestre/encuestre.html", 
         encuestres=encuestres, 
         search=search, 
         filter_by=filter_by, 
         order=order,
         order_prop=order_prop
     )
+
+
+@encuestre_bp.route('/detalle/<int:id>', methods=['GET'])
+
+def detalle_encuestre(id):
+
+    e = encuestre.Encuestre.obtener_encuestre_por_id(id)
+    if e is None:
+        abort(404)  # error 404 si no se encuentra el encuestre
+    return render_template('encuestre/detalle_encuestre.html', encuestre=e)

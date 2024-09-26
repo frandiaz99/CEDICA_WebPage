@@ -5,12 +5,6 @@
     {% block head %}
     <link rel="stylesheet" href="{{url_for('static', filename='output.css')}}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
-    <!-- Cargar Vue.js -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    
-    <!-- Importar el archivo navbar.js -->
-    <script src="{{ url_for('static', filename='funcionalidad/navbar.js') }}"></script>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
@@ -19,10 +13,10 @@
     {% endblock %}
 </head>
 
-<body>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
     {% block navbar %}
-    <nav class="bg-gray-800">
+    <nav class="bg-gray-700 shadow-lg">
         <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div class="relative flex h-16 items-center justify-between">
                 <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -59,15 +53,15 @@
                           <button type="button" class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" id="user-menu-button" aria-expanded="false" aria-haspopup="true" onclick="toggleDropdown()">
                             <span class="absolute -inset-1.5"></span>
                             <span class="sr-only">Open user menu</span>
-                            <img class="h-12 w-12 rounded-full" src="{{url_for('static', filename='images/icono_usuario.png')}}" alt="">
+                            <img class="h-12 w-12 rounded-full border-2 border-gray-700" src="{{url_for('static', filename='images/icono_usuario.png')}}" alt="User Icon">
                         </button>
                         
                         </div>
 
                         <!-- Dropdown menu -->
-                        <div id="user-dropdown" class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Perfil</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Cerrar Sesion</a>
+                        <div id="user-dropdown" class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-0">Perfil</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-1">Cerrar Sesion</a>
                         </div>
                     </div>
                 </div>
@@ -77,21 +71,25 @@
         <!-- Mobile menu, show/hide based on menu state. -->
         <div class="sm:hidden" id="mobile-menu">
             <div class="space-y-1 px-2 pb-3 pt-2">
-                <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Team</a>
-                <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Projects</a>
-                <a href="#" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Calendar</a>
+                <a href="{{url_for('jinetes_amazonas')}}" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">J&A</a>
+                <a href="{{url_for('encuestre.index')}}" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Encuestre</a>
+                <a href="{{url_for('equipo.index')}}" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Equipo</a>
             </div>
         </div>
     </nav>
 
     {% endblock %}
     
-    <div id="container">
+    <div id="container" class="min-h-screen px-4 py-6">
         {% block content %}
         {% endblock %}
     </div>
     
-    <div>{% block footer %} {% endblock %}</div>
+    <footer class="bg-gray-900 py-4 text-gray-400 text-center">
+        {% block footer %}
+        <p>&copy; 2024 Your Company. Todos los derechos reservados.</p>
+        {% endblock %}
+    </footer>
 
     <!-- JavaScript para abrir/cerrar el menú -->
     <script>
@@ -109,9 +107,10 @@
               }
           }
       }
-  </script>
-  
+    </script>
 
+    <script src="{{ url_for('static', filename='funcionalidad/navbar.js') }}"></script>
+  
 </body>
 
 </html>

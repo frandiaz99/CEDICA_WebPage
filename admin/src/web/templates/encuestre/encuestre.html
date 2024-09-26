@@ -19,9 +19,8 @@
         <label for="order" class="block text-sm font-medium text-gray-700">Ordenar por:</label>
         <select id="order_prop" name="order_prop">
             <option value="nombre" {% if order_prop=='nombre' %}selected{% endif %}>Nombre</option>
-            <option value="apellido" {% if order_prop=='fecha_nacimiento' %}selected{% endif %}>Fecha de Nacimiento</option>
-            <option value="fecha_creacion" {% if order_prop=='fecha_ingreso' %}selected{% endif %}>Fecha de Ingreso
-            </option>
+            <option value="fecha_nacimiento" {% if order_prop=='fecha_nacimiento' %}selected{% endif %}>Fecha de Nacimiento</option>
+            <option value="inserted_at" {% if order_prop=='fecha_ingreso' %}selected{% endif %}>Fecha de Ingreso</option>
         </select>
         <select name="order">
             <option value="asc" {% if order=='asc' %}selected{% endif %}>Ascendente</option>
@@ -38,7 +37,7 @@
     <!-- Tabla de resultados -->
     <table class="table-auto w-full">
         <thead>
-            <tr>
+            <tr >
                 <th>Nombre</th>
                 <th>Fecha de Nacimiento</th>
                 <th>Sexo</th>
@@ -53,8 +52,11 @@
         </thead>
         <tbody>
             {% for encuestre in encuestres %}
-            <tr>
-                <td>{{ encuestre.nombre }}</td>
+            <tr  class="cursor-pointer hover:bg-gray-200">
+            
+            
+                <td><a href="{{url_for('encuestre.detalle_encuestre', id=encuestre.id)}}">{{ encuestre.nombre }}</a></td>
+                
                 <td>{{ encuestre.fecha_nacimiento }}</td>
                 <td>{{ encuestre.sexo }}</td>
                 <td>{{ encuestre.raza }}</td>

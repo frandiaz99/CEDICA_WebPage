@@ -126,6 +126,21 @@ def run():
         entrenador_id=empleado2.id
     )
 
+    caballo3 = encuestre.create_encuestre(
+    nombre="Bucéfalo el invencible",
+    fecha_nacimiento=datetime(2017, 5, 22),  # Fecha de nacimiento en 2017
+    sexo="Macho",
+    raza="Pura Raza Española",
+    pelaje="Negro",
+    compra_donacion="Compra",
+    fecha_ingreso=datetime.now(),
+    sede_asignada="Buenos Aires",
+    tipo_ja_asignado="Equitación",
+    entrenador_id=empleado3.id  # Asegúrate de que empleado3 esté definido
+)
+
+
     # Asignar entrenadores a encuestres
     encuestre.assign_empleado(empleado1, caballo1)
     encuestre.assign_empleado(empleado2, caballo2)
+    encuestre.assign_empleado(empleado3, caballo3)

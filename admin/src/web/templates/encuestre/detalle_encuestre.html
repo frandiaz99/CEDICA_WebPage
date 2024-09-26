@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+
+{% block title %}Encuestre_detalle{% endblock %}
+
+{% block content %}
+<body class="bg-gray-100"></body>
+    <div class="max-w-4xl mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Detalle de Caballo</h1>
+        
+        <!-- Sección de pestañas -->
+        <div class="flex justify-center mb-6">
+            <button id="infoBtn" class="tab-button bg-blue-500 text-white px-4 py-2 rounded-l-md focus:outline-none">Información General</button>
+            <button id="docsBtn" class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-r-md focus:outline-none">Documentos</button>
+        </div>
+
+        <!-- Sección de Información General -->
+        <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold mb-4">Información General</h2>
+            <p><strong>Nombre:</strong> {{ encuestre.nombre }}</p>
+            <p><strong>Fecha de Nacimiento:</strong> {{ encuestre.fecha_nacimiento }}</p>
+            <p><strong>Sexo:</strong> {{ encuestre.sexo }}</p>
+            <p><strong>Raza:</strong> {{ encuestre.raza }}</p>
+            <p><strong>Pelaje:</strong> {{ encuestre.pelaje }}</p>
+            <p><strong>Compra/Donación:</strong> {{ encuestre.compra_donacion }}</p>
+            <p><strong>Fecha de Ingreso:</strong> {{ encuestre.fecha_ingreso }}</p>
+            <p><strong>Sede Asignada:</strong> {{ encuestre.sede_asignada }}</p>
+            <p><strong>Entrenadores y Conductores:</strong> {{ encuestre.entrenadores_conductores.nombre }}</p>
+            <p><strong>Tipo de J&A Asignados:</strong> {{ encuestre.tipo_ja_asignado }}</p>
+        </div>
+
+        <!-- Sección de Documentos -->
+<div id="docsSection" class="bg-white p-6 rounded-lg shadow-lg hidden">
+    <h2 class="text-2xl font-semibold mb-4">Documentos</h2>
+
+    <!-- Filtros -->
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex space-x-4">
+            <!-- Buscar por Nombre -->
+            <div class="flex items-center border border-gray-300 rounded-md px-3 py-2">
+                <input type="text" placeholder="Nombre" class="focus:outline-none" id="searchName">
+                <button class="ml-2 text-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.9 14.32a8 8 0 111.42-1.42l4.49 4.48-1.42 1.42-4.49-4.48zM8 14A6 6 0 108 2a6 6 0 000 12z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Filtrar por Tipo -->
+            <div class="flex items-center">
+                <select id="documentType" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none">
+                    <option value="">Seleccionar tipo</option>
+                    <option value="Ficha general">Ficha general del caballo</option>
+                    <option value="Planificación">Planificación de Entrenamiento</option>
+                    <option value="Informe">Informe de Evolución</option>
+                    <option value="Imágenes">Carga de Imágenes</option>
+                    <option value="Registro">Registro veterinario</option>
+                </select>
+            </div>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-md ml-2 hover:bg-blue-600">Filtrar</button>
+        </div>
+
+        <!-- Ordenar -->
+        <div class="flex items-center">
+            <label for="order" class="mr-2">Orden:</label>
+            <select id="order" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none">
+                <option value="nombre_az">Nombre A-Z</option>
+                <option value="nombre_za">Nombre Z-A</option>
+                <option value="tipo_az">Tipo A-Z</option>
+                <option value="tipo_za">Tipo Z-A</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Tabla de Documentos -->
+    <table class="min-w-full table-auto border-collapse">
+        <thead>
+            <tr class="border-b">
+                <th class="px-4 py-2 text-left">Nombre</th>
+                <th class="px-4 py-2 text-left">Tipo</th>
+                <th class="px-4 py-2">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="documentTable">
+            <!-- Filas de documentos dinámicos -->
+            <tr class="border-b">
+                <td class="px-4 py-2">DNI</td>
+                <td class="px-4 py-2">Documental</td>
+                <td class="px-4 py-2">
+                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Acciones</button>
+                </td>
+            </tr>
+            <tr class="border-b">
+                <td class="px-4 py-2">Entrevista Inicial</td>
+                <td class="px-4 py-2">Entrevista</td>
+                <td class="px-4 py-2">
+                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Acciones</button>
+                </td>
+            </tr>
+            <tr class="border-b">
+                <td class="px-4 py-2">Plan 2024</td>
+                <td class="px-4 py-2">Planificaciones</td>
+                <td class="px-4 py-2">
+                    <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Acciones</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Botones para Enlace y Subir Documentos -->
+    <div class="flex justify-end space-x-4 mt-4">
+        <button class="flex items-center bg-green-100 text-green-700 px-4 py-2 rounded-md hover:bg-green-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Enlace
+        </button>
+        <button class="flex items-center bg-blue-100 text-blue-700 px-4 py-2 rounded-md hover:bg-blue-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Subir
+        </button>
+    </div>
+</div>
+
+        
+    
+            
+        </div>
+        <script src="{{ url_for('static', filename='funcionalidad/script_informacion_general.js') }}"></script>
+</body>
+{% endblock %}

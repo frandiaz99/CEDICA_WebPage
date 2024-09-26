@@ -24,3 +24,8 @@ class Encuestre(db.Model):
 
     def __repr__(self):
         return f'<Encuestre #{self.id}">'
+    
+    # Función para obtener el encuestre por ID
+    @staticmethod
+    def obtener_encuestre_por_id(encuestre_id):
+        return db.session.query(Encuestre).filter(Encuestre.id == encuestre_id).first()

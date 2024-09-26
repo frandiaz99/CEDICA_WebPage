@@ -29,18 +29,26 @@ def index():
         elif filter_by == 'profesion':
             query = query.filter(equipo.Empleado.profesion.ilike(f'%{search}%'))
     
-    # Ordenar los resultados por el campo seleccionado y en el orden indicado
-    if order == 'asc':
-        query = query.order_by(asc(getattr(equipo.Empleado, filter_by)))
-    else:
-        query = query.order_by(desc(getattr(equipo.Empleado, filter_by)))
+    # Ordenar los resultados por el campo seleccionado y en el orden indicado --Esto hacia que se ordene por el campo de filtro pero no el de ordenar
+    #if order == 'asc':
+    #    query = query.order_by(asc(getattr(equipo.Empleado, filter_by)))
+    #else:
+    #    query = query.order_by(desc(getattr(equipo.Empleado, filter_by)))
     
+    # Adicionalmente, ordenar por order_prop si es distinto de filter_by
+    if order_prop != filter_by:
+        if order == 'asc':
+            query = query.order_by(asc(getattr(equipo.Empleado, order_prop)))
+        else:
+            query = query.order_by(desc(getattr(equipo.Empleado, order_prop)))
+
+
     # Si se quiere ordenar por nombre, apellido o fecha de creación adicionalmente
     if order_prop == 'nombre':
         query = query.order_by(asc(equipo.Empleado.nombre)) if order == 'asc' else query.order_by(desc(equipo.Empleado.nombre))
     elif order_prop == 'apellido':
         query = query.order_by(asc(equipo.Empleado.apellido)) if order == 'asc' else query.order_by(desc(equipo.Empleado.apellido))
-    elif order_prop == 'fecha_creacion':
+    elif order_prop == 'inserted_at':
         query = query.order_by(asc(equipo.Empleado.inserted_at)) if order == 'asc' else query.order_by(desc(equipo.Empleado.inserted_at))
     
     # Obtener los empleados filtrados y ordenados
