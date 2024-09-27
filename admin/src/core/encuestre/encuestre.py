@@ -1,5 +1,6 @@
 from datetime import datetime
 from src.core.database import db
+from src.core.encuestre_empleado import encuestres_empleados
 
 class Encuestre(db.Model):
     __tablename__ = "encuestres"
@@ -11,16 +12,12 @@ class Encuestre(db.Model):
     pelaje = db.Column(db.String(80), nullable=False)
     compra_donacion = db.Column(db.String(80), nullable=False)
     fecha_ingreso = db.Column(db.DateTime, default=datetime.now())
-
-    entrenadores_conductores = db.relationship("Empleado", back_populates="encuestres")
-
     sede_asignada = db.Column(db.String(100), nullable=True)
     tipo_ja_asignado = db.Column(db.String(80), nullable = False)
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
-    # Agregar una columna de clave foránea para vincular con Empleado
-    entrenador_id = db.Column(db.Integer, db.ForeignKey('empleados.id'), nullable=False)
+    entrenadores_conductores = db.relationship('Empleado', secondary='encuestre_empleado', back_populates='encuestres')
 
     def __repr__(self):
         return f'<Encuestre #{self.id}">'

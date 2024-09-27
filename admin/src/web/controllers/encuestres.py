@@ -1,7 +1,10 @@
-from flask import Blueprint, render_template, jsonify, request, abort
+from flask import Blueprint, render_template, jsonify, request, abort, flash, url_for, redirect
 from sqlalchemy import asc, desc
+from src.core.database import db 
+from datetime import datetime
 
 from src.core import encuestre
+from src.core.equipo import Empleado
 
 encuestre_bp = Blueprint('encuestre', __name__, url_prefix='/encuestre')
 
@@ -69,5 +72,60 @@ def detalle_encuestre(id):
 
 @encuestre_bp.route('/registrar', methods=['GET', 'POST'])
 def registrar_encuestre():
-    # Lógica para manejar el registro
-    return render_template('encuestre/registrar_encuestre.html')
+    if request.method == 'POST':
+        # Recoger los datos del formulario
+        nombre = request.form.get('nombre')
+        fecha_nacimiento = datetime.strptime(request.form.get('fecha_nacimiento'), '%Y-%m-%d')
+        sexo = request.form.get('sexo')
+        raza = request.form.get('raza')
+        pelaje = request.form.get('pelaje')
+        compra_donacion = request.form.get('tipo_ingreso')  # Compra o Donación
+        fecha_ingreso = datetime.strptime(request.form.get('fecha_ingreso'), '%Y-%m-%d')
+        sede_asignada = request.form.get('sede_asignada')
+        tipo_ja_asignado = request.form.get('tipo_ja_asignado')
+        entrenadores_conductores_ids = request.form.getlist('entrenadores_conductores')
+
+        print(f"Nombre: {nombre}, Fecha Nacimiento: {fecha_nacimiento}, Sexo: {sexo}, Raza: {raza}, Pelaje: {pelaje}, Tipo de Ingreso: {compra_donacion}, Fecha Ingreso: {fecha_ingreso}, Sede: {sede_asignada}, JA: {tipo_ja_asignado}, Entrenadores/Conductores: {entrenadores_conductores_ids}")
+
+        # Validar fechas
+        if fecha_nacimiento:
+            if fecha_nacimiento > datetime.today():
+                flash('La fecha de nacimiento no puede ser futura', 'danger')
+                return redirect(url_for('encuestre.registrar_encuestre'))
+
+        if fecha_ingreso:
+            if fecha_ingreso > datetime.today():
+                flash('La fecha de ingreso no puede ser futura', 'danger')
+                return redirect(url_for('encuestre.registrar_encuestre'))
+
+        # Crear el objeto encuestre
+        nuevo_encuestre = encuestre.Encuestre(
+            nombre=nombre,
+            fecha_nacimiento=fecha_nacimiento,
+            sexo=sexo,
+            raza=raza,
+            pelaje=pelaje,
+            compra_donacion=compra_donacion,
+            fecha_ingreso=fecha_ingreso,
+            sede_asignada=sede_asignada,
+            tipo_ja_asignado=tipo_ja_asignado
+        )
+
+        empleados_seleccionados = Empleado.query.filter(Empleado.id.in_(entrenadores_conductores_ids)).all()
+        nuevo_encuestre.entrenadores_conductores = empleados_seleccionados
+        
+        try:
+            # Subir a la base de datos
+            db.session.add(nuevo_encuestre)
+            db.session.commit()
+            flash('Caballo registrado exitosamente', 'success')
+            return redirect(url_for('encuestre.detalle_encuestre', id=nuevo_encuestre.id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al registrar el caballo: {str(e)}', 'danger')
+            print(f'esto anda maaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaal --> {str(e)}s')
+            return redirect(url_for('encuestre.registrar_encuestre'))
+    
+    empleados = Empleado.query.all()
+    # Si el método es GET, se renderiza el formulario
+    return render_template('encuestre/registrar_encuestre.html', empleados=empleados)

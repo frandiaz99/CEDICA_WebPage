@@ -3,6 +3,8 @@ from datetime import datetime
 from src.core.database import db
 from src.core.auth.user import User  # Importa el modelo User
 from src.core.equipo.documento import Documento  # Importa el modelo Documento
+from src.core.encuestre_empleado import encuestres_empleados
+
 class Empleado(db.Model):
     __tablename__ = 'empleados'
     id = db.Column(db.Integer, primary_key=True)
@@ -30,7 +32,7 @@ class Empleado(db.Model):
     user = db.relationship('User', backref='empleado', lazy=True)
 
     # Relación con Encuestre
-    encuestres = db.relationship("Encuestre", back_populates="entrenadores_conductores", lazy=True)
+    encuestres = db.relationship('Encuestre', secondary='encuestre_empleado', back_populates='entrenadores_conductores')
 
     documentos = db.relationship('Documento', backref='empleado', lazy=True)
 

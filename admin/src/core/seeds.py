@@ -1,4 +1,4 @@
-from src.core import board, auth, equipo, encuestre  # Importa el módulo equipo
+from src.core import board, auth, equipo, encuestre, encuestre_empleado  # Importa el módulo equipo
 from datetime import datetime 
 
 def run():
@@ -109,7 +109,7 @@ def run():
         #entrenadores_conductores = fede, 
         sede_asignada = "la plata",
         tipo_ja_asignado="Hipoterapia",
-        entrenador_id=empleado1.id
+        
     )
     
     caballo2 = encuestre.create_encuestre(
@@ -123,7 +123,7 @@ def run():
         #entrenadores_conductores = mati,
         sede_asignada = "la plata",
         tipo_ja_asignado="Monta Terapeutica",
-        entrenador_id=empleado2.id
+        
     )
 
     caballo3 = encuestre.create_encuestre(
@@ -136,11 +136,10 @@ def run():
     fecha_ingreso=datetime.now(),
     sede_asignada="Buenos Aires",
     tipo_ja_asignado="Equitación",
-    entrenador_id=empleado3.id  # Asegúrate de que empleado3 esté definido
+    
 )
 
 
-    # Asignar entrenadores a encuestres
-    encuestre.assign_empleado(empleado1, caballo1)
-    encuestre.assign_empleado(empleado2, caballo2)
-    encuestre.assign_empleado(empleado3, caballo3)
+    encuestre_empleado.assign_empleado_to_encuestre(empleado1.id, caballo1.id)
+    encuestre_empleado.assign_empleado_to_encuestre(empleado2.id, caballo2.id)
+    encuestre_empleado.assign_empleado_to_encuestre(empleado3.id, caballo3.id)

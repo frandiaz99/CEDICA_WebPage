@@ -13,6 +13,8 @@ from src.core import seeds
 def create_app(env="development", static_folder="../../static"):
     app = Flask(__name__, static_folder=static_folder)
 
+    app.config['SECRET_KEY'] = '1234'
+
     app.config.from_object(config[env])
     database.init_app(app)
 

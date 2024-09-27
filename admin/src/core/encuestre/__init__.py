@@ -13,10 +13,3 @@ def list_encustres():
     encustres = Encuestre.query.all()
 
     return encustres
-
-def assign_empleado(empleado, encuestre):
-    empleado.encuestr = encuestre
-    db.session.add(encuestre)
-    db.session.commit()
-
-    return encuestre

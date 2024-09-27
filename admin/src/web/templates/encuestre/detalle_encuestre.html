@@ -24,7 +24,11 @@
             <p><strong>Compra/Donación:</strong> {{ encuestre.compra_donacion }}</p>
             <p><strong>Fecha de Ingreso:</strong> {{ encuestre.fecha_ingreso }}</p>
             <p><strong>Sede Asignada:</strong> {{ encuestre.sede_asignada }}</p>
-            <p><strong>Entrenadores y Conductores:</strong> {{ encuestre.entrenadores_conductores.nombre }}</p>
+            <p><strong>Entrenadores y Conductores:</strong>
+                {% for empleado in encuestre.entrenadores_conductores %}
+                    {{ empleado.nombre }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </p>
             <p><strong>Tipo de J&A Asignados:</strong> {{ encuestre.tipo_ja_asignado }}</p>
         </div>
 
