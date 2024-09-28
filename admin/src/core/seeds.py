@@ -1,5 +1,5 @@
-from src.core import board, auth, equipo, encuestre, encuestre_empleado  # Importa el módulo equipo
-from datetime import datetime 
+from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso # Importa el módulo equipo
+from datetime import datetime
 
 def run():
     # Crear issues
@@ -22,6 +22,7 @@ def run():
         description="No anda la impresora",
         status="done"
     )
+
     
     # Crear usuarios
     fede = auth.create_user(email="fede@gmail.com", password="1234")    
@@ -44,7 +45,40 @@ def run():
     board.assign_labels(issue2, [label3, label4])
     board.assign_labels(issue3, [label1, label3])
 
+    #Crear Roles
+    tecnica_rol = auth.create_rol(nombre="tecnica")
+    encuestre_rol = auth.create_rol(nombre="encuestre")
+    voluntariado_rol = auth.create_rol(nombre="voluntariado")
+    administracion_rol = auth.create_rol(nombre="administracion")
+    system_admin = auth.create_rol(nombre="system_admin")
 
+    #Asigna roles
+    auth.assign_rol(fede, system_admin)
+    auth.assign_rol(mati, encuestre_rol)
+    auth.assign_rol(miguel, administracion_rol)
+
+    #Creo permisos
+    user_index = permiso.create_permiso(nombre="user_index")
+    user_new= permiso.create_permiso(nombre="user_new")
+    user_destroy = permiso.create_permiso(nombre="user_destroy")
+    user_update = permiso.create_permiso(nombre="user_update")
+    user_show = permiso.create_permiso(nombre="user_show")
+
+    permisos_user = [user_index, user_new, user_destroy, user_update, user_show]
+
+    issue_index = permiso.create_permiso(nombre="issue_index")
+    issue_new= permiso.create_permiso(nombre="issue_new")
+    issue_destroy = permiso.create_permiso(nombre="issue_destroy")
+    issue_update = permiso.create_permiso(nombre="issue_update")
+    issue_show = permiso.create_permiso(nombre="issue_show")
+
+    permisos_issue = [issue_index, issue_new, issue_destroy, issue_update, issue_show]
+
+    # Asignar permisos a rol
+
+    rol_permiso.assign_permisos_to_rol(system_admin, permisos_user)
+    rol_permiso.assign_permisos_to_rol(system_admin, permisos_issue)
+    
 
     # Crear empleados y asociarlos con usuarios
     empleado1 = equipo.create_empleado(

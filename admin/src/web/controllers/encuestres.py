@@ -127,5 +127,4 @@ def registrar_encuestre():
             return redirect(url_for('encuestre.registrar_encuestre'))
     
     empleados = Empleado.query.all()
-    # Si el método es GET, se renderiza el formulario
     return render_template('encuestre/registrar_encuestre.html', empleados=empleados)

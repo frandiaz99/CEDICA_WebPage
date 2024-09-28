@@ -10,6 +10,9 @@ class User(db.Model):
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
+    rol_id = db.Column(db.Integer, db.ForeignKey('roles.id')) 
+    rol = db.relationship("Rol", back_populates="users") 
+
     def __repr__(self):
         return f'<User #{self.id} email="{self.email}">'
       
