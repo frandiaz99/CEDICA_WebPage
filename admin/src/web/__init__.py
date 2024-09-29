@@ -34,6 +34,7 @@ def create_app(env="development", static_folder="../../static"):
         return render_template("jinetes_amazonas.html")
     
     app.register_error_handler(404, error.not_found_error)
+    app.register_error_handler(403, error.forbidden)
     
     app.register_blueprint(issues_bp)
 

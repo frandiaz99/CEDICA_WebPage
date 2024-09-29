@@ -26,3 +26,10 @@ def assign_rol(user, rol):
     db.session.commit()
 
     return user
+
+def get_permissions(user):  
+    permisos = [permiso for permiso in user.rol.permisos]
+
+    return permisos 
+
+
