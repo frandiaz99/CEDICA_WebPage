@@ -75,11 +75,11 @@ def run():
     permisos_issue = [issue_index, issue_new, issue_destroy, issue_update, issue_show]
 
     # Asignar permisos a rol
-
     rol_permiso.assign_permisos_to_rol(system_admin, permisos_user)
     rol_permiso.assign_permisos_to_rol(system_admin, permisos_issue)
-    
 
+    rol_permiso.assign_permisos_to_rol(administracion_rol, permisos_issue)
+    
     # Crear empleados y asociarlos con usuarios
     empleado1 = equipo.create_empleado(
         nombre="Federico", 
@@ -172,8 +172,10 @@ def run():
     tipo_ja_asignado="Equitación",
     
 )
+    lista_empleados1 = [empleado1, empleado2]
+    lista_empleados2 = [empleado2, empleado3]
+    lista_empleados3 = [empleado3]
 
-
-    encuestre_empleado.assign_empleado_to_encuestre(empleado1.id, caballo1.id)
-    encuestre_empleado.assign_empleado_to_encuestre(empleado2.id, caballo2.id)
-    encuestre_empleado.assign_empleado_to_encuestre(empleado3.id, caballo3.id)
+    encuestre_empleado.assign_empleado_to_encuestre(caballo1, lista_empleados1)
+    encuestre_empleado.assign_empleado_to_encuestre(caballo2, lista_empleados2)
+    encuestre_empleado.assign_empleado_to_encuestre(caballo3, lista_empleados3)

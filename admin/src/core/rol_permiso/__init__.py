@@ -1,4 +1,4 @@
-from database import db
+from src.core.database import db
 
 def assign_permisos_to_rol(rol, lista_permisos):
 

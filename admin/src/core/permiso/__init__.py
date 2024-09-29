@@ -1,4 +1,4 @@
-from src.core.permiso import Permiso
+from src.core.permiso.permiso import Permiso
 from src.core.database import db
 
 def create_permiso(**kwargs):

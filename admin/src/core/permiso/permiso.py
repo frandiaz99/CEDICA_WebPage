@@ -1,5 +1,6 @@
 from datetime import datetime
 from src.core.database import db
+from src.core.rol_permiso import permisos_roles
 
 class Permiso(db.Model):
     __tablename__ = "permisos"
