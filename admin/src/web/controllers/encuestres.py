@@ -75,28 +75,54 @@ def registrar_encuestre():
     if request.method == 'POST':
         # Recoger los datos del formulario
         nombre = request.form.get('nombre')
-        fecha_nacimiento = datetime.strptime(request.form.get('fecha_nacimiento'), '%Y-%m-%d')
+        fecha_nacimiento_str = request.form.get('fecha_nacimiento')
         sexo = request.form.get('sexo')
         raza = request.form.get('raza')
         pelaje = request.form.get('pelaje')
         compra_donacion = request.form.get('tipo_ingreso')  # Compra o Donación
-        fecha_ingreso = datetime.strptime(request.form.get('fecha_ingreso'), '%Y-%m-%d')
+        fecha_ingreso_str = request.form.get('fecha_ingreso')
         sede_asignada = request.form.get('sede_asignada')
         tipo_ja_asignado = request.form.get('tipo_ja_asignado')
         entrenadores_conductores_ids = request.form.getlist('entrenadores_conductores')
 
-        print(f"Nombre: {nombre}, Fecha Nacimiento: {fecha_nacimiento}, Sexo: {sexo}, Raza: {raza}, Pelaje: {pelaje}, Tipo de Ingreso: {compra_donacion}, Fecha Ingreso: {fecha_ingreso}, Sede: {sede_asignada}, JA: {tipo_ja_asignado}, Entrenadores/Conductores: {entrenadores_conductores_ids}")
+        
 
-        # Validar fechas
-        if fecha_nacimiento:
+        if not (nombre and sexo and raza and pelaje and compra_donacion and sede_asignada and entrenadores_conductores_ids and tipo_ja_asignado):
+            flash(' Faltan completar campos', 'danger')
+            return redirect(url_for('encuestre.registrar_encuestre'))
+        
+        if not fecha_nacimiento_str:
+            flash('La fecha de nacimiento es obligatoria', 'danger')
+            return redirect(url_for('encuestre.registrar_encuestre'))
+
+        try:
+            fecha_nacimiento = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d')
             if fecha_nacimiento > datetime.today():
                 flash('La fecha de nacimiento no puede ser futura', 'danger')
                 return redirect(url_for('encuestre.registrar_encuestre'))
+        except ValueError or UnboundLocalError:
+            flash('Formato de fecha de nacimiento inválido', 'danger')
+            return redirect(url_for('encuestre.registrar_encuestre'))
 
-        if fecha_ingreso:
+        # Validar y convertir la fecha de ingreso
+        if not fecha_ingreso_str:
+            flash('La fecha de ingreso es obligatoria', 'danger')
+            return redirect(url_for('encuestre.registrar_encuestre'))
+
+        try:
+            fecha_ingreso = datetime.strptime(fecha_ingreso_str, '%Y-%m-%d')
             if fecha_ingreso > datetime.today():
                 flash('La fecha de ingreso no puede ser futura', 'danger')
                 return redirect(url_for('encuestre.registrar_encuestre'))
+        except ValueError or UnboundLocalError:
+            flash('Formato de fecha de ingreso inválido', 'danger')
+            return redirect(url_for('encuestre.registrar_encuestre'))
+
+        
+        # Aquí irían las demás validaciones para los campos si es necesario
+
+        # Si todo está bien, continuar con el registro
+        # Por ejemplo, crear el objeto Encustre y guardarlo en la base de datos
 
         # Crear el objeto encuestre
         nuevo_encuestre = encuestre.Encuestre(
@@ -123,8 +149,10 @@ def registrar_encuestre():
         except Exception as e:
             db.session.rollback()
             flash(f'Error al registrar el caballo: {str(e)}', 'danger')
-            print(f'esto anda maaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaal --> {str(e)}s')
+            print(f'Error {str(e)}')
             return redirect(url_for('encuestre.registrar_encuestre'))
     
-    empleados = Empleado.query.all()
-    return render_template('encuestre/registrar_encuestre.html', empleados=empleados)
+    empleados = Empleado.query.filter(Empleado.puesto_laboral.in_(['Entrenador de caballos', 'Conductor'])).all()
+    fecha_hoy = datetime.now().strftime('%Y-%m-%d')
+
+    return render_template('encuestre/registrar_encuestre.html', empleados=empleados, fecha_hoy=fecha_hoy)
