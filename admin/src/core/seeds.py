@@ -90,7 +90,7 @@ def run():
         localidad="Rosario", 
         telefono="567890123", 
         profesion="Veterinario", 
-        puesto_laboral="Veterinario", 
+        puesto_laboral="Conductor", 
         contacto_emergencia="Carlos López 567890123", 
         obra_social="Galeno", 
         numero_afiliado="778899", 
@@ -106,7 +106,6 @@ def run():
         pelaje="Castaño",
         compra_donacion="Compra",
         fecha_ingreso=datetime.now(),
-        #entrenadores_conductores = fede, 
         sede_asignada = "la plata",
         tipo_ja_asignado="Hipoterapia",
         
@@ -120,7 +119,6 @@ def run():
         pelaje="Blanco",
         compra_donacion="Donación",
         fecha_ingreso=datetime.now(),
-        #entrenadores_conductores = mati,
         sede_asignada = "la plata",
         tipo_ja_asignado="Monta Terapeutica",
         
@@ -128,7 +126,7 @@ def run():
 
     caballo3 = encuestre.create_encuestre(
     nombre="Bucéfalo el invencible",
-    fecha_nacimiento=datetime(2017, 5, 22),  # Fecha de nacimiento en 2017
+    fecha_nacimiento=datetime(2017, 5, 22),
     sexo="Macho",
     raza="Pura Raza Española",
     pelaje="Negro",

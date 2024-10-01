@@ -61,14 +61,16 @@
                 {% for encuestre in encuestres %}
                 <tr class="cursor-pointer hover:bg-gray-100">
                     <td class="px-4 py-2"><a href="{{ url_for('encuestre.detalle_encuestre', id=encuestre.id) }}" class="text-blue-600 hover:underline">{{ encuestre.nombre }}</a></td>
-                    <td class="px-4 py-2">{{ encuestre.fecha_nacimiento }}</td>
+                    <td class="px-4 py-2">{{ encuestre.fecha_nacimiento.strftime('%Y-%m-%d') }}</td>
                     <td class="px-4 py-2">{{ encuestre.sexo }}</td>
                     <td class="px-4 py-2">{{ encuestre.raza }}</td>
                     <td class="px-4 py-2">{{ encuestre.pelaje }}</td>
                     <td class="px-4 py-2">{{ encuestre.compra_donacion }}</td>
-                    <td class="px-4 py-2">{{ encuestre.fecha_ingreso }}</td>
+                    <td class="px-4 py-2">{{ encuestre.fecha_ingreso.strftime('%Y-%m-%d') }}</td>
                     <td class="px-4 py-2">{{ encuestre.sede_asignada }}</td>
-                    <td class="px-4 py-2">{{ encuestre.entrenador_id }}</td>
+                    <td class="px-4 py-2">{% for empleado in encuestre.entrenadores_conductores %}
+                        {{ empleado.nombre }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}</td>
                     <td class="px-4 py-2">{{ encuestre.tipo_ja_asignado }}</td>
                 </tr>
                 {% endfor %}
