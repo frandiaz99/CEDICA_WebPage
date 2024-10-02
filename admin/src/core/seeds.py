@@ -1,5 +1,6 @@
 from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso # Importa el módulo equipo
 from datetime import datetime
+from itertools import chain 
 
 def run():
     # Crear issues
@@ -74,11 +75,63 @@ def run():
 
     permisos_issue = [issue_index, issue_new, issue_destroy, issue_update, issue_show]
 
-    # Asignar permisos a rol
-    rol_permiso.assign_permisos_to_rol(system_admin, permisos_user)
-    rol_permiso.assign_permisos_to_rol(system_admin, permisos_issue)
+    # Permisos para el módulo equipo
+    equipo_index = permiso.create_permiso(nombre="equipo_index")
+    equipo_new = permiso.create_permiso(nombre="equipo_new")
+    equipo_destroy = permiso.create_permiso(nombre="equipo_destroy")
+    equipo_update = permiso.create_permiso(nombre="equipo_update")
+    equipo_show = permiso.create_permiso(nombre="equipo_show")
 
-    rol_permiso.assign_permisos_to_rol(administracion_rol, permisos_issue)
+    permisos_equipo = [equipo_index, equipo_new, equipo_destroy, equipo_update, equipo_show]
+
+    # Permisos para el módulo registro_pagos
+    registro_pagos_index = permiso.create_permiso(nombre="registro_pagos_index")
+    registro_pagos_new = permiso.create_permiso(nombre="registro_pagos_new")
+    registro_pagos_destroy = permiso.create_permiso(nombre="registro_pagos_destroy")
+    registro_pagos_update = permiso.create_permiso(nombre="registro_pagos_update")
+    registro_pagos_show = permiso.create_permiso(nombre="registro_pagos_show")
+
+    permisos_registro_pagos = [registro_pagos_index, registro_pagos_new, registro_pagos_destroy, registro_pagos_update, registro_pagos_show]
+
+    # Permisos para el módulo registro_cobros
+    registro_cobros_index = permiso.create_permiso(nombre="registro_cobros_index")
+    registro_cobros_new = permiso.create_permiso(nombre="registro_cobros_new")
+    registro_cobros_destroy = permiso.create_permiso(nombre="registro_cobros_destroy")
+    registro_cobros_update = permiso.create_permiso(nombre="registro_cobros_update")
+    registro_cobros_show = permiso.create_permiso(nombre="registro_cobros_show")
+
+    permisos_registro_cobros = [registro_cobros_index, registro_cobros_new, registro_cobros_destroy, registro_cobros_update, registro_cobros_show]
+
+    # Permisos para el módulo J&A
+    ja_index = permiso.create_permiso(nombre="ja_index")
+    ja_new = permiso.create_permiso(nombre="ja_new")
+    ja_destroy = permiso.create_permiso(nombre="ja_destroy")
+    ja_update = permiso.create_permiso(nombre="ja_update")
+    ja_show = permiso.create_permiso(nombre="ja_show")
+
+    permisos_ja = [ja_index, ja_new, ja_destroy, ja_update, ja_show]
+
+    # Permisos para el módulo encuestre
+    encuestre_index = permiso.create_permiso(nombre="encuestre_index")
+    encuestre_new = permiso.create_permiso(nombre="encuestre_new")
+    encuestre_destroy = permiso.create_permiso(nombre="encuestre_destroy")
+    encuestre_update = permiso.create_permiso(nombre="encuestre_update")
+    encuestre_show = permiso.create_permiso(nombre="encuestre_show")
+
+    permisos_encuestre = [encuestre_index, encuestre_new, encuestre_destroy, encuestre_update, encuestre_show]
+
+    # Asignar permisos a rol
+    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre))
+    rol_permiso.assign_permisos_to_rol(system_admin, permisos_system_admin)
+    
+    permisos_administracion_rol = list(chain(permisos_equipo , permisos_ja , permisos_registro_cobros , permisos_registro_pagos , [encuestre_index] , [encuestre_show]))
+    rol_permiso.assign_permisos_to_rol(administracion_rol, permisos_administracion_rol)
+
+    permisos_tecnica_rol = list(chain(permisos_ja , [registro_cobros_index] , [registro_cobros_show] , [encuestre_index] , [encuestre_show]))
+    rol_permiso.assign_permisos_to_rol(tecnica_rol, permisos_tecnica_rol)
+
+    permisos_encuestre_rol = list(chain([ja_index] , [ja_show] , permisos_encuestre))
+    rol_permiso.assign_permisos_to_rol(encuestre_rol, permisos_encuestre_rol)
     
     # Crear empleados y asociarlos con usuarios
     empleado1 = equipo.create_empleado(
