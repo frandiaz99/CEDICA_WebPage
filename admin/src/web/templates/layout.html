@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     {% block head %}
@@ -21,7 +21,7 @@
 
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
     {% block navbar %}
-    <nav class="bg-gray-700 shadow-lg">
+    <nav class="bg-gray-800 shadow-lg">
         <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div class="relative flex h-16 items-center justify-between">
                 <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -41,7 +41,10 @@
                 </div>
                 <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                     <div class="flex flex-shrink-0 items-center">
-                        <img class="h-8 w-auto" src="{{url_for('static', filename='images/logo_provisorio.png')}}" alt="Your Company">
+                        <!-- Reemplazamos el logo por el de CEDICA -->
+                        <a href="{{ url_for('home') }}">
+                            <img class="h-8 w-auto" src="{{url_for('static', filename='images/icono_cedica.jpg')}}" alt="CEDICA">
+                        </a>
                     </div>
                     <div class="hidden sm:ml-6 sm:block">
                         <div class="flex space-x-4">
@@ -92,7 +95,7 @@
     
     <footer class="bg-gray-900 py-4 text-gray-400 text-center">
         {% block footer %}
-        <p>&copy; 2024 Your Company. Todos los derechos reservados.</p>
+        <p>&copy; 2024 CEDICA. Todos los derechos reservados.</p>
         {% endblock %}
     </footer>
 
@@ -114,7 +117,7 @@
       }
     </script>
 
-    <script src="{{ url_for('static', filename='funcionalidad/navbar.js') }}"></script>
+    
   
 </body>
 

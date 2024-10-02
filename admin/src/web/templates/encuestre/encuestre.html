@@ -3,80 +3,95 @@
 {% block title %}Encuestre{% endblock %}
 
 {% block content %}
-<div class="bg-green-100 p-6 rounded-lg shadow-md">
-    <h1 class="text-2xl font-bold mb-4">Lista de Encuestres</h1>
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-6 text-gray-700">Lista de Encuestres</h1>
 
     <!-- Contenedor para el botón y filtros -->
-    <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Botón de registro -->
-        <div class="flex justify-start ">
-            <!--<a href="{{ url_for('encuestre.registrar_encuestre') }}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 md:text-center">Registrar Nuevo Encuestre</a>-->
-            <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 text-center md:w-auto w-auto" onclick="redirectToRegistrarEncuestre()">
+        <div class="flex justify-start">
+            <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-center md:w-auto w-auto transition-colors duration-200" onclick="redirectToRegistrarEncuestre()">
                 Registrar Nuevo Encuestre
             </button>
         </div>
 
         <!-- Formulario de búsqueda y filtros -->
         <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 w-full">
-            <input type="text" name="search" placeholder="Buscar..." value="{{ search }}" class="border border-gray-300 rounded px-3 py-2 w-full">
+            <input type="text" name="search" placeholder="Buscar..." value="{{ search }}" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
 
-            <select name="filter_by" class="border border-gray-300 rounded px-3 py-2 w-full">
+            <select name="filter_by" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
                 <option value="nombre" {% if filter_by=='nombre' %}selected{% endif %}>Nombre</option>
                 <option value="tipo_ja_asignado" {% if filter_by=='tipo_ja_asignado' %}selected{% endif %}>Tipo de J&A asignado</option>
             </select>
 
-            <select id="order_prop" name="order_prop" class="border border-gray-300 rounded px-3 py-2 w-full">
+            <select id="order_prop" name="order_prop" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
                 <option value="nombre" {% if order_prop=='nombre' %}selected{% endif %}>Nombre</option>
                 <option value="fecha_nacimiento" {% if order_prop=='fecha_nacimiento' %}selected{% endif %}>Fecha de Nacimiento</option>
                 <option value="inserted_at" {% if order_prop=='inserted_at' %}selected{% endif %}>Fecha de Ingreso</option>
             </select>
 
-            <select name="order" class="border border-gray-300 rounded px-3 py-2 w-full">
+            <select name="order" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
                 <option value="asc" {% if order=='asc' %}selected{% endif %}>Ascendente</option>
                 <option value="desc" {% if order=='desc' %}selected{% endif %}>Descendente</option>
             </select>
 
-            <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 w-full">Buscar</button>
+            <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
         </form>
     </div>
 
     <!-- Tabla de resultados -->
     <div class="overflow-x-auto">
-        <table class="table-auto w-full bg-white shadow-md rounded-lg">
-            <thead class="bg-gray-200">
+        <table class="min-w-full bg-white shadow-md rounded-lg">
+            <thead class="bg-gray-100">
                 <tr>
-                    <th class="px-4 py-2">Nombre</th>
-                    <th class="px-4 py-2">Fecha de Nacimiento</th>
-                    <th class="px-4 py-2">Sexo</th>
-                    <th class="px-4 py-2">Raza</th>
-                    <th class="px-4 py-2">Pelaje</th>
-                    <th class="px-4 py-2">Compra/Donación</th>
-                    <th class="px-4 py-2">Fecha Ingreso</th>
-                    <th class="px-4 py-2">Sede Asignada</th>
-                    <th class="px-4 py-2">Entrenadores/Conductores Asignados</th>
-                    <th class="px-4 py-2">Tipo de J&A</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Nombre</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Fecha de Nacimiento</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Sexo</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Raza</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Pelaje</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Compra/Donación</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Fecha Ingreso</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Sede Asignada</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Entrenadores/Conductores Asignados</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Tipo de J&A</th>
                 </tr>
             </thead>
             <tbody>
                 {% for encuestre in encuestres %}
-                <tr class="cursor-pointer hover:bg-gray-100">
-                    <td class="px-4 py-2"><a href="{{ url_for('encuestre.detalle_encuestre', id=encuestre.id) }}" class="text-blue-600 hover:underline">{{ encuestre.nombre }}</a></td>
-                    <td class="px-4 py-2">{{ encuestre.fecha_nacimiento.strftime('%Y-%m-%d') }}</td>
-                    <td class="px-4 py-2">{{ encuestre.sexo }}</td>
-                    <td class="px-4 py-2">{{ encuestre.raza }}</td>
-                    <td class="px-4 py-2">{{ encuestre.pelaje }}</td>
-                    <td class="px-4 py-2">{{ encuestre.compra_donacion }}</td>
-                    <td class="px-4 py-2">{{ encuestre.fecha_ingreso.strftime('%Y-%m-%d') }}</td>
-                    <td class="px-4 py-2">{{ encuestre.sede_asignada }}</td>
-                    <td class="px-4 py-2">{% for empleado in encuestre.entrenadores_conductores %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border-b"><a href="{{ url_for('encuestre.detalle_encuestre', id=encuestre.id) }}" class="text-blue-600 hover:underline">{{ encuestre.nombre }}</a></td>
+                    <td class="px-4 py-2 border-b">{{ encuestre.fecha_nacimiento.strftime('%d/%m/%Y') }}</td>
+                    <td class="px-4 py-2 border-b">{{ encuestre.sexo }}</td>
+                    <td class="px-4 py-2 border-b">{{ encuestre.raza }}</td>
+                    <td class="px-4 py-2 border-b">{{ encuestre.pelaje }}</td>
+                    <td class="px-4 py-2 border-b">{{ encuestre.compra_donacion }}</td>
+                    <td class="px-4 py-2 border-b">{{ encuestre.fecha_ingreso.strftime('%d/%m/%Y') }}</td>
+                    <td class="px-4 py-2 border-b">{{ encuestre.sede_asignada }}</td>
+                    <td class="px-4 py-2 border-b">{% for empleado in encuestre.entrenadores_conductores %}
                         {{ empleado.nombre }}{% if not loop.last %}, {% endif %}
                     {% endfor %}</td>
-                    <td class="px-4 py-2">{{ encuestre.tipo_ja_asignado }}</td>
+                    <td class="px-4 py-2 border-b">{{ encuestre.tipo_ja_asignado }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <!-- Paginación -->
+    <div class="flex justify-between items-center mt-4">
+        <span class="text-gray-600">Página {{ pagina }} de {{ total_paginas }}</span>
+
+        <div class="flex space-x-2">
+            {% if pagina > 1 %}
+                <a href="{{ url_for('encuestre.index', pagina=pagina-1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Anterior</a>
+            {% endif %}
+            
+            {% if pagina < total_paginas %}
+                <a href="{{ url_for('encuestre.index', pagina=pagina+1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Siguiente</a>
+            {% endif %}
+        </div>
+    </div>
+
 </div>
 
 <script>

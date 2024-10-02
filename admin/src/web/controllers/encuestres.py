@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, jsonify, request, abort, flash, ur
 from sqlalchemy import asc, desc
 from src.core.database import db 
 from datetime import datetime
+from math import ceil
 
 from src.core import encuestre
 from src.core.equipo import Empleado
@@ -11,11 +12,15 @@ encuestre_bp = Blueprint('encuestre', __name__, url_prefix='/encuestre')
 @encuestre_bp.get("/")
 def index():
     print("Ruta /encuestre/ accedida")
+
+    registros_por_pagina = 1
+
     # Obtener parámetros de búsqueda y orden desde la URL
     search = request.args.get('search', '')
     filter_by = request.args.get('filter_by', 'nombre')  # Por defecto 'nombre'
     order = request.args.get('order', 'asc')  # Por defecto ascendente
     order_prop = request.args.get('order_prop', 'nombre')
+    pagina = request.args.get('pagina', 1, type=int)
     
     # Construir la query base
     query = encuestre.Encuestre.query
@@ -47,8 +52,17 @@ def index():
     elif order_prop == 'fecha_ingreso':
         query = query.order_by(asc(encuestre.Encuestre.inserted_at)) if order == 'asc' else query.order_by(desc(encuestre.Encuestre.inserted_at))
     
-    # Obtener los empleados filtrados y ordenados
-    encuestres = query.all()
+    # Contar el total de registros que cumplen con los criterios de búsqueda
+    total_registros = query.count()
+
+    # Calcular cuántos registros hay que omitir dependiendo de la página (a medida que aumenta la cantidad de paginas omite mas registros)
+    offset = (pagina - 1) * registros_por_pagina
+
+    # Aplicar límite y offset para la paginación
+    encuestres = query.offset(offset).limit(registros_por_pagina).all()
+
+    # Calcular el total de páginas
+    total_paginas = ceil(total_registros / registros_por_pagina)
     
     # Renderizar la plantilla y pasar los empleados y los parámetros
     return render_template(
@@ -57,18 +71,21 @@ def index():
         search=search, 
         filter_by=filter_by, 
         order=order,
-        order_prop=order_prop
+        order_prop=order_prop,
+        pagina=pagina,
+        total_paginas=total_paginas
     )
 
 
 @encuestre_bp.route('/detalle/<int:id>', methods=['GET'])
-
 def detalle_encuestre(id):
 
     e = encuestre.Encuestre.obtener_encuestre_por_id(id)
     if e is None:
         abort(404)  # error 404 si no se encuentra el encuestre
     return render_template('encuestre/detalle_encuestre.html', encuestre=e)
+
+
 
 @encuestre_bp.route('/registrar', methods=['GET', 'POST'])
 def registrar_encuestre():
