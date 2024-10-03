@@ -52,18 +52,14 @@ def index():
     elif order_prop == 'fecha_ingreso':
         query = query.order_by(asc(encuestre.Encuestre.inserted_at)) if order == 'asc' else query.order_by(desc(encuestre.Encuestre.inserted_at))
     
-    # Contar el total de registros que cumplen con los criterios de búsqueda
-    total_registros = query.count()
 
-    # Calcular cuántos registros hay que omitir dependiendo de la página (a medida que aumenta la cantidad de paginas omite mas registros)
-    offset = (pagina - 1) * registros_por_pagina
-
-    # Aplicar límite y offset para la paginación
-    encuestres = query.offset(offset).limit(registros_por_pagina).all()
-
-    # Calcular el total de páginas
-    total_paginas = ceil(total_registros / registros_por_pagina)
+    pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
     
+    encuestres = pagination.items
+
+    total_paginas = pagination.pages
+
+
     # Renderizar la plantilla y pasar los empleados y los parámetros
     return render_template(
         "encuestre/encuestre.html", 
