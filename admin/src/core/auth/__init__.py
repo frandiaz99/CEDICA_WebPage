@@ -30,6 +30,11 @@ def assign_rol(user, rol):
 def get_permissions(user):  
     permisos = [permiso for permiso in user.rol.permisos]
 
-    return permisos 
+    return permisos
+
+def find_user_by_email_and_password(email, password):
+    user = User.query.filter_by(email=email, password=password).first()
+
+    return user 
 
 

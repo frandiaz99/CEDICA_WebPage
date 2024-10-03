@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<section>
+    <h1>Iniciar sesión</h1>
+    <form action="{{url_for('auth.authenticate')}}" method="post">
+        <input type="email" name="email" placeholder="Ingrese su correo" required>
+        <input type="password" name="password" placeholder="Ingrese su contraseña" required>
+        <input type="submit" value="Login">
+    </form>
+</section>
+
+{% endblock %}

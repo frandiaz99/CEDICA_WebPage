@@ -3,6 +3,7 @@ from flask import render_template
 from src.web.handlers import error
 from src.web.controllers.issues import bp as issues_bp
 from src.web.controllers.equipo import equipo_bp
+from src.web.controllers.auth import login_bp
 from src.web.controllers.encuestres import encuestre_bp
 from src.core import database
 from src.core.config import config
@@ -41,6 +42,8 @@ def create_app(env="development", static_folder="../../static"):
     app.register_blueprint(equipo_bp)
 
     app.register_blueprint(encuestre_bp)
+
+    app.register_blueprint(login_bp)
 
     @app.cli.command(name="reset-db")
     def reset_db():
