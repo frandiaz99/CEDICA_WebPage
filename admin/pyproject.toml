@@ -6,6 +6,7 @@ authors = [
     "MATIAS DURAN <matiduran03@gmail.com~>",
     "FRANCISCO DIAZ MALBRAN <fdmalbran@alu.ing.unlp.edu.ar~>",
     "LAUTARO FRANCISCO BLEIZ <lautaro.bleiz77@gmail.com~>",
+    "PACO LOVERA <pacolovera29@gmail.com~>"
 ]
 readme = "README.md"
 packages = [{ include = "web", from = "src" }]
@@ -15,6 +16,8 @@ python = "^3.12"
 flask = "^3.0.3"
 psycopg2-binary = "^2.9.9"
 flask-sqlalchemy = "^3.1.1"
+flask-session = "^0.8.0"
+flask-bcrypt = "^1.0.1"
 
 
 [tool.poetry.group.dev.dependencies]

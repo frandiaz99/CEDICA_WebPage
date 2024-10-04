@@ -3,7 +3,8 @@ from flask import session
 from flask import abort 
 from src.core import auth 
 
-
+def is_authenticated(session):
+    return session.get("user") is not None
 
 def check_permission(session, permission): 
     user_email = session.get("user")
@@ -11,6 +12,17 @@ def check_permission(session, permission):
     permissions = auth.get_permissions(user)
 
     return user is not None and permission in permissions
+
+
+def login_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if not is_authenticated(session):
+            return abort(401)
+            
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 def check(permission): 

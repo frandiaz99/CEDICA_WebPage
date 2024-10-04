@@ -16,15 +16,21 @@ def login():
 @login_bp.post("/authenticate")
 def authenticate():
     params = request.form
-    user = auth.find_user_by_email_and_password(params["email"], params["password"])
+    user = auth.check_user(params["email"], params["password"])
     if not user:
         flash("Usuario o contraseña incorrecta", "error")
         return redirect(url_for("auth.login"))
     
     session["user"] = user.email
-    flash("¡La sesión se inició correctamente")
-    return redirect(url_for("issue.index"))
+    flash("¡La sesión se inició correctamente","success")
+    return redirect(url_for("home"))
 
 @login_bp.get("/logout")
 def logout():
-    pass
+    if session.get("user"):
+        del session["user"]
+        session.clear()
+        flash("¡La sesión se cerró correctamente!", "info")
+    else:
+        flash("No hay una sesión activa", "error")
+    return redirect(url_for("auth.login"))

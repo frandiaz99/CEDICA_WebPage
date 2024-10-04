@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}Usuarios{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<h1>Usuarios</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <th>{{ user.id }}</th>
+            <th>{{ user.email }}</th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
