@@ -3,12 +3,17 @@ from flask import render_template
 from src.web.handlers import error
 from src.web.controllers.issues import bp as issues_bp
 from src.web.controllers.equipo import equipo_bp
+from src.web.controllers.auth import login_bp
 from src.web.controllers.encuestres import encuestre_bp
+from src.web.controllers.users import users_bp
+from src.web.handlers.auth import is_authenticated
 from src.core import database
 from src.core.config import config
 from src.core import seeds
+from src.core.bcrypt import bcrypt
+from flask_session import Session
 
-
+session = Session()
 
 def create_app(env="development", static_folder="../../static"):
     app = Flask(__name__, static_folder=static_folder)
@@ -18,9 +23,12 @@ def create_app(env="development", static_folder="../../static"):
     app.config.from_object(config[env])
     database.init_app(app)
 
+    session.init_app(app)
+    bcrypt.init_app(app)
+
     @app.route("/")
     def home():
-        return render_template("home.html")
+        return render_template("auth/login.html")
         
     
     @app.route("/about")
@@ -35,12 +43,19 @@ def create_app(env="development", static_folder="../../static"):
     
     app.register_error_handler(404, error.not_found_error)
     app.register_error_handler(403, error.forbidden)
+    app.register_error_handler(401, error.unauthorized)
     
     app.register_blueprint(issues_bp)
 
     app.register_blueprint(equipo_bp)
 
     app.register_blueprint(encuestre_bp)
+
+    app.register_blueprint(login_bp)
+
+    app.register_blueprint(users_bp)
+
+    app.jinja_env.globals.update(is_authenticated=is_authenticated)
 
     @app.cli.command(name="reset-db")
     def reset_db():
