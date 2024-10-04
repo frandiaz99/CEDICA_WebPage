@@ -173,3 +173,37 @@ def registrar_encuestre():
     fecha_hoy = datetime.now().strftime('%Y-%m-%d')
 
     return render_template('encuestre/registrar_encuestre.html', empleados=empleados, fecha_hoy=fecha_hoy)
+
+
+
+@encuestre_bp.route('/editar/<int:encuestre_id>', methods=['GET', 'POST'])
+@check("encuestre_update")
+def editar_encuestre(encuestre_id):
+    
+    encuestre_aux = encuestre.Encuestre.obtener_encuestre_por_id(encuestre_id)
+    if encuestre_aux is None:
+        abort(404) 
+    
+    if request.method == 'POST':
+        # Obtener datos del formulario
+        encuestre_aux.nombre = request.form['nombre']
+        encuestre_aux.fecha_nacimiento = request.form['fecha_nacimiento']
+        encuestre_aux.sexo = request.form['sexo']
+        encuestre_aux.raza = request.form['raza']
+        encuestre_aux.pelaje = request.form['pelaje']
+        encuestre_aux.tipo_ingreso = request.form['tipo_ingreso']
+        encuestre_aux.fecha_ingreso = request.form['fecha_ingreso']
+        encuestre_aux.sede_asignada = request.form['sede_asignada']
+        
+        # Procesar entrenadores y conductores seleccionados
+        encuestre_aux.entrenadores_conductores = request.form.getlist('entrenadores_conductores')
+
+        # Guardar cambios en la base de datos
+        db.session.commit()
+        flash('Los cambios se han guardado exitosamente.', 'success')
+        return redirect(url_for('encuestre.detalle_encuestre', encuestre_id=encuestre.id))
+    
+    # Obtener empleados para la lista de selección
+    empleados = Empleado.query.filter(Empleado.puesto_laboral.in_(['Entrenador de caballos', 'Conductor'])).all()
+
+    return render_template('encuestre/editar_encuestre.html', encuestre=encuestre_aux, empleados=empleados, fecha_hoy=datetime.today().date())
