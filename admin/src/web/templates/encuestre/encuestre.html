@@ -9,11 +9,13 @@
     <!-- Contenedor para el botón y filtros -->
     <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Botón de registro -->
+        {% if check_permission(session, "encuestre_new") %}
         <div class="flex justify-start">
             <button type="button" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-center md:w-auto w-auto transition-colors duration-200" onclick="redirectToRegistrarEncuestre()">
                 Registrar Nuevo Encuestre
             </button>
         </div>
+        {% endif %}
 
         <!-- Formulario de búsqueda y filtros -->
         <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 w-full">
@@ -59,7 +61,9 @@
             <tbody>
                 {% for encuestre in encuestres %}
                 <tr class="hover:bg-gray-50">
+                    {% if check_permission(session, "encuestre_show") %}
                     <td class="px-4 py-2 border-b"><a href="{{ url_for('encuestre.detalle_encuestre', id=encuestre.id) }}" class="text-blue-600 hover:underline">{{ encuestre.nombre }}</a></td>
+                    {% endif %}
                     <td class="px-4 py-2 border-b">{{ encuestre.fecha_nacimiento.strftime('%d/%m/%Y') }}</td>
                     <td class="px-4 py-2 border-b">{{ encuestre.sexo }}</td>
                     <td class="px-4 py-2 border-b">{{ encuestre.raza }}</td>

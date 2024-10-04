@@ -17,11 +17,13 @@ def login():
 def authenticate():
     params = request.form
     user = auth.check_user(params["email"], params["password"])
+
     if not user:
         flash("Usuario o contraseña incorrecta", "error")
         return redirect(url_for("auth.login"))
     
     session["user"] = user.email
+    session["user_alias"] = user.alias 
     flash("¡La sesión se inició correctamente","success")
     return redirect(url_for("home"))
 

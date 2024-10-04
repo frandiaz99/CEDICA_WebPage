@@ -11,6 +11,10 @@ def check_permission(session, permission):
     user = auth.find_user_by_email(user_email)
     permissions = auth.get_permissions(user)
 
+    print("User:", user_email)
+    #print("Permissions:", permission_names)
+    print("Requested Permission:", permission)
+
     return user is not None and permission in permissions
 
 

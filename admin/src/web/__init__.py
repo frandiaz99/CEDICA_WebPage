@@ -7,6 +7,7 @@ from src.web.controllers.auth import login_bp
 from src.web.controllers.encuestres import encuestre_bp
 from src.web.controllers.users import users_bp
 from src.web.handlers.auth import is_authenticated
+from src.web.handlers.auth import check_permission
 from src.core import database
 from src.core.config import config
 from src.core import seeds
@@ -27,7 +28,7 @@ def create_app(env="development", static_folder="../../static"):
     bcrypt.init_app(app)
 
     @app.route("/")
-    def home():
+    def login():
         return render_template("auth/login.html")
         
     
@@ -35,7 +36,9 @@ def create_app(env="development", static_folder="../../static"):
     def about():
         return render_template("about.html")
     
-    
+    @app.route("/home")
+    def home():
+        return render_template("home.html")
     
     @app.route("/jinetes_amazonas")
     def jinetes_amazonas():
@@ -56,6 +59,8 @@ def create_app(env="development", static_folder="../../static"):
     app.register_blueprint(users_bp)
 
     app.jinja_env.globals.update(is_authenticated=is_authenticated)
+
+    app.jinja_env.globals.update(check_permission=check_permission)
 
     @app.cli.command(name="reset-db")
     def reset_db():

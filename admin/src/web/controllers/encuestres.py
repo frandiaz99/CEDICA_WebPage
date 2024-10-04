@@ -2,14 +2,16 @@ from flask import Blueprint, render_template, jsonify, request, abort, flash, ur
 from sqlalchemy import asc, desc
 from src.core.database import db 
 from datetime import datetime
-from math import ceil
 
 from src.core import encuestre
 from src.core.equipo import Empleado
 
+from src.web.handlers.auth import check
+
 encuestre_bp = Blueprint('encuestre', __name__, url_prefix='/encuestre')
 
 @encuestre_bp.get("/")
+@check("encuestre_index")
 def index():
     print("Ruta /encuestre/ accedida")
 
@@ -74,6 +76,7 @@ def index():
 
 
 @encuestre_bp.route('/detalle/<int:id>', methods=['GET'])
+@check("encuestre_show")
 def detalle_encuestre(id):
 
     e = encuestre.Encuestre.obtener_encuestre_por_id(id)
@@ -84,6 +87,7 @@ def detalle_encuestre(id):
 
 
 @encuestre_bp.route('/registrar', methods=['GET', 'POST'])
+@check("encuestre_new")
 def registrar_encuestre():
     if request.method == 'POST':
         # Recoger los datos del formulario

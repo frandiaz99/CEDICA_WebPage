@@ -41,7 +41,7 @@
                 </div>
                 <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                     <div class="flex flex-shrink-0 items-center">
-                        <!-- Reemplazamos el logo por el de CEDICA -->
+                        
                         <a href="{{ url_for('home') }}">
                             <img class="h-8 w-auto" src="{{url_for('static', filename='images/icono_cedica.jpg')}}" alt="CEDICA">
                         </a>
@@ -49,12 +49,15 @@
                     <div class="hidden sm:ml-6 sm:block">
                         <div class="flex space-x-4">
                             <a href="{{url_for('jinetes_amazonas')}}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">J&A</a>
+                            {% if check_permission(session, "encuestre_index") %}
                             <a href="{{url_for('encuestre.index')}}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Encuestre</a>
+                            {% endif %}
                             <a href="{{url_for('equipo.index')}}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Equipo</a>
                         </div>
                     </div>
                 </div>
                 <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                    <span class="text-gray-300 text-sm mr-2">Hola {{ session['user_alias'] }}</span>
                     <!-- Profile dropdown -->
                     <div class="relative ml-3">
                         <div>

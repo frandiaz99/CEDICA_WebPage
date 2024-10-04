@@ -26,9 +26,9 @@ def run():
 
     
     # Crear usuarios
-    fede = auth.create_user(email="fede@gmail.com", password="1234")    
-    mati = auth.create_user(email="mati@gmail.com", password="1234")    
-    miguel = auth.create_user(email="miguel@gmail.com", password="1234")        
+    fede = auth.create_user(alias="Fede", email="fede@gmail.com", password="1234")    
+    mati = auth.create_user(alias="el mati", email="mati@gmail.com", password="1234")    
+    miguel = auth.create_user(alias="migueee", email="miguel@gmail.com", password="1234")        
 
     # Asignar issues a usuarios
     board.assign_user(issue1, fede)

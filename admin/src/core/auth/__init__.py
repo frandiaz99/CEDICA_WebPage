@@ -31,7 +31,7 @@ def assign_rol(user, rol):
     return user
 
 def get_permissions(user):  
-    permisos = [permiso for permiso in user.rol.permisos]
+    permisos = [permiso.nombre for permiso in user.rol.permisos]
 
     return permisos
 
