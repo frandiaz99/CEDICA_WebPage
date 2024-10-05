@@ -84,6 +84,22 @@ def detalle_encuestre(id):
         abort(404)  # error 404 si no se encuentra el encuestre
     return render_template('encuestre/detalle_encuestre.html', encuestre=e)
 
+@encuestre_bp.route('/eliminar/<int:id>', methods=['POST'])
+@check("encuestre_destroy")
+def eliminar_encuestre(id):
+    # Buscar el encuestre por ID
+    encuestre_aux = encuestre.Encuestre.query.get_or_404(id)
+    
+    try:
+        db.session.delete(encuestre_aux)
+        db.session.commit()
+
+        flash('Encuestre eliminado correctamente.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar el encuestre: {str(e)}', 'danger')
+    return redirect(url_for('encuestre.index')) 
+
 
 
 @encuestre_bp.route('/registrar', methods=['GET', 'POST'])
@@ -186,17 +202,19 @@ def editar_encuestre(id):
     
     if request.method == 'POST':
         # Obtener datos del formulario
-        encuestre_aux.nombre = request.form['nombre']
-        
+        encuestre_aux.nombre = request.form['nombre']    
         encuestre_aux.sexo = request.form['sexo']
         encuestre_aux.raza = request.form['raza']
         encuestre_aux.pelaje = request.form['pelaje']
         encuestre_aux.compra_donacion = request.form['tipo_ingreso']
-        
         encuestre_aux.sede_asignada = request.form['sede_asignada']
         
         # Procesar entrenadores y conductores seleccionados
-        encuestre_aux.entrenadores_conductores = request.form.getlist('entrenadores_conductores')
+        entrenadores_conductores_ids = request.form.getlist('entrenadores_conductores')
+
+        empleados_seleccionados = Empleado.query.filter(Empleado.id.in_(entrenadores_conductores_ids)).all()
+        encuestre_aux.entrenadores_conductores = empleados_seleccionados
+        
 
         # Guardar cambios en la base de datos
         db.session.commit()
@@ -204,6 +222,16 @@ def editar_encuestre(id):
         return redirect(url_for('encuestre.detalle_encuestre', id=encuestre_aux.id))
     
     # Obtener empleados para la lista de selección
+    
     empleados = Empleado.query.filter(Empleado.puesto_laboral.in_(['Entrenador de caballos', 'Conductor'])).all()
 
-    return render_template('encuestre/editar_encuestre.html', encuestre=encuestre_aux, empleados=empleados, fecha_hoy=datetime.today().date())
+    entrenadores_ids = [entrenador.id for entrenador in encuestre_aux.entrenadores_conductores]
+
+    return render_template(
+    'encuestre/editar_encuestre.html', 
+    encuestre=encuestre_aux, 
+    empleados=empleados, 
+    entrenadores_ids=entrenadores_ids,  # Pasar solo los IDs
+    fecha_hoy=datetime.today().date()
+)
+

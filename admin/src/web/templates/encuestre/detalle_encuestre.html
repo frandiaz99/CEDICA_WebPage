@@ -133,9 +133,12 @@
         <a href="{{ url_for('encuestre.editar_encuestre', id=encuestre.id) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600">Editar</a>
         {% endif %}
 
-        {% if check_permission(session, "encuestre_destroy") %}
-        <button class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Eliminar</button>
+        {% if check_permission(session, 'encuestre_destroy') %}
+        <form method="POST" action="{{ url_for('encuestre.eliminar_encuestre', id=encuestre.id) }}">
+            <button type="submit" class="btn btn-danger bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">Eliminar</button>
+        </form>
         {% endif %}
+
     </div>
     
             
