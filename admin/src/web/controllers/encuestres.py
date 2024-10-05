@@ -176,23 +176,23 @@ def registrar_encuestre():
 
 
 
-@encuestre_bp.route('/editar/<int:encuestre_id>', methods=['GET', 'POST'])
+@encuestre_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @check("encuestre_update")
-def editar_encuestre(encuestre_id):
+def editar_encuestre(id):
     
-    encuestre_aux = encuestre.Encuestre.obtener_encuestre_por_id(encuestre_id)
+    encuestre_aux = encuestre.Encuestre.obtener_encuestre_por_id(id)
     if encuestre_aux is None:
         abort(404) 
     
     if request.method == 'POST':
         # Obtener datos del formulario
         encuestre_aux.nombre = request.form['nombre']
-        encuestre_aux.fecha_nacimiento = request.form['fecha_nacimiento']
+        
         encuestre_aux.sexo = request.form['sexo']
         encuestre_aux.raza = request.form['raza']
         encuestre_aux.pelaje = request.form['pelaje']
-        encuestre_aux.tipo_ingreso = request.form['tipo_ingreso']
-        encuestre_aux.fecha_ingreso = request.form['fecha_ingreso']
+        encuestre_aux.compra_donacion = request.form['tipo_ingreso']
+        
         encuestre_aux.sede_asignada = request.form['sede_asignada']
         
         # Procesar entrenadores y conductores seleccionados
@@ -201,7 +201,7 @@ def editar_encuestre(encuestre_id):
         # Guardar cambios en la base de datos
         db.session.commit()
         flash('Los cambios se han guardado exitosamente.', 'success')
-        return redirect(url_for('encuestre.detalle_encuestre', encuestre_id=encuestre.id))
+        return redirect(url_for('encuestre.detalle_encuestre', id=encuestre_aux.id))
     
     # Obtener empleados para la lista de selección
     empleados = Empleado.query.filter(Empleado.puesto_laboral.in_(['Entrenador de caballos', 'Conductor'])).all()

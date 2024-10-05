@@ -130,7 +130,7 @@
         <!-- Botones para Editar y Eliminar -->
     <div class="flex justify-end space-x-4 mt-4">
         {% if check_permission(session, "encuestre_update") %}
-        <a href="{{ url_for('encuestre.editar_encuestre', encuestre_id=encuestre.id) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600">Editar</a>
+        <a href="{{ url_for('encuestre.editar_encuestre', id=encuestre.id) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600">Editar</a>
         {% endif %}
 
         {% if check_permission(session, "encuestre_destroy") %}
