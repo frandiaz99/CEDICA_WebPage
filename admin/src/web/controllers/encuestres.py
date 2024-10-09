@@ -1,12 +1,19 @@
-from flask import Blueprint, render_template, jsonify, request, abort, flash, url_for, redirect
+from flask import Blueprint, render_template, jsonify, request, abort, flash, url_for, redirect, current_app
 from sqlalchemy import asc, desc
 from src.core.database import db 
 from datetime import datetime
 
 from src.core import encuestre
+from src.core.encuestre import documento_encuestre
 from src.core.equipo import Empleado
 
 from src.web.handlers.auth import check
+
+from ulid import ULID
+
+import os
+
+from src.web import storage
 
 encuestre_bp = Blueprint('encuestre', __name__, url_prefix='/encuestre')
 
@@ -79,10 +86,61 @@ def index():
 @check("encuestre_show")
 def detalle_encuestre(id):
 
-    e = encuestre.Encuestre.obtener_encuestre_por_id(id)
-    if e is None:
-        abort(404)  # error 404 si no se encuentra el encuestre
-    return render_template('encuestre/detalle_encuestre.html', encuestre=e)
+    encuestre_aux = encuestre.Encuestre.obtener_encuestre_por_id(id)
+    if encuestre_aux is None:
+        abort(404)  
+
+    query = documento_encuestre.DocumentoEncuestre.query.filter_by(encuestre_id=id)
+
+    registros_por_pagina = 2
+
+    # Obtener parámetros de búsqueda y orden desde la URL
+    search = request.args.get('search', '')
+    tipo = request.args.get('tipo', '')  # Filtro por tipo de documento
+    filter_by = request.args.get('filter_by', 'titulo')  # Por defecto 'nombre'
+    order = request.args.get('order', 'asc')  # Por defecto ascendente
+    order_prop = request.args.get('order_prop', 'titulo')
+    pagina = request.args.get('pagina', 1, type=int)
+    
+    if search:
+        if filter_by == 'titulo':
+            query = query.filter(documento_encuestre.DocumentoEncuestre.titulo.ilike(f'%{search}%'))
+    
+    if tipo:
+        query = query.filter(documento_encuestre.DocumentoEncuestre.tipo == tipo)
+    
+    if order_prop != filter_by:
+        if order == 'asc':
+            query = query.order_by(asc(getattr(documento_encuestre.DocumentoEncuestre, order_prop)))
+        else:
+            query = query.order_by(desc(getattr(documento_encuestre.DocumentoEncuestre, order_prop)))
+
+    # Si se quiere ordenar por nombre, apellido o fecha de creación adicionalmente
+    if order_prop == 'titulo':
+        query = query.order_by(asc(documento_encuestre.DocumentoEncuestre.titulo)) if order == 'asc' else query.order_by(desc(documento_encuestre.DocumentoEncuestre.titulo))
+    elif order_prop == 'fecha_subida':
+        query = query.order_by(asc(documento_encuestre.DocumentoEncuestre.inserted_at)) if order == 'asc' else query.order_by(desc(documento_encuestre.DocumentoEncuestre.inserted_at))
+
+    pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
+    
+    documentos_filtrados = pagination.items
+    total_paginas = pagination.pages
+    
+    return render_template(
+        'encuestre/detalle_encuestre.html', 
+        encuestre=encuestre_aux, 
+        documentos=documentos_filtrados,
+        search=search, 
+        tipo=tipo,
+        filter_by=filter_by, 
+        order=order,
+        order_prop=order_prop,
+        pagina=pagina,
+        total_paginas=total_paginas
+
+    )
+
+
 
 @encuestre_bp.route('/eliminar/<int:id>', methods=['POST'])
 @check("encuestre_destroy")
@@ -234,4 +292,63 @@ def editar_encuestre(id):
     entrenadores_ids=entrenadores_ids,  # Pasar solo los IDs
     fecha_hoy=datetime.today().date()
 )
+
+@encuestre_bp.route('/subir_documento', methods=['POST'])
+def subir_documento():
+
+    MAX_FILE_SIZE = 16 * 1024 * 1024
+
+    if 'file' not in request.files:
+        flash('No se seleccionó ningún archivo', 'error')
+        return redirect(url_for('encuestre.detalle_encuestre', id=request.form.get('encuestre_id')))
+    
+    file = request.files['file']
+
+    client = current_app.storage.client 
+
+    file_size = os.fstat(file.fileno()).st_size
+    
+    if file_size > MAX_FILE_SIZE:
+        flash('El archivo excede el tamaño máximo permitido (16MB)', 'error')
+        return redirect(url_for('encuestre.detalle_encuestre', id=request.form.get('encuestre_id')))
+    
+    if file.filename == '':
+        flash('Nombre de archivo vacío', 'error')
+        return redirect(url_for('encuestre.detalle_encuestre', id=request.form.get('encuestre_id')))
+    
+    #ulid = str(ULID())
+    #extension = os.path.splitext(file.filename)[1]
+    #nombre_unico = f"{extension}"
+
+    
+    try:
+        client.put_object(
+            'grupo49',
+            file.filename,
+            file,
+            file_size, 
+            content_type=file.content_type
+        )
+        
+        # Obtener el encuestre asociado
+        encuestre_id = request.form.get('encuestre_id')
+        encuestre_aux = encuestre.Encuestre.query.get(encuestre_id)
+        
+        # Crear el documento y asociarlo al encuestre
+        nuevo_documento = documento_encuestre.DocumentoEncuestre(
+            titulo=file.filename,
+            tipo=file.content_type,
+            url=f"{current_app.config['MINIO_SERVER']}/grupo49/{file.name}",
+            encuestre=encuestre_aux
+        )
+        
+        db.session.add(nuevo_documento)
+        db.session.commit()
+        
+        flash('Documento subido exitosamente', 'success')
+    except Exception as e:
+        flash(f'Error al subir el documento: {str(e)}', 'error')
+    
+    return redirect(url_for('encuestre.detalle_encuestre', id=request.form.get('encuestre_id')))
+
 
