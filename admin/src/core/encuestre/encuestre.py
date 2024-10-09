@@ -1,5 +1,6 @@
 from datetime import datetime
 from src.core.database import db
+from src.core.encuestre_empleado import encuestres_empleados
 
 class Encuestre(db.Model):
     __tablename__ = "encuestres"
@@ -11,10 +12,19 @@ class Encuestre(db.Model):
     pelaje = db.Column(db.String(80), nullable=False)
     compra_donacion = db.Column(db.String(80), nullable=False)
     fecha_ingreso = db.Column(db.DateTime, default=datetime.now())
-    #sede_asignada = db.relationship("Sede", back_populates="encuestre")
-    #tipo_ja_asignado = db.relationship("JA", back_populates="encuestre")
+    sede_asignada = db.Column(db.String(100), nullable=True)
+    tipo_ja_asignado = db.Column(db.String(80), nullable = False)
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
+    entrenadores_conductores = db.relationship('Empleado', secondary='encuestre_empleado',cascade="all, delete", back_populates='encuestres')
+
+    documentos = db.relationship('DocumentoEncuestre', back_populates='encuestre', cascade="all, delete-orphan")
+
     def __repr__(self):
         return f'<Encuestre #{self.id}">'
+    
+    # Función para obtener el encuestre por ID
+    @staticmethod
+    def obtener_encuestre_por_id(encuestre_id):
+        return db.session.query(Encuestre).filter(Encuestre.id == encuestre_id).first()

@@ -1,0 +1,177 @@
+{% extends "layout.html" %}
+
+{% block title %}Encuestre_detalle{% endblock %}
+
+{% block content %}
+<body class="bg-gray-100"></body>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flex justify-center mt-4">
+            <div class="w-full max-w-2xl">
+                {% for category, message in messages %}
+                    <div class="bg-red-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                        <p class="text-lg font-semibold">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% endwith %}
+    <div class="max-w-4xl mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Detalle de Caballo</h1>
+        
+        <!-- Sección de pestañas -->
+        <div class="flex justify-center mb-6">
+            <button id="infoBtn" class="tab-button bg-blue-500 text-white px-4 py-2 rounded-l-md focus:outline-none">Información General</button>
+            <button id="docsBtn" class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-r-md focus:outline-none">Documentos</button>
+        </div>
+
+        <!-- Sección de Información General -->
+        <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold mb-4">Información General</h2>
+            <p><strong>Nombre:</strong> {{ encuestre.nombre }}</p>
+            <p><strong>Fecha de Nacimiento:</strong> {{ encuestre.fecha_nacimiento }}</p>
+            <p><strong>Sexo:</strong> {{ encuestre.sexo }}</p>
+            <p><strong>Raza:</strong> {{ encuestre.raza }}</p>
+            <p><strong>Pelaje:</strong> {{ encuestre.pelaje }}</p>
+            <p><strong>Compra/Donación:</strong> {{ encuestre.compra_donacion }}</p>
+            <p><strong>Fecha de Ingreso:</strong> {{ encuestre.fecha_ingreso }}</p>
+            <p><strong>Sede Asignada:</strong> {{ encuestre.sede_asignada }}</p>
+            <p><strong>Entrenadores y Conductores:</strong>
+                {% for empleado in encuestre.entrenadores_conductores %}
+                    {{ empleado.nombre }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Tipo de J&A Asignados:</strong> {{ encuestre.tipo_ja_asignado }}</p>
+        </div>
+
+
+        <!-- Sección de Documentos -->
+<div id="docsSection" class="p-6 bg-white rounded-lg shadow-md">
+    <!-- Filtros de búsqueda -->
+
+    <form method="GET" class="flex items-center space-x-4 mb-4">
+        <input type="text" name="search" id="documentSearch" value="{{ search }}" placeholder="Buscar por título..." class="px-4 py-2 border rounded-md">
+        
+        <select name="tipo" id="documentType" class="px-4 py-2 border rounded-md">
+            <option value=""{% if tipo == '' %}selected{% endif %}>Seleccionar tipo</option>
+            <option value="entrevista"{% if tipo == 'entrevista' %}selected{% endif %}>Entrevista</option>
+            <option value="evaluacion"{% if tipo == 'evaluacion' %}selected{% endif %}>Evaluación</option>
+            <option value="planificaciones"{% if tipo == 'planificaciones' %}selected{% endif %}>Planificaciones</option>
+            <option value="evolucion" {% if tipo == 'evolucion' %}selected{% endif %}>Evolución</option>
+            <option value="cronicas"{% if tipo == 'cronicas' %}selected{% endif %}>Crónicas</option>
+            <option value="documental"{% if tipo == 'documental' %}selected{% endif %}>Documental</option>
+        </select>
+
+        <select name="order_prop" id="orderField" class="px-4 py-2 border rounded-md">
+            <option value="titulo"{% if order_prop == 'titulo' %}selected{% endif %}>Título</option>
+            <option value="inserted_at"{% if order_prop == 'inserted_at' %}selected{% endif %}>Fecha de subida</option>
+        </select>
+
+        
+        <select name="order" id="orderDirection" class="px-4 py-2 border rounded-md">
+            <option value="asc"{% if order == 'asc' %}selected{% endif %}>Ascendente</option>
+            <option value="desc"{% if order == 'desc' %}selected{% endif %}>Descendente</option>
+        </select>
+        
+        <button type="submit" id="filterButton" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Filtrar</button>
+    </form>
+
+    <!-- Ordenar documentos -->
+    
+
+    <!-- Tabla de Documentos -->
+    <table class="min-w-full table-auto border-collapse">
+        <thead>
+            <tr class="border-b">
+                <th class="px-4 py-2 text-left">Nombre</th>
+                <th class="px-4 py-2 text-left">Tipo</th>
+                <th class="px-4 py-2 text-left">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="documentTable">
+            {% for documento in documentos %}
+            <tr class="border-b">
+                <td class="px-4 py-2">{{ documento.titulo }}</td>
+                <td class="px-4 py-2">{{ documento.tipo }}</td>
+                <td class="px-4 py-2">
+                    <!-- Selector de acciones -->
+                    <select class="actions-select" data-document-id="{{ documento.id }}">
+                        <option value="ver">Ver</option>
+                        <option value="editar">Editar</option>
+                        <option value="eliminar">Eliminar</option>
+                        <option value="descargar">Descargar</option>
+                    </select>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center px-4 py-2">No hay documentos disponibles.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Botones para agregar documentos -->
+    <div class="flex items-center space-x-4 mt-4">
+        <a href="#" class="bg-green-100 text-green-700 px-4 py-2 rounded-md hover:bg-green-200 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Enlace
+        </a>
+
+        <form method="POST" enctype="multipart/form-data" action="{{ url_for('encuestre.subir_documento') }}" style="display: flex; align-items: center; gap: 10px;">
+            
+            <button type="submit" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-md hover:bg-blue-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Subir
+            </button>
+            <input type="hidden" name="encuestre_id" value="{{ encuestre.id }}">
+            <input type="file" name="file" accept=".pdf,.doc,.docx,.jpg,.png" required>
+            
+        </form>
+    </div>
+</div>
+       
+</div>
+
+    <script src="{{ url_for('static', filename='funcionalidad/script_informacion_general.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Inicializar Select2
+            $('.actions-select').select2({
+                placeholder: "Seleccione una acción",
+                minimumResultsForSearch: Infinity // Ocultar la barra de búsqueda
+            });
+    
+            // Manejar la acción seleccionada
+            $('.actions-select').on('change', function() {
+                var action = $(this).val();
+                var documentId = $(this).data('document-id');
+    
+                if (action === 'editar') {
+                    // Redirigir a la página de edición
+                    window.location.href = `/editar_documento/${documentId}`;
+                } else if (action === 'eliminar') {
+                    if (confirm('¿Está seguro de que desea eliminar este documento?')) {
+                        // Llamar a la ruta de eliminación
+                        $.post(`/eliminar_documento/${documentId}`, function(response) {
+                            location.reload(); // Recargar la página tras eliminar
+                        });
+                    }
+                } else if (action === 'descargar') {
+                    // Llamar a la ruta de descarga
+                    window.location.href = `/descargar_documento/${documentId}`;
+                } else if (action === 'ver') {
+                    // Ver el documento en una nueva pestaña
+                    window.open(`/ver_documento/${documentId}`, '_blank');
+                }
+            });
+        });
+    </script>
+{% endblock %}

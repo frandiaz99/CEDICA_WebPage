@@ -1,4 +1,6 @@
-from src.core import board, auth, equipo  # Importa el módulo equipo
+from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso # Importa el módulo equipo
+from datetime import datetime
+from itertools import chain 
 
 def run():
     # Crear issues
@@ -21,11 +23,12 @@ def run():
         description="No anda la impresora",
         status="done"
     )
+
     
     # Crear usuarios
-    fede = auth.create_user(email="fede@gmail.com", password="1234")    
-    mati = auth.create_user(email="mati@gmail.com", password="1234")    
-    miguel = auth.create_user(email="miguel@gmail.com", password="1234")        
+    fede = auth.create_user(alias="Fede", email="fede@gmail.com", password="1234")    
+    mati = auth.create_user(alias="el mati", email="mati@gmail.com", password="1234")    
+    miguel = auth.create_user(alias="migueee", email="miguel@gmail.com", password="1234")        
 
     # Asignar issues a usuarios
     board.assign_user(issue1, fede)
@@ -43,6 +46,93 @@ def run():
     board.assign_labels(issue2, [label3, label4])
     board.assign_labels(issue3, [label1, label3])
 
+    #Crear Roles
+    tecnica_rol = auth.create_rol(nombre="tecnica")
+    encuestre_rol = auth.create_rol(nombre="encuestre")
+    voluntariado_rol = auth.create_rol(nombre="voluntariado")
+    administracion_rol = auth.create_rol(nombre="administracion")
+    system_admin = auth.create_rol(nombre="system_admin")
+
+    #Asigna roles
+    auth.assign_rol(fede, system_admin)
+    auth.assign_rol(mati, encuestre_rol)
+    auth.assign_rol(miguel, administracion_rol)
+
+    #Creo permisos
+    user_index = permiso.create_permiso(nombre="user_index")
+    user_new= permiso.create_permiso(nombre="user_new")
+    user_destroy = permiso.create_permiso(nombre="user_destroy")
+    user_update = permiso.create_permiso(nombre="user_update")
+    user_show = permiso.create_permiso(nombre="user_show")
+
+    permisos_user = [user_index, user_new, user_destroy, user_update, user_show]
+
+    issue_index = permiso.create_permiso(nombre="issue_index")
+    issue_new= permiso.create_permiso(nombre="issue_new")
+    issue_destroy = permiso.create_permiso(nombre="issue_destroy")
+    issue_update = permiso.create_permiso(nombre="issue_update")
+    issue_show = permiso.create_permiso(nombre="issue_show")
+
+    permisos_issue = [issue_index, issue_new, issue_destroy, issue_update, issue_show]
+
+    # Permisos para el módulo equipo
+    equipo_index = permiso.create_permiso(nombre="equipo_index")
+    equipo_new = permiso.create_permiso(nombre="equipo_new")
+    equipo_destroy = permiso.create_permiso(nombre="equipo_destroy")
+    equipo_update = permiso.create_permiso(nombre="equipo_update")
+    equipo_show = permiso.create_permiso(nombre="equipo_show")
+
+    permisos_equipo = [equipo_index, equipo_new, equipo_destroy, equipo_update, equipo_show]
+
+    # Permisos para el módulo registro_pagos
+    registro_pagos_index = permiso.create_permiso(nombre="registro_pagos_index")
+    registro_pagos_new = permiso.create_permiso(nombre="registro_pagos_new")
+    registro_pagos_destroy = permiso.create_permiso(nombre="registro_pagos_destroy")
+    registro_pagos_update = permiso.create_permiso(nombre="registro_pagos_update")
+    registro_pagos_show = permiso.create_permiso(nombre="registro_pagos_show")
+
+    permisos_registro_pagos = [registro_pagos_index, registro_pagos_new, registro_pagos_destroy, registro_pagos_update, registro_pagos_show]
+
+    # Permisos para el módulo registro_cobros
+    registro_cobros_index = permiso.create_permiso(nombre="registro_cobros_index")
+    registro_cobros_new = permiso.create_permiso(nombre="registro_cobros_new")
+    registro_cobros_destroy = permiso.create_permiso(nombre="registro_cobros_destroy")
+    registro_cobros_update = permiso.create_permiso(nombre="registro_cobros_update")
+    registro_cobros_show = permiso.create_permiso(nombre="registro_cobros_show")
+
+    permisos_registro_cobros = [registro_cobros_index, registro_cobros_new, registro_cobros_destroy, registro_cobros_update, registro_cobros_show]
+
+    # Permisos para el módulo J&A
+    ja_index = permiso.create_permiso(nombre="ja_index")
+    ja_new = permiso.create_permiso(nombre="ja_new")
+    ja_destroy = permiso.create_permiso(nombre="ja_destroy")
+    ja_update = permiso.create_permiso(nombre="ja_update")
+    ja_show = permiso.create_permiso(nombre="ja_show")
+
+    permisos_ja = [ja_index, ja_new, ja_destroy, ja_update, ja_show]
+
+    # Permisos para el módulo encuestre
+    encuestre_index = permiso.create_permiso(nombre="encuestre_index")
+    encuestre_new = permiso.create_permiso(nombre="encuestre_new")
+    encuestre_destroy = permiso.create_permiso(nombre="encuestre_destroy")
+    encuestre_update = permiso.create_permiso(nombre="encuestre_update")
+    encuestre_show = permiso.create_permiso(nombre="encuestre_show")
+
+    permisos_encuestre = [encuestre_index, encuestre_new, encuestre_destroy, encuestre_update, encuestre_show]
+
+    # Asignar permisos a rol
+    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre))
+    rol_permiso.assign_permisos_to_rol(system_admin, permisos_system_admin)
+    
+    permisos_administracion_rol = list(chain(permisos_equipo , permisos_ja , permisos_registro_cobros , permisos_registro_pagos , [encuestre_index] , [encuestre_show]))
+    rol_permiso.assign_permisos_to_rol(administracion_rol, permisos_administracion_rol)
+
+    permisos_tecnica_rol = list(chain(permisos_ja , [registro_cobros_index] , [registro_cobros_show] , [encuestre_index] , [encuestre_show]))
+    rol_permiso.assign_permisos_to_rol(tecnica_rol, permisos_tecnica_rol)
+
+    permisos_encuestre_rol = list(chain([ja_index] , [ja_show] , permisos_encuestre))
+    rol_permiso.assign_permisos_to_rol(encuestre_rol, permisos_encuestre_rol)
+    
     # Crear empleados y asociarlos con usuarios
     empleado1 = equipo.create_empleado(
         nombre="Federico", 
@@ -87,10 +177,56 @@ def run():
         localidad="Rosario", 
         telefono="567890123", 
         profesion="Veterinario", 
-        puesto_laboral="Veterinario", 
+        puesto_laboral="Conductor", 
         contacto_emergencia="Carlos López 567890123", 
         obra_social="Galeno", 
         numero_afiliado="778899", 
         condicion="Personal Rentado", 
         user_id=miguel.id
     )
+
+    caballo1 = encuestre.create_encuestre(
+        nombre="Juancito el caballo veloz",
+        fecha_nacimiento=datetime(2015, 5, 1),
+        sexo="Macho",
+        raza="Pura Sangre",
+        pelaje="Castaño",
+        compra_donacion="Compra",
+        fecha_ingreso=datetime.now(),
+        sede_asignada = "la plata",
+        tipo_ja_asignado="Hipoterapia",
+        
+    )
+    
+    caballo2 = encuestre.create_encuestre(
+        nombre="Rocinante el caballo fiel",
+        fecha_nacimiento=datetime(2012, 3, 15),
+        sexo="Macho",
+        raza="Criollo",
+        pelaje="Blanco",
+        compra_donacion="Donación",
+        fecha_ingreso=datetime.now(),
+        sede_asignada = "la plata",
+        tipo_ja_asignado="Monta Terapeutica",
+        
+    )
+
+    caballo3 = encuestre.create_encuestre(
+    nombre="Bucéfalo el invencible",
+    fecha_nacimiento=datetime(2017, 5, 22),
+    sexo="Macho",
+    raza="Pura Raza Española",
+    pelaje="Negro",
+    compra_donacion="Compra",
+    fecha_ingreso=datetime.now(),
+    sede_asignada="Buenos Aires",
+    tipo_ja_asignado="Equitación",
+    
+)
+    lista_empleados1 = [empleado1, empleado2]
+    lista_empleados2 = [empleado2, empleado3]
+    lista_empleados3 = [empleado3]
+
+    encuestre_empleado.assign_empleado_to_encuestre(caballo1, lista_empleados1)
+    encuestre_empleado.assign_empleado_to_encuestre(caballo2, lista_empleados2)
+    encuestre_empleado.assign_empleado_to_encuestre(caballo3, lista_empleados3)

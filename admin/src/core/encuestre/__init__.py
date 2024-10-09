@@ -1,10 +1,7 @@
-from src.core.encuestre.encuestre import Encuestre
+from .encuestre import Encuestre
+from .documento_encuestre import DocumentoEncuestre
 from src.core.database import db
-
-def list_users():
-    users = Encuestre.query.all()
-
-    return users
+from flask import Blueprint
 
 def create_encuestre(**kwargs):
     encuestre = Encuestre(**kwargs)
@@ -12,3 +9,8 @@ def create_encuestre(**kwargs):
     db.session.commit()
 
     return encuestre
+
+def list_encustres():
+    encustres = Encuestre.query.all()
+
+    return encustres

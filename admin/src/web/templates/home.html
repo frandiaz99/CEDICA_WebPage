@@ -11,6 +11,20 @@
 {% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-4">
+                    {% for category, message in messages %}
+                    <div class="bg-green-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                        <p class="text-lg font-semibold">{{ message }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% set messages = None %}
+            {% endwith %}
+
+
 <h1 class="bg-orange-500">Inicio</h1>
 <p>Página de inicio de la aplicación</p>
 <a href="{{ url_for('about') }}">About</a>
