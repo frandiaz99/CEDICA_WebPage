@@ -45,13 +45,16 @@ def index():
     if order_prop == 'nombre':
         query = query.order_by(asc(equipo.Empleado.nombre)) if order == 'asc' else query.order_by(desc(equipo.Empleado.nombre))
     elif order_prop == 'apellido':
-        query = query.order_by(asc(equipo.Empleado.apellido)) if order == 'asc' else query.order_by(desc(equipo.Empleado.apellido))
-    elif order_prop == 'fecha_creacion':
-        query = query.order_by(asc(equipo.Empleado.inserted_at)) if order == 'asc' else query.order_by(desc(equipo.Empleado.inserted_at))
+        query = query.order_by(asc(Empleado.apellido)) if order == 'asc' else query.order_by(desc(Empleado.apellido))
+    elif order_prop == 'inserted_at':
+        query = query.order_by(asc(Empleado.inserted_at)) if order == 'asc' else query.order_by(desc(Empleado.inserted_at))
+
+    pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
     
-    # Obtener los empleados filtrados y ordenados
-    empleados = query.all()
-    
+    empleados = pagination.items
+
+    total_paginas = pagination.pages
+
     # Renderizar la plantilla y pasar los empleados y los parámetros
     return render_template(
         "equipo.html", 
