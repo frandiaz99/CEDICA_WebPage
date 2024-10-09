@@ -7,18 +7,20 @@ equipo_bp = Blueprint('equipo', __name__, url_prefix='/equipo')
 
 from flask import Blueprint, render_template, request
 from sqlalchemy import asc, desc
-from src.core import equipo
+from src.core.equipo import Empleado
+
 
 equipo_bp = Blueprint('equipo', __name__, url_prefix='/equipo')
 
 @equipo_bp.get("/")
 def index():
+    registros_por_pagina = 5
     # Obtener parámetros de búsqueda y orden desde la URL
     search = request.args.get('search', '')
     filter_by = request.args.get('filter_by', 'nombre')  # Por defecto 'nombre'
     order = request.args.get('order', 'asc')  # Por defecto ascendente
     order_prop = request.args.get('order_prop', 'nombre')
-    
+    pagina = int(request.args.get('pagina', 1, type=int))
     # Construir la query base
     query = equipo.Empleado.query
     
