@@ -1,4 +1,5 @@
 from .encuestre import Encuestre
+from .documento_encuestre import DocumentoEncuestre
 from src.core.database import db
 from flask import Blueprint
 

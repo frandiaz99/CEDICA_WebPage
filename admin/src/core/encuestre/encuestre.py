@@ -17,7 +17,9 @@ class Encuestre(db.Model):
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
-    entrenadores_conductores = db.relationship('Empleado', secondary='encuestre_empleado', back_populates='encuestres')
+    entrenadores_conductores = db.relationship('Empleado', secondary='encuestre_empleado',cascade="all, delete", back_populates='encuestres')
+
+    documentos = db.relationship('DocumentoEncuestre', back_populates='encuestre', cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'<Encuestre #{self.id}">'

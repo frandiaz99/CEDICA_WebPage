@@ -3,133 +3,93 @@
 {% block title %}Detalle_Empleado{% endblock %}
 
 {% block content %}
+
 <body class="bg-gray-100"></body>
-    <div class="max-w-4xl mx-auto mt-10">
-        <h1 class="text-3xl font-bold text-center mb-6">Detalle de Empleado</h1>
-        
-        <!-- Sección de pestañas -->
-        <div class="flex justify-center mb-6">
-            <button id="infoBtn" class="tab-button bg-blue-500 text-white px-4 py-2 rounded-l-md focus:outline-none">Información General</button>
-            <button id="docsBtn" class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-r-md focus:outline-none">Documentos</button>
-        </div>
+<div class="max-w-4xl mx-auto mt-10">
+    <h1 class="text-3xl font-bold text-center mb-6">Detalle de Empleado</h1>
 
-        <!-- Sección de Información General -->
-        <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg">
-            <h2 class="text-2xl font-semibold mb-4">Información General</h2>
-            <p><strong>Nombre:</strong> {{ empleado.nombre }}</p>
-            <p><strong>Apellido:</strong> {{ empleado.apellido }}</p>
-            <p><strong>DNI:</strong> {{ empleado.dni }}</p>
-            <p><strong>Domicilio:</strong> {{ empleado.domicilio }}</p>
-            <p><strong>Email:</strong> {{ empleado.email }}</p>
-            <p><strong>Localidad:</strong> {{ empleado.localidad }}</p>
-            <p><strong>Teléfono:</strong> {{ empleado.telefono }}</p>
-            <p><strong>Profesión:</strong> {{ empleado.profesion }}</p>
-            <p><strong>Puesto Laboral:</strong> {{ empleado.puesto_laboral }}</p>
-            <p><strong>Fecha de Inicio:</strong> {{ empleado.fecha_inicio.strftime('%Y-%m-%d') }}</p>
-            <p><strong>Fecha de Cese:</strong> {% if empleado.fecha_cese %}{{ empleado.fecha_cese.strftime('%Y-%m-%d') }}{% else %}N/A{% endif %}</p>
-            <p><strong>Contacto de Emergencia:</strong> {{ empleado.contacto_emergencia }}</p>
-            <p><strong>Obra Social:</strong> {{ empleado.obra_social }}</p>
-            <p><strong>Número de Afiliado:</strong> {{ empleado.numero_afiliado }}</p>
-            <p><strong>Condición:</strong> {{ empleado.condicion }}</p>
-            <p><strong>Activo:</strong> {{ empleado.activo }}</p>
-        </div>
+    <!-- Sección de pestañas -->
+    <div class="flex justify-center mb-6">
+        <button id="infoBtn"
+            class="tab-button bg-blue-500 text-white px-4 py-2 rounded-l-md focus:outline-none">Información
+            General</button>
+        <button id="docsBtn"
+            class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-r-md focus:outline-none">Documentos</button>
+    </div>
 
-        <!-- Sección de Documentos -->
-        <div id="docsSection" class="bg-white p-6 rounded-lg shadow-lg hidden">
-            <h2 class="text-2xl font-semibold mb-4">Documentos</h2>
-
-            <!-- Filtros -->
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex space-x-4">
-                    <!-- Buscar por Nombre -->
-                    <div class="flex items-center border border-gray-300 rounded-md px-3 py-2">
-                        <input type="text" placeholder="Nombre" class="focus:outline-none" id="searchName">
-                        <button class="ml-2 text-gray-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M12.9 14.32a8 8 0 111.42-1.42l4.49 4.48-1.42 1.42-4.49-4.48zM8 14A6 6 0 108 2a6 6 0 000 12z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Filtrar por Tipo -->
-                    <div class="flex items-center">
-                        <select id="documentType" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none">
-                            <option value="">Seleccionar tipo</option>
-                            <option value="Ficha general">Ficha general del empleado</option>
-                            <option value="Contratos">Contratos</option>
-                            <option value="Informe">Informe de Desempeño</option>
-                            <option value="Imágenes">Carga de Imágenes</option>
-                            <option value="Registro">Registro de asistencia</option>
+    <!-- Sección de Información General -->
+    <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold mb-4">Información General</h2>
+        <p><strong>Nombre:</strong> {{ empleado.nombre }}</p>
+        <p><strong>Apellido:</strong> {{ empleado.apellido }}</p>
+        <p><strong>DNI:</strong> {{ empleado.dni }}</p>
+        <p><strong>Domicilio:</strong> {{ empleado.domicilio }}</p>
+        <p><strong>Email:</strong> {{ empleado.email }}</p>
+        <p><strong>Localidad:</strong> {{ empleado.localidad }}</p>
+        <p><strong>Teléfono:</strong> {{ empleado.telefono }}</p>
+        <p><strong>Profesión:</strong> {{ empleado.profesion }}</p>
+        <p><strong>Puesto Laboral:</strong> {{ empleado.puesto_laboral }}</p>
+        <p><strong>Fecha de Inicio:</strong> {{ empleado.fecha_inicio.strftime('%Y-%m-%d') }}</p>
+        <p><strong>Fecha de Cese:</strong> {% if empleado.fecha_cese %}{{ empleado.fecha_cese.strftime('%Y-%m-%d') }}{%
+            else %}N/A{% endif %}</p>
+        <p><strong>Contacto de Emergencia:</strong> {{ empleado.contacto_emergencia }}</p>
+        <p><strong>Obra Social:</strong> {{ empleado.obra_social }}</p>
+        <p><strong>Número de Afiliado:</strong> {{ empleado.numero_afiliado }}</p>
+        <p><strong>Condición:</strong> {{ empleado.condicion }}</p>
+        <p><strong>Activo:</strong> {{ empleado.activo }}</p>
+    </div>
+    <div id="docsSection" class="p-6 bg-white rounded-lg shadow-md">
+        <!-- Tabla de Documentos -->
+        <table class="min-w-full table-auto border-collapse">
+            <thead>
+                <tr class="border-b">
+                    <th class="px-4 py-2 text-left">Nombre</th>
+                    <th class="px-4 py-2 text-left">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="documentTable">
+                {% for documento in documentos %}
+                <tr class="border-b">
+                    <td class="px-4 py-2">{{ documento.titulo }}</td>
+                    <td class="px-4 py-2">
+                        <!-- Selector de acciones -->
+                        <select class="actions-select" data-document-id="{{ documento.id }}">
+                            <option value="ver">Ver</option>
+                            <option value="editar">Editar</option>
+                            <option value="eliminar">Eliminar</option>
+                            <option value="descargar">Descargar</option>
                         </select>
-                    </div>
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded-md ml-2 hover:bg-blue-600">Filtrar</button>
-                </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center px-4 py-2">No hay documentos disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <!-- Botones para agregar documentos -->
+        <div class="flex items-center space-x-4 mt-4">
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('equipo.subir_documento') }}"
+                style="display: flex; align-items: center; gap: 10px;">
 
-                <!-- Ordenar -->
-                <div class="flex items-center">
-                    <label for="order" class="mr-2">Orden:</label>
-                    <select id="order" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none">
-                        <option value="nombre_az">Nombre A-Z</option>
-                        <option value="nombre_za">Nombre Z-A</option>
-                        <option value="tipo_az">Tipo A-Z</option>
-                        <option value="tipo_za">Tipo Z-A</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Tabla de Documentos -->
-            <table class="min-w-full table-auto border-collapse">
-                <thead>
-                    <tr class="border-b">
-                        <th class="px-4 py-2 text-left">Nombre</th>
-                        <th class="px-4 py-2 text-left">Tipo</th>
-                        <th class="px-4 py-2">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="documentTable">
-                    <!-- Filas de documentos dinámicos -->
-                    <tr class="border-b">
-                        <td class="px-4 py-2">Contrato Laboral</td>
-                        <td class="px-4 py-2">Contrato</td>
-                        <td class="px-4 py-2">
-                            <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Acciones</button>
-                        </td>
-                    </tr>
-                    <tr class="border-b">
-                        <td class="px-4 py-2">Informe 2023</td>
-                        <td class="px-4 py-2">Informe de Desempeño</td>
-                        <td class="px-4 py-2">
-                            <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Acciones</button>
-                        </td>
-                    </tr>
-                    <tr class="border-b">
-                        <td class="px-4 py-2">Plan de Trabajo 2024</td>
-                        <td class="px-4 py-2">Planificación</td>
-                        <td class="px-4 py-2">
-                            <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-md">Acciones</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Botones para Enlace y Subir Documentos -->
-            <div class="flex justify-end space-x-4 mt-4">
-                <button class="flex items-center bg-green-100 text-green-700 px-4 py-2 rounded-md hover:bg-green-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Enlace
-                </button>
-                <button class="flex items-center bg-blue-100 text-blue-700 px-4 py-2 rounded-md hover:bg-blue-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button type="submit"
+                    class="bg-blue-100 text-blue-700 px-4 py-2 rounded-md hover:bg-blue-200 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
                     Subir
                 </button>
-            </div>
-        </div>
+                <input type="hidden" name="empleado_id" value="{{ empleado.id }}">
+                <input type="file" name="file" accept=".pdf,.doc,.docx,.jpg,.png" required>
 
+            </form>
+        </div>
     </div>
-    <script src="{{ url_for('static', filename='funcionalidad/script_informacion_general.js') }}"></script>
+</div>
+
+</div>
+<script src="{{ url_for('static', filename='funcionalidad/script_informacion_general.js') }}"></script>
 </body>
 {% endblock %}

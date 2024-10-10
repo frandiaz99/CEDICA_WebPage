@@ -13,6 +13,8 @@ from src.core.config import config
 from src.core import seeds
 from src.core.bcrypt import bcrypt
 from flask_session import Session
+from src.web.storage import storage
+from src.web import helpers
 
 session = Session()
 
@@ -26,6 +28,8 @@ def create_app(env="development", static_folder="../../static"):
 
     session.init_app(app)
     bcrypt.init_app(app)
+
+    storage.init_app(app)
 
     @app.route("/")
     def login():
@@ -62,6 +66,8 @@ def create_app(env="development", static_folder="../../static"):
     app.jinja_env.globals.update(is_authenticated=is_authenticated)
 
     app.jinja_env.globals.update(check_permission=check_permission)
+
+    app.jinja_env.globals.update(documento_url=helpers.documento_url)
 
     @app.cli.command(name="reset-db")
     def reset_db():
