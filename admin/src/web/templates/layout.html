@@ -5,7 +5,7 @@
     {% block head %}
     <link rel="stylesheet" href="{{url_for('static', filename='output.css')}}">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <!-- Incluir jQuery -->
@@ -15,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
     <title>{% block title %} {% endblock %}</title>
-    
+
     {% endblock %}
 </head>
 
@@ -26,33 +26,44 @@
             <div class="relative flex h-16 items-center justify-between">
                 <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
                     <!-- Mobile menu button-->
-                    <button type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                    <button type="button"
+                        class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                        aria-controls="mobile-menu" aria-expanded="false">
                         <span class="absolute -inset-0.5"></span>
                         <span class="sr-only">Open main menu</span>
                         <!-- Icon when menu is closed. -->
-                        <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>
                         <!-- Icon when menu is open. -->
-                        <svg class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <svg class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
                 <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                     <div class="flex flex-shrink-0 items-center">
-                        
+
                         <a href="{{ url_for('home') }}">
-                            <img class="h-8 w-auto" src="{{url_for('static', filename='images/icono_cedica.jpg')}}" alt="CEDICA">
+                            <img class="h-8 w-auto" src="{{url_for('static', filename='images/icono_cedica.jpg')}}"
+                                alt="CEDICA">
                         </a>
                     </div>
                     <div class="hidden sm:ml-6 sm:block">
                         <div class="flex space-x-4">
-                            <a href="{{url_for('jinetes_amazonas')}}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">J&A</a>
+                            <a href="{{url_for('jinetes_amazonas')}}"
+                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">J&A</a>
                             {% if check_permission(session, "encuestre_index") %}
-                            <a href="{{url_for('encuestre.index')}}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Encuestre</a>
+                            <a href="{{url_for('encuestre.index')}}"
+                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Encuestre</a>
                             {% endif %}
-                            <a href="{{url_for('equipo.index')}}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Equipo</a>
+                            <a href="{{url_for('equipo.index')}}"
+                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Equipo</a>
+                            <a href="{{url_for('users.index')}}"
+                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Usuarios</a>
                         </div>
                     </div>
                 </div>
@@ -61,18 +72,27 @@
                     <!-- Profile dropdown -->
                     <div class="relative ml-3">
                         <div>
-                          <button type="button" class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" id="user-menu-button" aria-expanded="false" aria-haspopup="true" onclick="toggleDropdown()">
-                            <span class="absolute -inset-1.5"></span>
-                            <span class="sr-only">Open user menu</span>
-                            <img class="h-12 w-12 rounded-full border-2 border-gray-700" src="{{url_for('static', filename='images/icono_usuario.png')}}" alt="User Icon">
-                        </button>
-                        
+                            <button type="button"
+                                class="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                id="user-menu-button" aria-expanded="false" aria-haspopup="true"
+                                onclick="toggleDropdown()">
+                                <span class="absolute -inset-1.5"></span>
+                                <span class="sr-only">Open user menu</span>
+                                <img class="h-12 w-12 rounded-full border-2 border-gray-700"
+                                    src="{{url_for('static', filename='images/icono_usuario.png')}}" alt="User Icon">
+                            </button>
+
                         </div>
 
                         <!-- Dropdown menu -->
-                        <div id="user-dropdown" class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-0">Perfil</a>
-                            <a href="{{url_for('auth.logout')}}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="user-menu-item-1">Cerrar Sesion</a>
+                        <div id="user-dropdown"
+                            class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                            role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
+                                tabindex="-1" id="user-menu-item-0">Perfil</a>
+                            <a href="{{url_for('auth.logout')}}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
+                                tabindex="-1" id="user-menu-item-1">Cerrar Sesion</a>
                         </div>
                     </div>
                 </div>
@@ -82,20 +102,25 @@
         <!-- Mobile menu, show/hide based on menu state. -->
         <div class="sm:hidden" id="mobile-menu">
             <div class="space-y-1 px-2 pb-3 pt-2">
-                <a href="{{url_for('jinetes_amazonas')}}" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">J&A</a>
-                <a href="{{url_for('encuestre.index')}}" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Encuestre</a>
-                <a href="{{url_for('equipo.index')}}" class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Equipo</a>
+                <a href="{{url_for('jinetes_amazonas')}}"
+                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">J&A</a>
+                <a href="{{url_for('encuestre.index')}}"
+                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Encuestre</a>
+                <a href="{{url_for('equipo.index')}}"
+                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Equipo</a>
+                <a href="{{url_for('users.index')}}"
+                    class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Usuarios</a>
             </div>
         </div>
     </nav>
 
     {% endblock %}
-    
+
     <div id="container" class="min-h-screen px-4 py-6">
         {% block content %}
         {% endblock %}
     </div>
-    
+
     <footer class="bg-gray-900 py-4 text-gray-400 text-center">
         {% block footer %}
         <p>&copy; 2024 CEDICA. Todos los derechos reservados.</p>
@@ -104,24 +129,24 @@
 
     <!-- JavaScript para abrir/cerrar el menú -->
     <script>
-      function toggleDropdown() {
-          var dropdown = document.getElementById('user-dropdown');
-          dropdown.classList.toggle('hidden');
-      }
-  
-      // Cerrar el menú si se hace clic fuera de él
-      window.onclick = function(event) {
-          if (!event.target.matches('#user-menu-button') && !event.target.closest('#user-menu-button')) {
-              var dropdown = document.getElementById('user-dropdown');
-              if (!dropdown.classList.contains('hidden')) {
-                  dropdown.classList.add('hidden');
-              }
-          }
-      }
+        function toggleDropdown() {
+            var dropdown = document.getElementById('user-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Cerrar el menú si se hace clic fuera de él
+        window.onclick = function (event) {
+            if (!event.target.matches('#user-menu-button') && !event.target.closest('#user-menu-button')) {
+                var dropdown = document.getElementById('user-dropdown');
+                if (!dropdown.classList.contains('hidden')) {
+                    dropdown.classList.add('hidden');
+                }
+            }
+        }
     </script>
 
-    
-  
+
+
 </body>
 
 </html>

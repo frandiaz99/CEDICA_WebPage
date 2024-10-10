@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+
+{% block title %}Usuarios{% endblock %}
+
+<head>
+</head>
+
+{% block content %}
+
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-6 text-gray-700">Lista de usuarios</h1>
+
+    <!-- Ver si conviene poner order_prop y order debajo de los otros 2, asi no confundimos los filtros para la busqueda y el resultado-->
+
+    <!-- Contenedor para el botón y filtros -->
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Botón de registro -->
+        <div class="flex justify-start">
+            <button type="button"
+                class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-center md:w-auto w-auto transition-colors duration-200"
+                onclick="redirectToRegistrarUsuario()">
+                Registrar nuevo usuario
+            </button>
+        </div>
+
+        <!-- Formulario de búsqueda y filtros -->
+        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 w-full">
+            <input type="text" name="search" placeholder="Buscar..." value="{{ search }}"
+                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+
+            <select name="filter_by"
+                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+                <option value="email" {% if filter_by=='email' %}selected{% endif %}>Email</option>
+                <option value="alias" {% if filter_by=='alias' %}selected{% endif %}>Alias</option>
+                <option value="rol" {% if filter_by=='rol' %}selected{% endif %}>Rol</option>
+            </select>
+
+            <select name="actividad"
+                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+                <option value="si" {% if actividad=='si' %}selected{% endif %}>Activo: Sí</option>
+                <option value="no" {% if actividad=='no' %}selected{% endif %}>Activo: No</option>
+                <option value="todos" {% if actividad=='todos' %}selected{% endif %}>Activo: Todos</option>
+            </select>
+
+            <select id="order_prop" name="order_prop"
+                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+                <option value="email" {% if filter_by=='email' %}selected{% endif %}>Email</option>
+                <option value="inserted_at" {% if order_prop=='inserted_at' %}selected{% endif %}>Fecha de Creación
+                </option>
+            </select>
+
+            <select name="order" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+                <option value="asc" {% if order=='asc' %}selected{% endif %}>Ascendente</option>
+                <option value="desc" {% if order=='desc' %}selected{% endif %}>Descendente</option>
+            </select>
+
+            <button type="submit"
+                class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
+        </form>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Email</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Alias</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Activo</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Rol</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Fecha de Creación</th>
+                    <th class="border-b text-left text-gray-600 font-medium"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if users %}
+                {% for user in users %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border-b"><a href="{{ url_for('users.detalle_usuario', id=user.id) }}"
+                            class="text-blue-600 hover:underline">{{ user.email }}</a></td>
+                    <td class="px-4 py-2 border-b">{{ user.alias }}</td>
+                    <td class="px-4 py-2 border-b">{{ "Sí" if user.activo else "No" }}</td>
+                    <td class="px-4 py-2 border-b">{{ roles[user.rol_id].nombre if user.rol_id in roles else 'Sin rol'
+                        }}
+                    </td>
+                    <td class="px-4 py-2 border-b">{{ user.inserted_at }}</td>
+                    {% if user.activo %}
+                    <td>
+                        <button type="button" onclick="bloquearUsuario('{{user.id}}')"
+                            class="bg-gray-300 text-red-500 py-1 px-3 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Bloquear</button>
+                    </td>
+                    {% else %}
+                    <td>
+                        <button type="button"
+                            class="bg-gray-300 text-green-600 py-1 px-3 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Desbloquear</button>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="2">No hay usuarios disponibles.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="flex justify-between items-center mt-4">
+        <span class="text-gray-600">Página {{ pagina }} de {{ total_paginas }}</span>
+
+        <div class="flex space-x-2">
+            {% if pagina > 1 %}
+            <a href="{{ url_for('users.index', pagina=pagina-1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}"
+                class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Anterior</a>
+            {% endif %}
+
+            {% if pagina < total_paginas %} <a
+                href="{{ url_for('users.index', pagina=pagina+1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}"
+                class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Siguiente</a>
+                {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function bloquearUsuario(id) {
+        window.location.href = "{{ url_for('users.bloquear_usuario', id=0) }}".replace(/0/, id);
+    }
+
+    function redirectToRegistrarUsuario() {
+        window.location.href = "{{ url_for('users.crear_usuario') }}";
+    }
+</script>
+
+{% endblock %}

@@ -25,10 +25,21 @@ def run():
     )
 
     
-    # Crear usuarios
-    fede = auth.create_user(alias="Fede", email="fede@gmail.com", password="1234")    
-    mati = auth.create_user(alias="el mati", email="mati@gmail.com", password="1234")    
-    miguel = auth.create_user(alias="migueee", email="miguel@gmail.com", password="1234")        
+    # Crear usuarios de prueba
+    fede = auth.create_user(alias="Fede", email="fede@gmail.com", password="1234", activo=True)    
+    mati = auth.create_user(alias="el mati", email="mati@gmail.com", password="1234", activo=True)    
+    miguel = auth.create_user(alias="migueee", email="miguel@gmail.com", password="1234", activo=False)     
+    aaaa = auth.create_user(alias="aaaa", email="aaaa@gmail.com", password="1234", activo=True)    
+    bbbb = auth.create_user(alias="bbb", email="bbbb@gmail.com", password="1234", activo=False)    
+    ccc = auth.create_user(alias="ccc", email="ccc@gmail.com", password="1234", activo=False)  
+    ddd = auth.create_user(alias="dd", email="ddd@gmail.com", password="1234", activo=True)    
+    eee = auth.create_user(alias="eee", email="eee@gmail.com", password="1234", activo=False)    
+    ffff = auth.create_user(alias="fff", email="ffff@gmail.com", password="1234", activo=False)
+    gg = auth.create_user(alias="ggg", email="ggg@gmail.com", password="1234", activo=True)    
+    hhh = auth.create_user(alias="hhh", email="hhh@gmail.com", password="1234", activo=False)  
+    iii = auth.create_user(alias="iii", email="iii@gmail.com", password="1234", activo=False)    
+    jjj = auth.create_user(alias="jjjj", email="jjj@gmail.com", password="1234", activo=True)    
+    kkkk = auth.create_user(alias="kkk", email="kkk@gmail.com", password="1234", activo=False)            
 
     # Asignar issues a usuarios
     board.assign_user(issue1, fede)
