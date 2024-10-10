@@ -164,3 +164,5 @@ cython_debug/
 node_modules/
 flask_session/
 .DS_Store
+*.pyc
+__pycache__/
