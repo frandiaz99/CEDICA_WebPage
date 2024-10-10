@@ -33,6 +33,5 @@ class Empleado(db.Model):
 
     # Relación con Encuestre
     encuestres = db.relationship('Encuestre', secondary='encuestre_empleado', back_populates='entrenadores_conductores')
-
     documentos = db.relationship('Documento', backref='empleado', lazy=True)
 
