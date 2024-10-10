@@ -9,7 +9,7 @@ from src.core.equipo import Empleado
 
 from src.web.handlers.auth import check
 
-from ulid import ULID
+# from ulid import ULID
 
 import os
 

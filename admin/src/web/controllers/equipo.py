@@ -1,26 +1,26 @@
 from flask import Blueprint, render_template, request, abort, flash, url_for, redirect
 from sqlalchemy import asc, desc
-from src.core.database import db
-from datetime import datetime
-from math import ceil
+from src.core import equipo
 
+
+equipo_bp = Blueprint('equipo', __name__, url_prefix='/equipo')
+
+from flask import Blueprint, render_template, request
+from sqlalchemy import asc, desc
 from src.core.equipo import Empleado
+
 
 equipo_bp = Blueprint('equipo', __name__, url_prefix='/equipo')
 
 @equipo_bp.get("/")
 def index():
-    print("Ruta /equipo/ accedida")
-
-    registros_por_pagina = 10  # Puedes ajustar la cantidad de empleados por página
-
+    registros_por_pagina = 5
     # Obtener parámetros de búsqueda y orden desde la URL
     search = request.args.get('search', '')
     filter_by = request.args.get('filter_by', 'nombre')  # Por defecto 'nombre'
     order = request.args.get('order', 'asc')  # Por defecto ascendente
     order_prop = request.args.get('order_prop', 'nombre')
-    pagina = request.args.get('pagina', 1, type=int)
-
+    pagina = int(request.args.get('pagina', 1, type=int))
     # Construir la query base
     query = Empleado.query
 
@@ -52,17 +52,11 @@ def index():
     elif order_prop == 'inserted_at':
         query = query.order_by(asc(Empleado.inserted_at)) if order == 'asc' else query.order_by(desc(Empleado.inserted_at))
 
-    # Contar el total de registros que cumplen con los criterios de búsqueda
-    total_registros = query.count()
+    pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
+    
+    empleados = pagination.items
 
-    # Calcular cuántos registros hay que omitir dependiendo de la página
-    offset = (pagina - 1) * registros_por_pagina
-
-    # Aplicar límite y offset para la paginación
-    empleados = query.offset(offset).limit(registros_por_pagina).all()
-
-    # Calcular el total de páginas
-    total_paginas = ceil(total_registros / registros_por_pagina)
+    total_paginas = pagination.pages
 
     # Renderizar la plantilla y pasar los empleados y los parámetros
     return render_template(
