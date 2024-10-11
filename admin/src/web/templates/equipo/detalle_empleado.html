@@ -36,7 +36,7 @@
         <p><strong>Obra Social:</strong> {{ empleado.obra_social }}</p>
         <p><strong>Número de Afiliado:</strong> {{ empleado.numero_afiliado }}</p>
         <p><strong>Condición:</strong> {{ empleado.condicion }}</p>
-        <p><strong>Activo:</strong> {{ empleado.activo }}</p>
+        <p><strong>Activo:</strong> {{ "Sí" if empleado.activo else "No" }}</p>
     </div>
     <div id="docsSection" class="p-6 bg-white rounded-lg shadow-md">
         <!-- Tabla de Documentos -->
@@ -55,7 +55,6 @@
                         <!-- Selector de acciones -->
                         <select class="actions-select" data-document-id="{{ documento.id }}">
                             <option value="ver">Ver</option>
-                            <option value="editar">Editar</option>
                             <option value="eliminar">Eliminar</option>
                             <option value="descargar">Descargar</option>
                         </select>
@@ -91,5 +90,34 @@
 
 </div>
 <script src="{{ url_for('static', filename='funcionalidad/script_informacion_general.js') }}"></script>
+<script>
+    $(document).ready(function () {
+        // Inicializar Select2
+        $('.actions-select').select2({
+            placeholder: "Seleccione una acción",
+            minimumResultsForSearch: Infinity // Ocultar la barra de búsqueda
+        });
+
+        // Manejar la acción seleccionada
+        $('.actions-select').on('change', function () {
+            var action = $(this).val();
+            var documentId = $(this).data('document-id');
+            if (action === 'eliminar') {
+                if (confirm('¿Está seguro de que desea eliminar este documento?')) {
+                    // Llamar a la ruta de eliminación
+                    $.post(`/eliminar_documento/${documentId}`, function (response) {
+                        location.reload(); // Recargar la página tras eliminar
+                    });
+                }
+            } else if (action === 'descargar') {
+                // Llamar a la ruta de descarga
+                window.location.href = `/descargar_documento/${documentId}`;
+            } else if (action === 'ver') {
+                // Ver el documento en una nueva pestaña
+                window.open(`/ver_documento/${documentId}`, '_blank');
+            }
+        });
+    });
+</script>
 </body>
 {% endblock %}
