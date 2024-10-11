@@ -12,7 +12,8 @@ class DocumentoEncuestre(db.Model):
     url = db.Column(db.String(200), nullable=False)
     operacion = db.Column(db.String(200), nullable=True)
 
-    encuestre_id = db.Column(db.Integer, db.ForeignKey('encuestres.id'), nullable=False)
+    encuestre_id = db.Column(db.Integer, db.ForeignKey('encuestres.id'), nullable=True)
+    #ja_id = db.Column(db.Integer, db.ForeignKey('ja.id'), nullable=True)
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
