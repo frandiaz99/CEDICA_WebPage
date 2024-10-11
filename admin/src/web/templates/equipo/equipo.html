@@ -27,7 +27,7 @@
                 <option value="apellido" {% if filter_by=='apellido' %}selected{% endif %}>Apellido</option>
                 <option value="dni" {% if filter_by=='dni' %}selected{% endif %}>DNI</option>
                 <option value="email" {% if filter_by=='email' %}selected{% endif %}>Email</option>
-                <option value="profesion" {% if filter_by=='profesion' %}selected{% endif %}>Profesión</option>
+                <option value="puesto" {% if filter_by=='puesto' %}selected{% endif %}>Puesto laboral</option>
             </select>
 
             <select id="order_prop" name="order_prop"
@@ -60,7 +60,6 @@
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Profesión</th>
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Puesto Laboral</th>
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Activo</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Usuario Asociado</th>
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Fecha de Creación</th>
                 </tr>
             </thead>
@@ -75,8 +74,8 @@
                     <td class="px-4 py-2 border-b">{{ empleado.profesion }}</td>
                     <td class="px-4 py-2 border-b">{{ empleado.puesto_laboral }}</td>
                     <td class="px-4 py-2 border-b">{{ "Sí" if empleado.activo else "No" }}</td>
-                    <td class="px-4 py-2 border-b">{{ empleado.user_id if empleado.user_id else "N/A" }}</td>
-                    <td class="px-4 py-2 border-b">{{ empleado.inserted_at }}</td>
+                    <td class="px-4 py-2 border-b">{{ empleado.inserted_at.strftime('%d/%m/%Y') }}</td>
+
                 </tr>
                 {% endfor %}
             </tbody>

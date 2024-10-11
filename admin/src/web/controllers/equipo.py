@@ -34,8 +34,8 @@ def index():
             query = query.filter(Empleado.dni.ilike(f'%{search}%'))
         elif filter_by == 'email':
             query = query.filter(Empleado.email.ilike(f'%{search}%'))
-        elif filter_by == 'profesion':
-            query = query.filter(Empleado.profesion.ilike(f'%{search}%'))
+        elif filter_by == 'puesto':
+            query = query.filter(Empleado.puesto_laboral.ilike(f'%{search}%'))
 
     # Adicionalmente, ordenar por order_prop si es distinto de filter_by
     if order_prop != filter_by:
@@ -71,6 +71,7 @@ def index():
 
 
 @equipo_bp.route('/detalle/<int:id>', methods=['GET'])
+@check("equipo_show")
 def detalle_empleado(id):
     empleado = Empleado.query.get(id)
     if empleado is None:
@@ -103,18 +104,30 @@ def eliminar_empleado(id):
 
 
 @equipo_bp.route('/registrar', methods=['GET', 'POST'])
+@check("equipo_new")
 def registrar_empleado():
     if request.method == 'POST':
         # Recoger los datos del formulario
         nombre = request.form.get('nombre')
         apellido = request.form.get('apellido')
         dni = request.form.get('dni')
+        domicilio = request.form.get('domicilio')
         email = request.form.get('email')
+        localidad = request.form.get('localidad')
+        telefono = request.form.get('telefono')
         profesion = request.form.get('profesion')
         puesto_laboral = request.form.get('puesto_laboral')
+        fecha_inicio = request.form.get('fecha_inicio')
+        fecha_cese = request.form.get('fecha_cese') or None
+        contacto_emergencia = request.form.get('contacto_emergencia')
+        obra_social = request.form.get('obra_social')
+        numero_afiliado = request.form.get('n_afiliado')
+        condicion = request.form.get('condicion')
+        activo = request.form.get('activo')
 
-        if not (nombre and apellido and dni and email and profesion and puesto_laboral):
-            flash('Faltan completar campos', 'danger')
+        # Validar que los campos requeridos no estén vacíos
+        if not (nombre and apellido and dni and domicilio and email and localidad and telefono and profesion and puesto_laboral and fecha_inicio and contacto_emergencia and condicion and activo):
+            flash('Faltan completar campos obligatorios', 'danger')
             return redirect(url_for('equipo.registrar_empleado'))
 
         # Crear el objeto Empleado
@@ -122,9 +135,19 @@ def registrar_empleado():
             nombre=nombre,
             apellido=apellido,
             dni=dni,
+            domicilio=domicilio,
             email=email,
+            localidad=localidad,
+            telefono=telefono,
             profesion=profesion,
-            puesto_laboral=puesto_laboral
+            puesto_laboral=puesto_laboral,
+            fecha_inicio=fecha_inicio,
+            fecha_cese=fecha_cese,
+            contacto_emergencia=contacto_emergencia,
+            obra_social=obra_social,
+            numero_afiliado=numero_afiliado,
+            condicion=condicion,
+            activo=(activo == 'Sí')
         )
 
         try:
@@ -140,8 +163,9 @@ def registrar_empleado():
 
     return render_template('equipo/registrar_empleado.html')
 
+
 @equipo_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
-# @check("empleado_update")
+@check("equipo_update")
 def editar_empleado(id):
     empleado_aux = Empleado.query.get(id)
     if empleado_aux is None:
@@ -183,6 +207,7 @@ def editar_empleado(id):
     )
 
 @equipo_bp.route('/subir_documento', methods=['POST'])
+@check("equipo_update")
 def subir_documento():
     MAX_FILE_SIZE = 16 * 1024 * 1024
 
