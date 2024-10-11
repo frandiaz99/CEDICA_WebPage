@@ -9,6 +9,10 @@ from src.core.equipo import Empleado
 
 from src.web.handlers.auth import check
 
+from src.web.helpers import generar_url_firmada
+
+
+
 # from ulid import ULID
 
 import os
@@ -303,6 +307,7 @@ def subir_documento():
         return redirect(url_for('encuestre.detalle_encuestre', id=request.form.get('encuestre_id')))
     
     file = request.files['file']
+    tipo_documento = request.form.get('tipo_documento')
 
     client = current_app.storage.client 
 
@@ -316,6 +321,9 @@ def subir_documento():
         flash('Nombre de archivo vacío', 'error')
         return redirect(url_for('encuestre.detalle_encuestre', id=request.form.get('encuestre_id')))
     
+    if tipo_documento not in ['entrevista', 'evaluación', 'planificaciones', 'evolución', 'crónicas', 'documental']:
+        return 'Tipo de documento no válido', 400
+    
     #ulid = str(ULID())
     #extension = os.path.splitext(file.filename)[1]
     #nombre_unico = f"{extension}"
@@ -324,7 +332,7 @@ def subir_documento():
     try:
         client.put_object(
             'grupo49',
-            file.filename,
+            f'documentos_encuestres/{file.filename}',
             file,
             file_size, 
             content_type=file.content_type
@@ -337,7 +345,7 @@ def subir_documento():
         # Crear el documento y asociarlo al encuestre
         nuevo_documento = documento_encuestre.DocumentoEncuestre(
             titulo=file.filename,
-            tipo=file.content_type,
+            tipo=tipo_documento,
             url=f"{current_app.config['MINIO_SERVER']}/grupo49/{file.name}",
             encuestre=encuestre_aux
         )
@@ -352,3 +360,44 @@ def subir_documento():
     return redirect(url_for('encuestre.detalle_encuestre', id=request.form.get('encuestre_id')))
 
 
+@encuestre_bp.route('/descargar_documento/<int:document_id>')
+@check("encuestre_show")
+def descargar_documento(document_id):
+    documento = documento_encuestre.DocumentoEncuestre.query.get_or_404(document_id)
+    
+    #url_firmada = generar_url_firmada("grupo49", documento.titulo)
+
+    url_descarga = f"https://{documento.url}"
+    return redirect(url_descarga)
+
+
+@encuestre_bp.route('/eliminar_documento/<int:document_id>', methods=['POST'])
+@check("encuestre_destroy")
+def eliminar_documento(document_id):
+    print("eliminandoooooooooooooooooooooooooooooooooo")
+    documento = documento_encuestre.DocumentoEncuestre.query.get_or_404(document_id)
+    eliminar_de_minio(documento.titulo)
+    try:
+        db.session.delete(documento)
+        db.session.commit()
+
+        flash('Documento eliminado correctamente.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar el documento: {str(e)}', 'danger')
+
+    return redirect(url_for('encuestre.detalle_encuestre', id=documento.encuestre_id))
+
+def eliminar_de_minio(file):
+    client = current_app.storage.client
+    object_name = f'documentos_encuestres/{file}'
+    client.remove_object('grupo49', object_name)
+
+# Ruta para editar documento
+@encuestre_bp.route('/editar_documento/<int:document_id>')
+@check("encuestre_update")
+def editar_documento(document_id):
+    documento = documento_encuestre.DocumentoEncuestre.query.get_or_404(document_id)
+    
+    # Renderizar un formulario con la información del documento para editar
+    return render_template('encuestre/editar_documento.html', documento=documento)
