@@ -84,6 +84,7 @@
                         }}
                     </td>
                     <td class="px-4 py-2 border-b">{{ user.inserted_at }}</td>
+                    {% if user.rol_id != 5 %}
                     {% if user.activo %}
                     <td>
                         <button type="button" onclick="bloquearUsuario('{{user.id}}')"
@@ -91,9 +92,10 @@
                     </td>
                     {% else %}
                     <td>
-                        <button type="button"
+                        <button type="button" onclick="desbloquearUsuario('{{user.id}}')"
                             class="bg-gray-300 text-green-600 py-1 px-3 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Desbloquear</button>
                     </td>
+                    {% endif %}
                     {% endif %}
                 </tr>
                 {% endfor %}
@@ -125,7 +127,11 @@
 
 <script>
     function bloquearUsuario(id) {
-        window.location.href = "{{ url_for('users.bloquear_usuario', id=0) }}".replace(/0/, id);
+        window.location.href = "{{ url_for('users.bloquear_usuario', id=0)}}".replace(/0/, id);
+    }
+
+    function desbloquearUsuario(id) {
+        window.location.href = "{{ url_for('users.desbloquear_usuario', id=0)}}".replace(/0/, id);
     }
 
     function redirectToRegistrarUsuario() {

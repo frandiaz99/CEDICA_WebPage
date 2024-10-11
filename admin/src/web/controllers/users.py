@@ -143,6 +143,14 @@ def bloquear_usuario(id):
         abort(404)  # error 404 si no se encuentra el usuario
     user.activo = False
     db.session.commit()
-    return jsonify({'success': True, 'message': 'Usuario bloqueado exitosamente'})
+    return redirect(url_for('users.index'))
 
-    #Ver como hacer para mostrar mensaje en vez de json
+@users_bp.route('/desbloquear_usuario#<int:id>', methods=['GET', 'POST'])
+@login_required
+def desbloquear_usuario(id):
+    user = auth.User.query.get(id)
+    if user is None:
+        abort(404)  # error 404 si no se encuentra el usuario
+    user.activo = True
+    db.session.commit()
+    return redirect(url_for('users.index'))
