@@ -7,7 +7,7 @@
 <body class="bg-gray-100"></body>
 <div class="max-w-4xl mx-auto mt-10">
     <h1 class="text-3xl font-bold text-center mb-6">Detalle de Empleado</h1>
-
+    
     <!-- Sección de pestañas -->
     <div class="flex justify-center mb-6">
         <button id="infoBtn"
@@ -37,6 +37,20 @@
         <p><strong>Número de Afiliado:</strong> {{ empleado.numero_afiliado }}</p>
         <p><strong>Condición:</strong> {{ empleado.condicion }}</p>
         <p><strong>Activo:</strong> {{ "Sí" if empleado.activo else "No" }}</p>
+    </div>
+    <div class="flex justify-end mt-6 space-x-4">
+        <a href="{{ url_for('equipo.editar_empleado', id=empleado.id) }}" 
+           class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+           Editar
+        </a>
+        <form action="{{ url_for('equipo.eliminar_empleado', id=empleado.id) }}" method="POST">
+            
+            <button type="submit" 
+                    class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600" 
+                    onclick="return confirm('¿Estás seguro de que deseas eliminar este empleado? Esta acción no se puede deshacer.');">
+                Eliminar
+            </button>
+        </form>
     </div>
     <div id="docsSection" class="p-6 bg-white rounded-lg shadow-md">
         <!-- Tabla de Documentos -->
@@ -85,6 +99,7 @@
 
             </form>
         </div>
+       
     </div>
 </div>
 
