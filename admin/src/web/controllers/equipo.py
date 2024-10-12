@@ -182,11 +182,17 @@ def editar_empleado(id):
         empleado_aux.telefono = request.form['telefono']
         empleado_aux.profesion = request.form['profesion']
         empleado_aux.puesto_laboral = request.form['puesto_laboral']
-        empleado_aux.fecha_inicio = request.form['fecha_inicio']
-        empleado_aux.fecha_cese = request.form.get('fecha_cese')
+        fecha_inicio_str = request.form.get('fecha_inicio')
+        empleado_aux.fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d')
+        fecha_cese_str = request.form.get('fecha_cese')
+        if fecha_cese_str:
+            fecha_cese = datetime.strptime(fecha_cese_str, '%Y-%m-%d')
+        else:
+            fecha_cese = None
+        empleado_aux.fecha_cese = fecha_cese
         empleado_aux.contacto_emergencia = request.form['contacto_emergencia']
         empleado_aux.obra_social = request.form['obra_social']
-        empleado_aux.numero_afiliado = request.form['numero_afiliado']
+        empleado_aux.numero_afiliado = request.form['n_afiliado']
         empleado_aux.condicion = request.form['condicion']
         empleado_aux.activo = True if request.form['activo'] == 'si' else False
 
