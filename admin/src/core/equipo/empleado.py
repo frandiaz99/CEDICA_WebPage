@@ -27,10 +27,6 @@ class Empleado(db.Model):
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
-    # Relación con User
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # Asociación opcional
-    user = db.relationship('User', backref='empleado', lazy=True)
-
     # Relación con Encuestre
     encuestres = db.relationship('Encuestre', secondary='encuestre_empleado', back_populates='entrenadores_conductores')
     documentos = db.relationship('Documento', backref='empleado', lazy=True)
