@@ -4,16 +4,24 @@ from src.core.database import db
 from src.web.handlers.auth import check
 from src.core.equipo import Empleado
 from datetime import datetime
-from src.web.controllers.validador import (validar_tipo_pago, validar_monto, validar_fecha_pago, validar_descripcion, validar_beneficiario)
+from src.web.controllers.validador import (
+    validar_tipo_pago, validar_monto, validar_fecha_pago, validar_descripcion, validar_beneficiario
+)
+
 pagos_bp = Blueprint('pagos', __name__, url_prefix='/pagos')
+
 
 @pagos_bp.get('/')
 @check("registro_pagos_index")
 def index():
+    """
+    Muestra la lista de pagos con posibilidad de filtrado por tipo de pago, 
+    fecha de inicio, fecha de fin, y permite ordenar los resultados por fecha.
+    """
     tipo_pago = request.args.get('tipo_pago')
     fecha_inicio = request.args.get('fecha_inicio')
     fecha_fin = request.args.get('fecha_fin')
-    orden = request.args.get('orden', 'asc')  # Obtener el parámetro de orden, por defecto es 'asc'
+    orden = request.args.get('orden', 'asc')  # Ordenar por defecto en ascendente
 
     query = Pago.query
 
@@ -33,35 +41,29 @@ def index():
 
     pagos = query.all()
 
-    if tipo_pago:
-        query = query.filter_by(tipo_pago=tipo_pago)
-
-    if fecha_inicio and fecha_fin:
-        query = query.filter(Pago.fecha_pago.between(fecha_inicio, fecha_fin))
-
-    # Obtener la lista de pagos
-    pagos = query.order_by(Pago.fecha_pago.desc()).all()
-
-    # Agregar el email del beneficiario a cada pago
+    # Agregar el nombre completo del beneficiario a cada pago
     for pago in pagos:
         beneficiario = Empleado.query.filter_by(id=pago.beneficiario).first()
         if beneficiario:
-            pago.beneficiario = beneficiario.nombre +" "+ beneficiario.apellido  # Asignar el correo al objeto pago
+            pago.beneficiario = beneficiario.nombre + " " + beneficiario.apellido
 
     return render_template('pagos/pagos.html', pagos=pagos)
+
 
 @pagos_bp.route('/registrar', methods=['GET', 'POST'])
 @check("registro_pagos_new")
 def registrar_pago():
+    """
+    Permite registrar un nuevo pago. Valida los datos ingresados antes de guardarlos en la base de datos.
+    """
     if request.method == 'POST':
-        # Obtener datos del formulario
         tipo_pago = request.form['tipo_pago']
         monto = request.form['monto']
         fecha_pago_str = request.form.get('fecha_pago')
         descripcion = request.form['descripcion']
         beneficiario = request.form['beneficiario']
 
-        # Validadores de los campos
+        # Validar los campos del formulario
         validadores = [
             (validar_tipo_pago, [tipo_pago]),
             (validar_monto, [monto]),
@@ -75,9 +77,9 @@ def registrar_pago():
             es_valido, mensaje_error = validar_funcion(*args)
             if not es_valido:
                 flash(mensaje_error, 'danger')
-                return redirect(url_for('pagos.registrar_pago'))  # Redirige si hay error
+                return redirect(url_for('pagos.registrar_pago'))
 
-        # Crear el nuevo pago
+        # Crear y guardar el nuevo pago
         nuevo_pago = Pago(
             tipo_pago=tipo_pago,
             monto=float(monto),
@@ -86,7 +88,6 @@ def registrar_pago():
             beneficiario=beneficiario
         )
 
-        # Guardar en la base de datos
         try:
             db.session.add(nuevo_pago)
             db.session.commit()
@@ -98,35 +99,50 @@ def registrar_pago():
             return redirect(url_for('pagos.registrar_pago'))
 
     empleados = Empleado.query.all()
-    return render_template('pagos/registrar_pago.html', empleados=empleados,fecha_hoy=datetime.today().date())
+    return render_template('pagos/registrar_pago.html', empleados=empleados, fecha_hoy=datetime.today().date())
+
 
 @pagos_bp.route('/detalle/<int:id>', methods=['GET'])
 @check("registro_pagos_show")
 def detalle_pago(id):
+    """
+    Muestra los detalles de un pago específico.
+    
+    Args:
+        id (int): El ID del pago a mostrar.
+    """
     pago = Pago.query.get(id)
-    if pago is None:
-        abort(404) 
+    if not pago:
+        abort(404)
+
     beneficiario = Empleado.query.filter_by(id=pago.beneficiario).first()
     if beneficiario:
-        pago.beneficiario = beneficiario.nombre +" "+ beneficiario.apellido  
+        pago.beneficiario = beneficiario.nombre + " " + beneficiario.apellido
+
     return render_template('pagos/detalle_pago.html', pago=pago)
+
 
 @pagos_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @check("registro_pagos_update")
 def editar_pago(id):
+    """
+    Permite editar un pago existente. Valida los datos antes de guardar los cambios en la base de datos.
+    
+    Args:
+        id (int): El ID del pago a editar.
+    """
     pago_aux = Pago.query.get(id)
-    if pago_aux is None:
-        abort(404) 
+    if not pago_aux:
+        abort(404)
 
     if request.method == 'POST':
-        # Obtener datos del formulario
         tipo_pago = request.form['tipo_pago']
         monto = request.form['monto']
         fecha_pago_str = request.form.get('fecha_pago')
         descripcion = request.form['descripcion']
         beneficiario = request.form['beneficiario']
 
-        # Validadores de los campos
+        # Validar los campos del formulario
         validadores = [
             (validar_tipo_pago, [tipo_pago]),
             (validar_monto, [monto]),
@@ -140,7 +156,7 @@ def editar_pago(id):
             es_valido, mensaje_error = validar_funcion(*args)
             if not es_valido:
                 flash(mensaje_error, 'danger')
-                return redirect(url_for('pagos.editar_pago', id=id))  # Redirige si hay error
+                return redirect(url_for('pagos.editar_pago', id=id))
 
         # Actualizar los campos del pago
         pago_aux.tipo_pago = tipo_pago
@@ -158,6 +174,7 @@ def editar_pago(id):
             db.session.rollback()
             flash(f'Error al actualizar el pago: {str(e)}', 'danger')
             return redirect(url_for('pagos.editar_pago', id=id))
+
     empleados = Empleado.query.all()
     return render_template(
         'pagos/editar_pago.html', 
@@ -166,18 +183,24 @@ def editar_pago(id):
         fecha_hoy=datetime.today().date()
     )
 
+
 @pagos_bp.route('/eliminar/<int:id>', methods=['POST'])
 @check("registro_pagos_destroy")
 def eliminar_pago(id):
-    # Buscar el pago por ID
-    pago_aux = Pago.query.get_or_404(id)
+    """
+    Elimina un pago de la base de datos.
     
+    Args:
+        id (int): El ID del pago a eliminar.
+    """
+    pago_aux = Pago.query.get_or_404(id)
+
     try:
         db.session.delete(pago_aux)
         db.session.commit()
-
         flash('Pago eliminado correctamente.', 'success')
     except Exception as e:
         db.session.rollback()
         flash(f'Error al eliminar el pago: {str(e)}', 'danger')
+
     return redirect(url_for('pagos.index'))
