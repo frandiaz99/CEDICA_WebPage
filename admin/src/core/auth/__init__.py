@@ -7,6 +7,11 @@ def list_users():
     users = User.query.all()
     return users
 
+def list_roles():
+    roles = Rol.query.all()
+    return roles
+
+#Usar para el create
 def create_user(**kwargs):
     hash = bcrypt.generate_password_hash(kwargs["password"].encode("utf-8"))
     kwargs["password"] = hash.decode("utf-8")
