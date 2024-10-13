@@ -64,8 +64,10 @@
                             <a href="{{url_for('equipo.index')}}"
                                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Equipo</a>
                             {% endif %}
+                            {% if check_permission(session, "user_index") %}
                             <a href="{{url_for('users.index')}}"
                                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Usuarios</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

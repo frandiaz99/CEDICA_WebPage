@@ -68,6 +68,16 @@ def run():
     auth.assign_rol(fede, system_admin)
     auth.assign_rol(mati, encuestre_rol)
     auth.assign_rol(miguel, administracion_rol)
+    auth.assign_rol(aaaa, tecnica_rol)
+    auth.assign_rol(bbbb, voluntariado_rol)
+    auth.assign_rol(ccc, encuestre_rol)
+    auth.assign_rol(ddd, administracion_rol)
+    auth.assign_rol(eee, tecnica_rol)
+    auth.assign_rol(ffff, voluntariado_rol)
+    auth.assign_rol(gg, encuestre_rol)
+    auth.assign_rol(hhh, administracion_rol)
+    auth.assign_rol(iii, tecnica_rol)
+    auth.assign_rol(jjj, voluntariado_rol)
 
     #Creo permisos
     user_index = permiso.create_permiso(nombre="user_index")

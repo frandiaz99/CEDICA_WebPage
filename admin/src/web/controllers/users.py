@@ -5,13 +5,22 @@ from sqlalchemy import asc, desc
 from src.web.handlers.auth import login_required
 from math import ceil
 from src.core.database import db
+from datetime import datetime
 
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
 
+def chequearMailRepetido (email):
+    query = User.query  
+    if (query.filter(User.email == email).all()):
+        flash('El mail ingresado ya tiene una cuenta asociada.', 'danger')
+        return False
+    return True
+
 @users_bp.get("/")
 @login_required
 def index():
+
     roles = auth.list_roles()
     roles_dict = {role.id: role for role in roles}
 
@@ -97,6 +106,11 @@ def crear_usuario():
             flash('Faltan completar campos.', 'danger')
             return redirect(url_for('users.crear_usuario'))
         
+        query = User.query  
+        
+        if (chequearMailRepetido):
+            return redirect(url_for('users.crear_usuario'))
+        
         if not (contraseña1 == contraseña2):
             flash('Las contraseñas no coinciden.', 'danger')
             return redirect(url_for('users.crear_usuario'))
@@ -143,6 +157,7 @@ def bloquear_usuario(id):
         abort(404)  # error 404 si no se encuentra el usuario
     user.activo = False
     db.session.commit()
+    flash('Usuario bloqueado.', 'success')
     return redirect(url_for('users.index'))
 
 @users_bp.route('/desbloquear_usuario#<int:id>', methods=['GET', 'POST'])
@@ -153,4 +168,73 @@ def desbloquear_usuario(id):
         abort(404)  # error 404 si no se encuentra el usuario
     user.activo = True
     db.session.commit()
+    flash('Usuario desbloqueado.', 'success')
+    return redirect(url_for('users.index'))
+
+@users_bp.route('/actualizar_usuario#<int:id>', methods=['GET', 'POST'])
+@login_required
+def actualizar_usuario(id):
+    user = auth.User.query.get(id)
+    roles = auth.list_roles()
+    roles_dict = {role.id: role for role in roles}
+    if user is None:
+        abort(404)  # error 404 si no se encuentra el usuario
+
+    #Prevenis que no se ejecute al apretar el boton editar
+    if request.method == 'POST':
+        alias = request.form.get('alias')
+        email = request.form.get('email')
+        activo = request.form.get('activo')
+        rol = request.form.get('rol')
+        rol = int(rol)
+        #Buscar en la lista de roles aquel rol que coincida el id con "rol"
+        rol_encontrado = next((r for r in roles if r.id == rol), None)
+
+        if not (alias or email or activo):
+            flash('Faltan campos por completar.', 'danger')
+            return redirect(url_for('users.actualizar_usuario', id=id))
+        
+        query = User.query  
+        existing_user = User.query.filter(User.email == email, User.id != id).first()
+        if (existing_user):
+            flash('El email ingresado ya tiene una cuenta asociada.', 'danger')
+            return redirect(url_for('users.actualizar_usuario', id=id))
+        
+        if (activo == 'Sí'):
+            activo = True
+        else:
+            activo = False
+
+        user.alias = alias
+        user.email = email
+        user.activo = activo
+        user.rol = rol_encontrado
+        user.updated_at = datetime.now()
+
+        try:
+            db.session.commit()
+            flash('El usuario ha sido actualizado.', 'success')
+            return redirect(url_for('users.actualizar_usuario', id=id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al actualizar el usuario: {str(e)}', 'danger')
+            return redirect(url_for('users.actualizar_usuario', id=id))
+
+    return render_template("users/actualizar_usuario.html", user=user, roles=roles_dict)
+
+@users_bp.route('/eliminar_usuario#<int:id>', methods=['GET', 'POST'])
+@login_required
+def eliminar_usuario(id):
+    user = auth.User.query.get(id)
+    if user is None:
+        abort(404)  # error 404 si no se encuentra el usuario
+    
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        flash('El usuario ha sido eliminado.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar el usuario: {str(e)}', 'danger')
+
     return redirect(url_for('users.index'))

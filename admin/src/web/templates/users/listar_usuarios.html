@@ -7,18 +7,44 @@
 
 {% block content %}
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flex justify-center mt-4">
+    <div class="w-full max-w-2xl">
+        {% for category, message in messages %}
+        <div
+            class="bg-{{category == 'success' and 'green' or 'red'}}-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+            <p class="text-lg font-semibold">{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+
 <div class="bg-white p-6 rounded-lg shadow-md">
     <h1 class="text-2xl font-bold mb-6 text-gray-700">Lista de usuarios</h1>
+
+    <div id="confirmModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg p-6 max-w-sm w-full">
+            <h2 class="text-lg font-bold mb-4">Confirmación</h2>
+            <p>¿Estás seguro de que querés eliminarlo?</p>
+            <div class="mt-4 flex justify-end">
+                <button id="cancelButton" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md mr-2">Cancelar</button>
+                <button id="confirmButton" class="bg-red-500 text-white px-4 py-2 rounded-md">Confirmar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Ver si conviene poner order_prop y order debajo de los otros 2, asi no confundimos los filtros para la busqueda y el resultado-->
 
     <!-- Contenedor para el botón y filtros -->
     <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Botón de registro -->
-        <div class="flex justify-start">
+        <div class="flex items-center justify-start text-center">
             <button type="button"
-                class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 text-center md:w-auto w-auto transition-colors duration-200"
-                onclick="redirectToRegistrarUsuario()">
+                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-center md:w-auto md:h-auto w-auto transition-colors duration-200"
+                onclick="registrarUsuario()">
                 Registrar nuevo usuario
             </button>
         </div>
@@ -28,6 +54,7 @@
             <input type="text" name="search" placeholder="Buscar..." value="{{ search }}"
                 class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
 
+            <label class="flex items-center justify-center text-center">Ordenar resultados por: </label>
             <select name="filter_by"
                 class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
                 <option value="email" {% if filter_by=='email' %}selected{% endif %}>Email</option>
@@ -64,39 +91,53 @@
         <table class="min-w-full bg-white shadow-md rounded-lg">
             <thead class="bg-gray-100">
                 <tr>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Email</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Alias</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Activo</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Rol</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Fecha de Creación</th>
-                    <th class="border-b text-left text-gray-600 font-medium"></th>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium">Email</th>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium">Alias</th>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium">Activo</th>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium">Rol</th>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium">Fecha de Creación</th>
+                    <th class="border-b text-center text-gray-600 font-medium w-44">
+                        Bloquear/Desbloquear</th>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium w-44">Actualizar información</th>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium w-44">Eliminar usuario</th>
                 </tr>
             </thead>
             <tbody>
                 {% if users %}
                 {% for user in users %}
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-2 border-b"><a href="{{ url_for('users.detalle_usuario', id=user.id) }}"
-                            class="text-blue-600 hover:underline">{{ user.email }}</a></td>
-                    <td class="px-4 py-2 border-b">{{ user.alias }}</td>
-                    <td class="px-4 py-2 border-b">{{ "Sí" if user.activo else "No" }}</td>
-                    <td class="px-4 py-2 border-b">{{ roles[user.rol_id].nombre if user.rol_id in roles else 'Sin rol'
+                    <td class="text-center py-2 border-b"><a target="_blank"
+                            href="{{ url_for('users.detalle_usuario', id=user.id) }}"
+                            class="text-center text-blue-600 hover:underline">{{ user.email }}</a></td>
+                    <td class="text-center py-2 border-b">{{ user.alias }}</td>
+                    <td class="text-center py-2 border-b">{{ "Sí" if user.activo else "No" }}</td>
+                    <td class="text-center py-2 border-b">{{ roles[user.rol_id].nombre if user.rol_id in roles else 'Sin
+                        rol'
                         }}
                     </td>
-                    <td class="px-4 py-2 border-b">{{ user.inserted_at }}</td>
-                    {% if user.rol_id != 5 %}
-                    {% if user.activo %}
-                    <td>
+                    <td class="text-center py-2 border-b">{{ user.inserted_at }}</td>
+                    <td class="text-center py-2 px-4 border-b">
+                        {% if user.rol_id != 5 %}
+                        {% if user.activo %}
+
                         <button type="button" onclick="bloquearUsuario('{{user.id}}')"
-                            class="bg-gray-300 text-red-500 py-1 px-3 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Bloquear</button>
-                    </td>
-                    {% else %}
-                    <td>
+                            class="text-center bg-gray-300 text-red-500 py-1 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Bloquear</button>
+                        {% else %}
                         <button type="button" onclick="desbloquearUsuario('{{user.id}}')"
-                            class="bg-gray-300 text-green-600 py-1 px-3 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Desbloquear</button>
+                            class="text-center border-b bg-gray-300 text-green-600 py-1 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Desbloquear</button>
+                        {% endif %}
+                        {% endif %}
                     </td>
-                    {% endif %}
-                    {% endif %}
+                    <td class="text-center py-2 px-4 border-b">
+                        {% if user.rol_id != 5 %}
+                        <button type="button" onclick="actualizarUsuario('{{user.id}}')"
+                            class="text-center bg-gray-300 py-1 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Editar</button>
+                        {% endif %}
+                    </td>
+                    <td class="text-center py-2 px-4 border-b">
+                        <button type="button" onclick="eliminarUsuario('{{user.id}}')"
+                            class="text-center bg-red-400 py-1 rounded-md hover:bg-red-500 hover:text-white w-full transition-colors duration-200">Eliminar</button>
+                    </td>
                 </tr>
                 {% endfor %}
                 {% else %}
@@ -134,8 +175,25 @@
         window.location.href = "{{ url_for('users.desbloquear_usuario', id=0)}}".replace(/0/, id);
     }
 
-    function redirectToRegistrarUsuario() {
-        window.location.href = "{{ url_for('users.crear_usuario') }}";
+    function actualizarUsuario(id) {
+        const url = "{{ url_for('users.actualizar_usuario', id=0) }}".replace(/0/, id);
+        window.open(url, '_blank');
+    }
+
+    function registrarUsuario() {
+        const url = "{{ url_for('users.crear_usuario') }}";
+        window.open(url, '_blank');
+    }
+
+    function eliminarUsuario(id) {
+        const modal = document.getElementById('confirmModal');
+        modal.classList.remove('hidden');
+        document.getElementById('cancelButton').onclick = function () {
+            modal.classList.add('hidden');
+        };
+        document.getElementById('confirmButton').onclick = function () {
+            window.location.href = "{{ url_for('users.eliminar_usuario', id=0)}}".replace(/0/, id);
+        };
     }
 </script>
 
