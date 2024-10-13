@@ -4,6 +4,21 @@
 
 {% block content %}
 <div class="bg-white p-6 rounded-lg shadow-md">
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flex justify-center mt-4">
+            <div class="w-full max-w-2xl">
+                {% for category, message in messages %}
+                    <div class="bg-red-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                        <p class="text-lg font-semibold">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% endwith %}
+    
     <h1 class="text-2xl font-bold mb-6 text-gray-700">Lista de Encuestres</h1>
 
     <!-- Contenedor para el botón y filtros -->

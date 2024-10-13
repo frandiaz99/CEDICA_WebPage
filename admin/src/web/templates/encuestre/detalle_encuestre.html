@@ -28,54 +28,76 @@
         </div>
 
         <!-- Sección de Información General -->
-        <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg">
-            <h2 class="text-2xl font-semibold mb-4">Información General</h2>
-            <p><strong>Nombre:</strong> {{ encuestre.nombre }}</p>
-            <p><strong>Fecha de Nacimiento:</strong> {{ encuestre.fecha_nacimiento }}</p>
-            <p><strong>Sexo:</strong> {{ encuestre.sexo }}</p>
-            <p><strong>Raza:</strong> {{ encuestre.raza }}</p>
-            <p><strong>Pelaje:</strong> {{ encuestre.pelaje }}</p>
-            <p><strong>Compra/Donación:</strong> {{ encuestre.compra_donacion }}</p>
-            <p><strong>Fecha de Ingreso:</strong> {{ encuestre.fecha_ingreso }}</p>
-            <p><strong>Sede Asignada:</strong> {{ encuestre.sede_asignada }}</p>
-            <p><strong>Entrenadores y Conductores:</strong>
-                {% for empleado in encuestre.entrenadores_conductores %}
-                    {{ empleado.nombre }}{% if not loop.last %}, {% endif %}
-                {% endfor %}
-            </p>
-            <p><strong>Tipo de J&A Asignados:</strong> {{ encuestre.tipo_ja_asignado }}</p>
+        <div class="relative">
+            <!-- Contenido de la Información General -->
+            <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">Información General</h2>
+                <p><strong>Nombre:</strong> {{ encuestre.nombre }}</p>
+                <p><strong>Fecha de Nacimiento:</strong> {{ encuestre.fecha_nacimiento.strftime('%d/%m/%Y') }}</p>
+                <p><strong>Sexo:</strong> {{ encuestre.sexo }}</p>
+                <p><strong>Raza:</strong> {{ encuestre.raza }}</p>
+                <p><strong>Pelaje:</strong> {{ encuestre.pelaje }}</p>
+                <p><strong>Compra/Donación:</strong> {{ encuestre.compra_donacion }}</p>
+                <p><strong>Fecha de Ingreso:</strong> {{ encuestre.fecha_ingreso.strftime('%d/%m/%Y') }}</p>
+                <p><strong>Sede Asignada:</strong> {{ encuestre.sede_asignada }}</p>
+                <p><strong>Entrenadores y Conductores:</strong>
+                    {% for empleado in encuestre.entrenadores_conductores %}
+                        {{ empleado.nombre }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p><strong>Tipo de J&A Asignados:</strong> {{ encuestre.tipo_ja_asignado }}</p>
+        
+                <!-- Botones de Editar y Eliminar -->
+                <div class="flex justify-end mt-6 space-x-4">
+                    <a href="{{ url_for('encuestre.editar_encuestre', id=encuestre.id) }}" 
+                       class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                       Editar
+                    </a>
+                    <form action="{{ url_for('encuestre.eliminar_encuestre', id=encuestre.id) }}" method="POST">
+                        
+                        <button type="submit" 
+                                class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600" 
+                                onclick="return confirm('¿Estás seguro de que deseas eliminar este encuestre? Esta acción no se puede deshacer.');">
+                            Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
+        
 
-
-        <!-- Sección de Documentos -->
+    <!-- Sección de Documentos -->
 <div id="docsSection" class="p-6 bg-white rounded-lg shadow-md">
     <!-- Filtros de búsqueda -->
+    <form method="GET" class="mb-4">
+        <!-- Fila para el campo de búsqueda y el título -->
+        <div class="flex items-center space-x-4 mb-4">
+            <input type="text" name="search" id="documentSearch" value="{{ search }}" placeholder="Buscar por título..." class="px-4 py-2 border rounded-md flex-grow max-w-xs">
+            
+            <select name="tipo" id="documentType" class="px-4 py-2 border rounded-md">
+                <option value="" {% if tipo == '' %}selected{% endif %}>Seleccionar tipo</option>
+                <option value="ficha_general" {% if tipo == 'ficha_general' %}selected{% endif %}>Ficha General</option>
+                <option value="planificacion_entrenamiento" {% if tipo == 'planificacion_entrenamiento' %}selected{% endif %}>Planificación de entrenamiento</option>
+                <option value="informe_evaluacion" {% if tipo == 'informe_evaluacion' %}selected{% endif %}>Informe de evaluación</option>
+                <option value="carga_imagen" {% if tipo == 'carga_imagen' %}selected{% endif %}>Carga imagen</option>
+                <option value="registro_veterinario" {% if tipo == 'registro_veterinario' %}selected{% endif %}>Registro veterinario</option>
+            </select>
+        </div>
 
-    <form method="GET" class="flex items-center space-x-4 mb-4">
-        <input type="text" name="search" id="documentSearch" value="{{ search }}" placeholder="Buscar por título..." class="px-4 py-2 border rounded-md">
-        
-        <select name="tipo" id="documentType" class="px-4 py-2 border rounded-md">
-            <option value=""{% if tipo == '' %}selected{% endif %}>Seleccionar tipo</option>
-            <option value="entrevista"{% if tipo == 'entrevista' %}selected{% endif %}>Entrevista</option>
-            <option value="evaluacion"{% if tipo == 'evaluacion' %}selected{% endif %}>Evaluación</option>
-            <option value="planificaciones"{% if tipo == 'planificaciones' %}selected{% endif %}>Planificaciones</option>
-            <option value="evolucion" {% if tipo == 'evolucion' %}selected{% endif %}>Evolución</option>
-            <option value="cronicas"{% if tipo == 'cronicas' %}selected{% endif %}>Crónicas</option>
-            <option value="documental"{% if tipo == 'documental' %}selected{% endif %}>Documental</option>
-        </select>
+        <!-- Fila para el botón de filtrar y los selectores de orden -->
+        <div class="flex items-center space-x-4">
+            <select name="order_prop" id="orderField" class="px-4 py-2 border rounded-md">
+                <option value="titulo" {% if order_prop == 'titulo' %}selected{% endif %}>Título</option>
+                <option value="inserted_at" {% if order_prop == 'inserted_at' %}selected{% endif %}>Fecha de subida</option>
+            </select>
 
-        <select name="order_prop" id="orderField" class="px-4 py-2 border rounded-md">
-            <option value="titulo"{% if order_prop == 'titulo' %}selected{% endif %}>Título</option>
-            <option value="inserted_at"{% if order_prop == 'inserted_at' %}selected{% endif %}>Fecha de subida</option>
-        </select>
+            <select name="order" id="orderDirection" class="px-4 py-2 border rounded-md">
+                <option value="asc" {% if order == 'asc' %}selected{% endif %}>Ascendente</option>
+                <option value="desc" {% if order == 'desc' %}selected{% endif %}>Descendente</option>
+            </select>
 
-        
-        <select name="order" id="orderDirection" class="px-4 py-2 border rounded-md">
-            <option value="asc"{% if order == 'asc' %}selected{% endif %}>Ascendente</option>
-            <option value="desc"{% if order == 'desc' %}selected{% endif %}>Descendente</option>
-        </select>
-        
-        <button type="submit" id="filterButton" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Filtrar</button>
+            <button type="submit" id="filterButton" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Filtrar</button>
+        </div>
     </form>
 
     <!-- Ordenar documentos -->
@@ -87,21 +109,35 @@
             <tr class="border-b">
                 <th class="px-4 py-2 text-left">Nombre</th>
                 <th class="px-4 py-2 text-left">Tipo</th>
+                <th class="px-4 py-2 text-left">Fecha</th>
                 <th class="px-4 py-2 text-left">Acciones</th>
             </tr>
         </thead>
         <tbody id="documentTable">
             {% for documento in documentos %}
             <tr class="border-b">
-                <td class="px-4 py-2">{{ documento.titulo }}</td>
+                <td class="px-4 py-2 break-all overflow-hidden text-ellipsis">{{ documento.titulo }}</td>
                 <td class="px-4 py-2">{{ documento.tipo }}</td>
+                <td class="px-4 py-2">{{ documento.inserted_at.strftime('%d/%m/%Y') }}</td>
                 <td class="px-4 py-2">
                     <!-- Selector de acciones -->
                     <select class="actions-select" data-document-id="{{ documento.id }}">
-                        <option value="ver">Ver</option>
-                        <option value="editar">Editar</option>
-                        <option value="eliminar">Eliminar</option>
-                        <option value="descargar">Descargar</option>
+                        <option value="">Seleccione una acción</option>
+                        {% if check_permission(session, "encuestre_show") %}
+                        <option value="descargar" data-url="{{ url_for('encuestre.descargar_documento', document_id=documento.id) }}">
+                        {% if documento.is_document %}
+                            Descargar
+                        {% else %}
+                            Ir al enlace
+                        {% endif %}
+                        </option>
+                        {% endif %}
+                        {% if check_permission(session, "encuestre_update") %}
+                        <option value="editar" data-url="{{ url_for('encuestre.editar_documento', document_id=documento.id, encuestre_id=encuestre.id) }}">Editar</option>
+                        {% endif %}
+                        {% if check_permission(session, "encuestre_destroy") %}
+                        <option value="eliminar" data-url="{{ url_for('encuestre.eliminar_documento', document_id=documento.id) }}">Eliminar</option>
+                        {% endif %}
                     </select>
                 </td>
             </tr>
@@ -113,28 +149,63 @@
         </tbody>
     </table>
 
+    <!-- Paginación -->
+    <div class="flex justify-between items-center mt-4">
+        <span class="text-gray-600">Página {{ pagina }} de {{ total_paginas }}</span>
+
+        <div class="flex space-x-2">
+            {% if pagina > 1 %}
+                <a href="{{ url_for('encuestre.detalle_encuestre',id=encuestre.id, pagina=pagina-1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Anterior</a>
+            {% endif %}
+            
+            {% if pagina < total_paginas %}
+                <a href="{{ url_for('encuestre.detalle_encuestre',id=encuestre.id, pagina=pagina+1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Siguiente</a>
+            {% endif %}
+        </div>
+    </div>
+
     <!-- Botones para agregar documentos -->
-    <div class="flex items-center space-x-4 mt-4">
-        <a href="#" class="bg-green-100 text-green-700 px-4 py-2 rounded-md hover:bg-green-200 flex items-center">
+<div class="flex flex-col space-y-4 mt-4">
+    <!-- Formulario para agregar enlace -->
+    <form method="POST" action="{{ url_for('encuestre.subir_enlace') }}" class="flex flex-col space-y-2">
+        <input type="hidden" name="encuestre_id" value="{{ encuestre.id }}">
+        <input type="url" name="enlace" placeholder="https://example.com" required class="px-4 py-2 border rounded-md">
+        <select class="actions-select" name="tipo_documento" id="tipo_documento" required>
+            <option value="ficha_general">Ficha General</option>
+            <option value="planificacion_entrenamiento">Planificacion de entrenamiento</option>
+            <option value="informe_evaluacion">Informe de evaluacion</option>
+            <option value="carga_imagen" >Carga imagen</option>
+            <option value="registro_veterinario">Registro veterinario</option>
+        </select>
+        <button type="submit" class="bg-green-100 text-green-700 px-4 py-2 rounded-md hover:bg-green-200 flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
-            Enlace
-        </a>
+            Agregar Enlace
+        </button>
+    </form>
 
-        <form method="POST" enctype="multipart/form-data" action="{{ url_for('encuestre.subir_documento') }}" style="display: flex; align-items: center; gap: 10px;">
-            
-            <button type="submit" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-md hover:bg-blue-200 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Subir
-            </button>
-            <input type="hidden" name="encuestre_id" value="{{ encuestre.id }}">
-            <input type="file" name="file" accept=".pdf,.doc,.docx,.jpg,.png" required>
-            
-        </form>
-    </div>
+    <!-- Formulario para subir documento -->
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('encuestre.subir_documento') }}" class="flex flex-col space-y-2">
+        <input type="hidden" name="encuestre_id" value="{{ encuestre.id }}">
+        <input type="file" name="file" accept=".pdf,.doc,.docx,.jpg,.png" required>
+        <select class="actions-select" name="tipo_documento" id="tipo_documento" required>
+            <option value="ficha_general">Ficha General</option>
+            <option value="planificacion_entrenamiento">Planificacion de entrenamiento</option>
+            <option value="informe_evaluacion">Informe de evaluacion</option>
+            <option value="carga_imagen" >Carga imagen</option>
+            <option value="registro_veterinario">Registro veterinario</option>
+        </select>
+        <button type="submit" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-md hover:bg-blue-200 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Subir
+        </button>
+    </form>
+</div>
+
+
 </div>
        
 </div>
@@ -143,35 +214,43 @@
 
     <script>
         $(document).ready(function() {
-            // Inicializar Select2
-            $('.actions-select').select2({
-                placeholder: "Seleccione una acción",
-                minimumResultsForSearch: Infinity // Ocultar la barra de búsqueda
-            });
-    
-            // Manejar la acción seleccionada
-            $('.actions-select').on('change', function() {
-                var action = $(this).val();
-                var documentId = $(this).data('document-id');
-    
-                if (action === 'editar') {
-                    // Redirigir a la página de edición
-                    window.location.href = `/editar_documento/${documentId}`;
-                } else if (action === 'eliminar') {
-                    if (confirm('¿Está seguro de que desea eliminar este documento?')) {
-                        // Llamar a la ruta de eliminación
-                        $.post(`/eliminar_documento/${documentId}`, function(response) {
-                            location.reload(); // Recargar la página tras eliminar
-                        });
+        $('.actions-select').on('change', function() {
+        var action = $(this).val();
+        var documentId = $(this).data('document-id');
+        var url = $(this).find('option:selected').data('url');
+
+        if (action === 'eliminar') {
+            // Mostrar el mensaje de confirmación
+            var confirmacion = confirm("¿Estás seguro de que deseas eliminar este documento?");
+            
+            if (confirmacion) {
+                // Si el usuario confirma, se ejecuta la solicitud POST para eliminar
+                $.ajax({ //permite hacer un post sin necesidad de recargar la pagina, apenas se clickea el select se envia los datos al back
+                    url: url, //al ser ejecutadas en segundo plano, el flash ni redirect funcionan 
+                    type: 'POST', 
+                    success: function(response) {
+                        // Recargar la página para reflejar los cambios
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Ocurrió un error al eliminar el documento.');
                     }
-                } else if (action === 'descargar') {
-                    // Llamar a la ruta de descarga
-                    window.location.href = `/descargar_documento/${documentId}`;
-                } else if (action === 'ver') {
-                    // Ver el documento en una nueva pestaña
-                    window.open(`/ver_documento/${documentId}`, '_blank');
-                }
-            });
-        });
+                });
+            } else {
+                // Si el usuario cancela, reseteamos el selector
+                $(this).val('');
+            }
+        }
+
+        else if(action =="descargar"){
+            window.location.href = url;
+        }
+
+        else if(action =="editar"){
+            window.location.href = url;
+        }
+    });
+});
+
     </script>
 {% endblock %}

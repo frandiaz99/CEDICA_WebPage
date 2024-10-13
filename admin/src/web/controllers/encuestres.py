@@ -9,6 +9,10 @@ from src.core.equipo import Empleado
 
 from src.web.handlers.auth import check
 
+from src.web.helpers import generar_url_firmada
+
+
+
 # from ulid import ULID
 
 import os
@@ -82,7 +86,7 @@ def index():
     )
 
 
-@encuestre_bp.route('/detalle/<int:id>', methods=['GET'])
+@encuestre_bp.route('/detalle/<int:id>', methods=['GET','POST'])
 @check("encuestre_show")
 def detalle_encuestre(id):
 
@@ -303,6 +307,7 @@ def subir_documento():
         return redirect(url_for('encuestre.detalle_encuestre', id=request.form.get('encuestre_id')))
     
     file = request.files['file']
+    tipo_documento = request.form.get('tipo_documento')
 
     client = current_app.storage.client 
 
@@ -324,7 +329,7 @@ def subir_documento():
     try:
         client.put_object(
             'grupo49',
-            file.filename,
+            f'documentos_encuestres/{file.filename}',
             file,
             file_size, 
             content_type=file.content_type
@@ -337,7 +342,7 @@ def subir_documento():
         # Crear el documento y asociarlo al encuestre
         nuevo_documento = documento_encuestre.DocumentoEncuestre(
             titulo=file.filename,
-            tipo=file.content_type,
+            tipo=tipo_documento,
             url=f"{current_app.config['MINIO_SERVER']}/grupo49/{file.name}",
             encuestre=encuestre_aux
         )
@@ -352,3 +357,95 @@ def subir_documento():
     return redirect(url_for('encuestre.detalle_encuestre', id=request.form.get('encuestre_id')))
 
 
+@encuestre_bp.route('/descargar_documento/<int:document_id>')
+@check("encuestre_show")
+def descargar_documento(document_id):
+    documento = documento_encuestre.DocumentoEncuestre.query.get_or_404(document_id)
+    
+    #url_firmada = generar_url_firmada("grupo49", documento.titulo)
+    if(documento.is_document):
+        url_descarga = f"https://{documento.url}"
+    else: 
+        url_descarga = documento.url
+
+    return redirect(url_descarga)
+
+
+@encuestre_bp.route('/eliminar_documento/<int:document_id>', methods=['POST'])
+@check("encuestre_destroy")
+def eliminar_documento(document_id):
+
+    documento = documento_encuestre.DocumentoEncuestre.query.get_or_404(document_id)
+
+    if(documento.is_document):
+        eliminar_de_minio(documento.titulo)
+
+
+    try:
+        db.session.delete(documento)
+        db.session.commit()
+
+        flash('Documento eliminado correctamente.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar el documento: {str(e)}', 'danger')
+
+    return redirect(url_for('encuestre.detalle_encuestre', id=documento.encuestre_id))
+
+def eliminar_de_minio(file):
+    client = current_app.storage.client
+    object_name = f'documentos_encuestres/{file}'
+    client.remove_object('grupo49', object_name)
+
+# Ruta para editar documento
+@encuestre_bp.route('/editar_documento/<int:document_id>', methods=['POST','GET'])
+@check("encuestre_update")
+def editar_documento(document_id):
+    documento = documento_encuestre.DocumentoEncuestre.query.get_or_404(document_id)
+    encuestre = documento_encuestre.DocumentoEncuestre.get_encuestre_by_document_id(document_id)
+    tipo = documento.tipo
+    if documento is None:
+        abort(404) 
+    
+    if request.method == 'POST':
+        # Obtener datos del formulario
+        documento.titulo = request.form['nombre']    
+        documento.tipo = request.form['tipo_documento']
+        
+        
+        # Guardar cambios en la base de datos
+        db.session.commit()
+        flash('Los cambios se han guardado exitosamente.', 'success')
+        return redirect(url_for('encuestre.detalle_encuestre', id=encuestre.id))
+
+    return render_template('encuestre/editar_documento.html', documento=documento, encuestre=encuestre, tipo=tipo)
+
+
+@encuestre_bp.route('/subir_enlace', methods=['POST'])
+def subir_enlace():
+    encuestre_id = request.form.get('encuestre_id')
+    encuestre_aux = encuestre.Encuestre.query.get(encuestre_id)
+    tipo_enlace = request.form.get('tipo_documento')
+
+    titulo = request.form.get('titulo')
+    url_enlace = request.form.get('enlace')
+
+    # Valida que no se suban enlaces vacíos
+    if not url_enlace:
+        flash('El enlace no puede estar vacío', 'error')
+        return redirect(url_for('encuestre.detalle_encuestre', id=encuestre_id))
+
+    # Agregar el enlace como un objeto separado de documentos
+    nuevo_enlace = documento_encuestre.DocumentoEncuestre(
+        titulo=url_enlace,
+        tipo=tipo_enlace,
+        url=url_enlace,
+        encuestre=encuestre_aux,
+        is_document = False
+    )
+    
+    db.session.add(nuevo_enlace)
+    db.session.commit()
+
+    flash('Enlace subido exitosamente', 'success')
+    return redirect(url_for('encuestre.detalle_encuestre', id=encuestre_id))

@@ -20,148 +20,148 @@
 
     <div class="max-w-4xl mx-auto mt-10">
         <h1 class="text-3xl font-bold text-center mb-6">Registro de Empleado</h1>
-        <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('equipo.registrar_empleado') }}" method="POST" enctype="multipart/form-data">
-            
+        <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('equipo.registrar_empleado') }}" method="POST" enctype="multipart/form-data">            <!-- Nombre -->
             <!-- Nombre -->
             <div class="mb-4">
-                <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-                <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre" required>
+              <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+              <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                     placeholder="Ingrese el nombre" pattern="[A-Za-zÀ-ÿ\s]+" title="El nombre solo debe contener letras" required>
             </div>
-
+          
             <!-- Apellido -->
             <div class="mb-4">
-                <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
-                <input type="text" id="apellido" name="apellido" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el apellido" required>
+              <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
+              <input type="text" id="apellido" name="apellido" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                     placeholder="Ingrese el apellido" pattern="[A-Za-zÀ-ÿ\s]+" title="El apellido solo debe contener letras" required>
             </div>
-
+          
             <!-- DNI -->
             <div class="mb-4">
-                <label for="dni" class="block text-sm font-medium text-gray-700">DNI</label>
-                <input type="text" id="dni" name="dni" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el DNI" required>
+              <label for="dni" class="block text-sm font-medium text-gray-700">DNI</label>
+              <input type="text" id="dni" name="dni" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                     placeholder="Ingrese el DNI" pattern="\d{8}" title="El DNI debe tener exactamente 8 dígitos" required>
             </div>
-
+          
             <!-- Domicilio -->
             <div class="mb-4">
-                <label for="domicilio" class="block text-sm font-medium text-gray-700">Domicilio</label>
-                <input type="text" id="domicilio" name="domicilio" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el domicilio" required>
+              <label for="domicilio" class="block text-sm font-medium text-gray-700">Domicilio</label>
+              <input type="text" id="domicilio" name="domicilio" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                     placeholder="Ingrese el domicilio" required>
             </div>
-
+          
             <!-- Email -->
             <div class="mb-4">
-                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" id="email" name="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el correo electrónico" required>
+              <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+              <input type="email" id="email" name="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                     placeholder="Ingrese el email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Ingrese un correo electrónico válido" required>
             </div>
-
+          
             <!-- Localidad -->
             <div class="mb-4">
-                <label for="localidad" class="block text-sm font-medium text-gray-700">Localidad</label>
-                <input type="text" id="localidad" name="localidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la localidad" required>
+              <label for="localidad" class="block text-sm font-medium text-gray-700">Localidad</label>
+              <input type="text" id="localidad" name="localidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                     placeholder="Ingrese la localidad" required>
             </div>
-
+          
             <!-- Teléfono -->
             <div class="mb-4">
-                <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
-                <input type="text" id="telefono" name="telefono" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono" required>
+              <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+              <input type="text" id="telefono" name="telefono" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                     placeholder="Ingrese el teléfono" pattern="\d{7,15}" title="El teléfono debe tener entre 7 y 15 dígitos" required>
             </div>
-
+          
             <!-- Profesión -->
             <div class="mb-4">
-                <label for="profesion" class="block text-sm font-medium text-gray-700">Profesión</label>
-                <select id="profesion" name="profesion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-                    <option value="Psicólogo/a">Psicólogo/a</option>
-                    <option value="Psicomotricista">Psicomotricista</option>
-                    <option value="Médico/a">Médico/a</option>
-                    <option value="Kinesiólogo/a">Kinesiólogo/a</option>
-                    <option value="Terapista Ocupacional">Terapista Ocupacional</option>
-                    <option value="Psicopedagogo/a">Psicopedagogo/a</option>
-                    <option value="Docente">Docente</option>
-                    <option value="Profesor">Profesor</option>
-                    <option value="Fonoaudiólogo/a">Fonoaudiólogo/a</option>
-                    <option value="Veterinario/a">Veterinario/a</option>
-                    <option value="Otro">Otro</option>
-                </select>
-            </div>
-
-            <!-- Puesto Laboral en la Institución -->
-            <div class="mb-4">
-                <label for="puesto_laboral" class="block text-sm font-medium text-gray-700">Puesto Laboral en la Institución</label>
-                <select id="puesto_laboral" name="puesto_laboral" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-                    <option value="Administrativo/a">Administrativo/a</option>
-                    <option value="Terapeuta">Terapeuta</option>
-                    <option value="Conductor">Conductor</option>
-                    <option value="Auxiliar de pista">Auxiliar de pista</option>
-                    <option value="Herrero">Herrero</option>
-                    <option value="Veterinario">Veterinario</option>
-                    <option value="Entrenador de Caballos">Entrenador de Caballos</option>
-                    <option value="Domador">Domador</option>
-                    <option value="Profesor de Equitación">Profesor de Equitación</option>
-                    <option value="Docente de Capacitación">Docente de Capacitación</option>
-                    <option value="Auxiliar de mantenimiento">Auxiliar de mantenimiento</option>
-                    <option value="Otro">Otro</option>
-                </select>
-            </div>
-
+              <label for="profesion" class="block text-sm font-medium text-gray-700">Profesión</label>
+              <select id="profesion" name="profesion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option value="Psicólogo/a">Psicólogo/a</option>
+                  <option value="Psicomotricista">Psicomotricista</option>
+                  <option value="Médico/a">Médico/a</option>
+                  <option value="Kinesiólogo/a">Kinesiólogo/a</option>
+                  <option value="Terapista Ocupacional">Terapista Ocupacional</option>
+                  <option value="Psicopedagogo/a">Psicopedagogo/a</option>
+                  <option value="Docente">Docente</option>
+                  <option value="Profesor">Profesor</option>
+                  <option value="Fonoaudiólogo/a">Fonoaudiólogo/a</option>
+                  <option value="Veterinario/a">Veterinario/a</option>
+                  <option value="Otro">Otro</option>
+              </select>
+          </div>
+          
+          <!-- Puesto Laboral en la Institución -->
+          <div class="mb-4">
+              <label for="puesto_laboral" class="block text-sm font-medium text-gray-700">Puesto Laboral en la Institución</label>
+              <select id="puesto_laboral" name="puesto_laboral" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                  <option value="Administrativo/a">Administrativo/a</option>
+                  <option value="Terapeuta">Terapeuta</option>
+                  <option value="Conductor">Conductor</option>
+                  <option value="Auxiliar de pista">Auxiliar de pista</option>
+                  <option value="Herrero">Herrero</option>
+                  <option value="Veterinario">Veterinario</option>
+                  <option value="Entrenador de Caballos">Entrenador de Caballos</option>
+                  <option value="Domador">Domador</option>
+                  <option value="Profesor de Equitación">Profesor de Equitación</option>
+                  <option value="Docente de Capacitación">Docente de Capacitación</option>
+                  <option value="Auxiliar de mantenimiento">Auxiliar de mantenimiento</option>
+                  <option value="Otro">Otro</option>
+              </select>
+          </div>
+          
             <!-- Fecha de Inicio -->
             <div class="mb-4">
-                <label for="fecha_inicio" class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
-                <input type="date" id="fecha_inicio" name="fecha_inicio" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" max="{{ fecha_hoy }}" required>
+              <label for="fecha_inicio" class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
+              <input type="date" id="fecha_inicio" name="fecha_inicio" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
             </div>
-
+          
             <!-- Fecha de Cese -->
             <div class="mb-4">
-                <label for="fecha_cese" class="block text-sm font-medium text-gray-700">Fecha de Cese</label>
-                <input type="date" id="fecha_cese" name="fecha_cese" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" max="{{ fecha_hoy }}">
+              <label for="fecha_cese" class="block text-sm font-medium text-gray-700">Fecha de Cese</label>
+              <input type="date" id="fecha_cese" name="fecha_cese" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
             </div>
-
+          
             <!-- Contacto de Emergencia -->
             <div class="mb-4">
-                <label for="contacto_emergencia" class="block text-sm font-medium text-gray-700">Contacto de Emergencia</label>
-                <input type="text" id="contacto_emergencia" name="contacto_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre y teléfono del contacto de emergencia" required>
+              <label for="contacto_emergencia" class="block text-sm font-medium text-gray-700">Contacto de Emergencia</label>
+              <input type="text" id="contacto_emergencia" name="contacto_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                     placeholder="Ingrese el contacto de emergencia" required>
             </div>
-
+          
             <!-- Obra Social -->
             <div class="mb-4">
-                <label for="obra_social" class="block text-sm font-medium text-gray-700">Obra Social</label>
-                <input type="text" id="obra_social" name="obra_social" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la obra social" required>
+              <label for="obra_social" class="block text-sm font-medium text-gray-700">Obra Social</label>
+              <input type="text" id="obra_social" name="obra_social" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                     placeholder="Ingrese la obra social" required>
             </div>
-
+          
             <!-- Número de Afiliado -->
             <div class="mb-4">
-                <label for="n_afiliado" class="block text-sm font-medium text-gray-700">N° de Afiliado</label>
-                <input type="text" id="n_afiliado" name="n_afiliado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el número de afiliado" required>
+              <label for="numero_afiliado" class="block text-sm font-medium text-gray-700">Número de Afiliado</label>
+              <input type="text" id="numero_afiliado" name="numero_afiliado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                     placeholder="Ingrese el número de afiliado" pattern="\d+" title="El número de afiliado solo acepta dígitos" required>
             </div>
-
+          
             <!-- Condición -->
             <div class="mb-4">
-                <label for="condicion" class="block text-sm font-medium text-gray-700">Condición</label>
-                <select id="condicion" name="condicion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-                    <option value="Voluntario">Voluntario</option>
-                    <option value="Personal Rentado">Personal Rentado</option>
-                </select>
+              <label for="condicion" class="block text-sm font-medium text-gray-700">Condición</label>
+              <select id="condicion" name="condicion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                <option value="">Seleccione una condición</option>
+                <option value="Voluntario">Voluntario</option>
+                <option value="Personal Rentado">Personal Rentado</option>
+              </select>
             </div>
-
-            <!-- Activo -->
+          
+            <!-- Estado Activo -->
             <div class="mb-4">
-                <label for="activo" class="block text-sm font-medium text-gray-700">Activo</label>
-                <select id="activo" name="activo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-                    <option value="si">Sí</option>
-                    <option value="no">No</option>
-                </select>
+              <label for="activo" class="block text-sm font-medium text-gray-700">Activo</label>
+              <select id="activo" name="activo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                <option value="">Seleccione el estado</option>
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+              </select>
             </div>
-
-            <!-- Documentación complementaria -->
-            <!-- <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Documentación Complementaria</label>
-                <div class="mt-1">
-                    <input type="file" name="documentos[]" multiple class="block w-full text-sm text-gray-500">
-                </div>
-            </div> -->
-
-            <!-- Botón de Enviar -->
-            <div class="text-center">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Guardar</button>
-            </div>
-        </form>
+          
+            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Enviar</button>
+          </form>
     </div>
 </body>
 {% endblock %}

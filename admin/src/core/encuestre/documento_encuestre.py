@@ -11,6 +11,7 @@ class DocumentoEncuestre(db.Model):
     tipo = db.Column(db.String(100), nullable=False)
     url = db.Column(db.String(200), nullable=False)
     operacion = db.Column(db.String(200), nullable=True)
+    is_document = db.Column(db.Boolean, nullable=False, default=True)
 
     encuestre_id = db.Column(db.Integer, db.ForeignKey('encuestres.id'), nullable=True)
     #ja_id = db.Column(db.Integer, db.ForeignKey('ja.id'), nullable=True)
@@ -19,3 +20,12 @@ class DocumentoEncuestre(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     encuestre = db.relationship('Encuestre', back_populates='documentos')
+
+    @staticmethod
+    def get_encuestre_by_document_id(document_id):
+    # Busca el documento por ID
+        documento = db.session.query(DocumentoEncuestre).get(document_id)
+        if documento:
+        # Si el documento existe, devuelve el encuestre relacionado
+            return documento.encuestre
+        return None  # Si no se encuentra, devuelve None

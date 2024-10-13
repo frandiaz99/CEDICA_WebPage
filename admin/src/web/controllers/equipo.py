@@ -9,6 +9,13 @@ from sqlalchemy import asc, desc
 from src.core.equipo import Empleado, documento
 from src.web.handlers.auth import check
 import os 
+from src.web.controllers.validador import (
+    validar_nombre, validar_apellido, validar_dni, validar_domicilio, 
+    validar_email, validar_localidad, validar_telefono, validar_profesion, 
+    validar_puesto_laboral, validar_fecha_inicio, validar_fecha_cese, 
+    validar_contacto_emergencia, validar_obra_social, validar_numero_afiliado, 
+    validar_condicion, validar_activo
+)
 equipo_bp = Blueprint('equipo', __name__, url_prefix='/equipo')
 
 @equipo_bp.get("/")
@@ -90,16 +97,16 @@ def detalle_empleado(id):
 @check("equipo_destroy")
 def eliminar_empleado(id):
     # Buscar el encuestre por ID
-    equipo_aux = Empleado.query.get_or_404(id)
+    empleado_aux = Empleado.query.get_or_404(id)
     
     try:
-        db.session.delete(equipo_aux)
+        db.session.delete(empleado_aux)
         db.session.commit()
 
-        flash('Equipo eliminado correctamente.', 'success')
+        flash('Empleado eliminado correctamente.', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'Error al eliminar el equipo: {str(e)}', 'danger')
+        flash(f'Error al eliminar el empleado: {str(e)}', 'danger')
     return redirect(url_for('equipo.index')) 
 
 
@@ -117,18 +124,49 @@ def registrar_empleado():
         telefono = request.form.get('telefono')
         profesion = request.form.get('profesion')
         puesto_laboral = request.form.get('puesto_laboral')
-        fecha_inicio = request.form.get('fecha_inicio')
-        fecha_cese = request.form.get('fecha_cese') or None
+        fecha_inicio_str = request.form.get('fecha_inicio')
+        fecha_cese_str = request.form.get('fecha_cese')
         contacto_emergencia = request.form.get('contacto_emergencia')
         obra_social = request.form.get('obra_social')
-        numero_afiliado = request.form.get('n_afiliado')
+        numero_afiliado = request.form.get('numero_afiliado')
         condicion = request.form.get('condicion')
         activo = request.form.get('activo')
 
         # Validar que los campos requeridos no estén vacíos
-        if not (nombre and apellido and dni and domicilio and email and localidad and telefono and profesion and puesto_laboral and fecha_inicio and contacto_emergencia and condicion and activo):
+        if not (nombre and apellido and dni and domicilio and email and localidad and telefono and profesion and puesto_laboral and fecha_inicio_str and fecha_cese_str and contacto_emergencia and condicion and activo):
             flash('Faltan completar campos obligatorios', 'danger')
             return redirect(url_for('equipo.registrar_empleado'))
+
+        dni_aux = Empleado.query.filter_by(dni=dni).first()
+        if dni_aux:
+            flash('El DNI ingresado ya se encuentra registrado.', 'danger')
+            return redirect(url_for('equipo.registrar_empleado'))
+        # Validadores
+        validadores = [
+            (validar_nombre, [nombre]),
+            (validar_apellido, [apellido]),
+            (validar_dni, [dni]),
+            (validar_domicilio, [domicilio]),
+            (validar_email, [email]),
+            (validar_localidad, [localidad]),
+            (validar_telefono, [telefono]),
+            (validar_profesion, [profesion]),
+            (validar_puesto_laboral, [puesto_laboral]),
+            (validar_fecha_inicio, [fecha_inicio_str]),
+            (validar_fecha_cese, [fecha_cese_str, fecha_inicio_str]),  # Aquí también se pasa la fecha de inicio
+            (validar_contacto_emergencia, [contacto_emergencia]),
+            (validar_obra_social, [obra_social]),
+            (validar_numero_afiliado, [numero_afiliado]),
+            (validar_condicion, [condicion]),
+            (validar_activo, [activo])
+        ]
+
+        # Ejecutar validaciones
+        for validar_funcion, args in validadores:
+            es_valido, mensaje_error = validar_funcion(*args)  # Desempaquetamos los argumentos
+            if not es_valido:
+                flash(mensaje_error, 'danger')
+                return redirect(url_for('equipo.registrar_empleado'))  # Redirige si hay error
 
         # Crear el objeto Empleado
         nuevo_empleado = Empleado(
@@ -141,8 +179,8 @@ def registrar_empleado():
             telefono=telefono,
             profesion=profesion,
             puesto_laboral=puesto_laboral,
-            fecha_inicio=fecha_inicio,
-            fecha_cese=fecha_cese,
+            fecha_inicio=datetime.strptime(fecha_inicio_str, '%Y-%m-%d'),
+            fecha_cese=datetime.strptime(fecha_cese_str, '%Y-%m-%d'),
             contacto_emergencia=contacto_emergencia,
             obra_social=obra_social,
             numero_afiliado=numero_afiliado,
@@ -163,7 +201,6 @@ def registrar_empleado():
 
     return render_template('equipo/registrar_empleado.html')
 
-
 @equipo_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @check("equipo_update")
 def editar_empleado(id):
@@ -173,22 +210,64 @@ def editar_empleado(id):
 
     if request.method == 'POST':
         # Obtener datos del formulario
-        empleado_aux.nombre = request.form['nombre']
-        empleado_aux.apellido = request.form['apellido']
-        empleado_aux.dni = request.form['dni']
-        empleado_aux.domicilio = request.form['domicilio']
-        empleado_aux.email = request.form['email']
-        empleado_aux.localidad = request.form['localidad']
-        empleado_aux.telefono = request.form['telefono']
-        empleado_aux.profesion = request.form['profesion']
-        empleado_aux.puesto_laboral = request.form['puesto_laboral']
-        empleado_aux.fecha_inicio = request.form['fecha_inicio']
-        empleado_aux.fecha_cese = request.form.get('fecha_cese')
-        empleado_aux.contacto_emergencia = request.form['contacto_emergencia']
-        empleado_aux.obra_social = request.form['obra_social']
-        empleado_aux.numero_afiliado = request.form['numero_afiliado']
-        empleado_aux.condicion = request.form['condicion']
-        empleado_aux.activo = True if request.form['activo'] == 'si' else False
+        nombre = request.form['nombre']
+        apellido = request.form['apellido']
+        dni = request.form['dni']
+        domicilio = request.form['domicilio']
+        email = request.form['email']
+        localidad = request.form['localidad']
+        telefono = request.form['telefono']
+        profesion = request.form['profesion']
+        puesto_laboral = request.form['puesto_laboral']
+        fecha_inicio_str = request.form.get('fecha_inicio')
+        fecha_cese_str = request.form.get('fecha_cese')
+        contacto_emergencia = request.form['contacto_emergencia']
+        obra_social = request.form['obra_social']
+        numero_afiliado = request.form['n_afiliado']
+        condicion = request.form['condicion']
+        activo = request.form['activo']
+
+        validadores = [
+            (validar_nombre, [nombre]),
+            (validar_apellido, [apellido]),
+            (validar_dni, [dni]),
+            (validar_domicilio, [domicilio]),
+            (validar_email, [email]),
+            (validar_localidad, [localidad]),
+            (validar_telefono, [telefono]),
+            (validar_profesion, [profesion]),
+            (validar_puesto_laboral, [puesto_laboral]),
+            (validar_fecha_inicio, [fecha_inicio_str]),
+            (validar_fecha_cese, [fecha_cese_str, fecha_inicio_str]),  # Aquí sí hay dos argumentos
+            (validar_contacto_emergencia, [contacto_emergencia]),
+            (validar_obra_social, [obra_social]),
+            (validar_numero_afiliado, [numero_afiliado]),
+            (validar_condicion, [condicion]),
+            (validar_activo, [activo])
+        ]
+
+        for validar_funcion, args in validadores:
+            es_valido, mensaje_error = validar_funcion(*args)  # Desempaquetamos los argumentos
+            if not es_valido:
+                flash(mensaje_error, 'danger')
+                return redirect(url_for('equipo.editar_empleado', id=id))  # Redirige si hay error
+
+        empleado_aux.nombre = nombre
+        empleado_aux.apellido = apellido
+        empleado_aux.dni = dni
+        empleado_aux.domicilio = domicilio
+        empleado_aux.email = email
+        empleado_aux.localidad = localidad
+        empleado_aux.telefono = telefono
+        empleado_aux.profesion = profesion
+        empleado_aux.puesto_laboral = puesto_laboral
+        empleado_aux.fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d')
+        empleado_aux.fecha_cese = datetime.strptime(fecha_cese_str, '%Y-%m-%d')
+        empleado_aux.contacto_emergencia = contacto_emergencia
+        empleado_aux.obra_social = obra_social
+        empleado_aux.numero_afiliado = numero_afiliado
+        empleado_aux.condicion = condicion
+        empleado_aux.activo = activo == 'Sí' 
 
         # Guardar cambios en la base de datos
         try:
@@ -199,7 +278,7 @@ def editar_empleado(id):
             db.session.rollback()
             flash(f'Error al actualizar el empleado: {str(e)}', 'danger')
             return redirect(url_for('equipo.editar_empleado', id=id))
-    
+
     return render_template(
         'equipo/editar_empleado.html', 
         empleado=empleado_aux, 
@@ -257,3 +336,33 @@ def subir_documento():
         flash(f'Error al subir el documento: {str(e)}', 'error')
     
     return redirect(url_for('equipo.detalle_empleado', id=request.form.get('empleado_id')))
+
+@equipo_bp.route('/descargar_documento/<int:document_id>')
+@check("equipo_show")
+def descargar_documento(document_id):
+    documento = documento.Documento.query.get_or_404(document_id)  
+    url_descarga = f"https://{documento.url}"  
+    return redirect(url_descarga)
+
+
+@equipo_bp.route('/eliminar_documento/<int:document_id>', methods=['POST'])
+@check("equipo_destroy")
+def eliminar_documento(document_id):
+    print("Eliminando documento...")
+    documento = documento.Documento.query.get_or_404(document_id)  
+    eliminar_de_minio(documento.titulo)  
+    try:
+        db.session.delete(documento)
+        db.session.commit()
+
+        flash('Documento eliminado correctamente.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar el documento: {str(e)}', 'danger')
+
+    return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))  
+
+def eliminar_de_minio(file):
+    client = current_app.storage.client
+    object_name = f'documentos_empleados/{file}' 
+    client.remove_object('grupo49', object_name)
