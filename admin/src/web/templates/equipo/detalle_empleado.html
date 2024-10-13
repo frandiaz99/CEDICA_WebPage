@@ -68,7 +68,7 @@
                     <td class="px-4 py-2">
                         <!-- Selector de acciones -->
                         <select class="actions-select" data-document-id="{{ documento.id }}">
-                            <option value="ver">Ver</option>
+                            <option value="" selected disabled>Seleccionar acción</option>
                             <option value="eliminar">Eliminar</option>
                             <option value="descargar">Descargar</option>
                         </select>
@@ -127,9 +127,6 @@
             } else if (action === 'descargar') {
                 // Llamar a la ruta de descarga
                 window.location.href = `/descargar_documento/${documentId}`;
-            } else if (action === 'ver') {
-                // Ver el documento en una nueva pestaña
-                window.open(`/ver_documento/${documentId}`, '_blank');
             }
         });
     });
