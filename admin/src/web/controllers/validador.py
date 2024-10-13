@@ -114,3 +114,39 @@ def validar_activo(activo):
     if activo not in ['Sí', 'No']:
         return False, "El estado activo debe ser 'Sí' o 'No'."
     return True, ""
+
+from datetime import datetime
+
+def validar_tipo_pago(tipo_pago):
+    tipos_validos = ['honorarios', 'proveedor', 'gastos varios']
+    if tipo_pago in tipos_validos:
+        return True, ""
+    return False, "Tipo de pago no es válido."
+
+def validar_monto(monto):
+    try:
+        monto_float = float(monto)
+        if monto_float > 0:
+            return True, ""
+        return False, "El monto debe ser un número positivo."
+    except ValueError:
+        return False, "El monto ingresado no es un número válido."
+
+def validar_fecha_pago(fecha_pago_str):
+    try:
+        fecha_pago = datetime.strptime(fecha_pago_str, '%Y-%m-%d')
+        if fecha_pago <= datetime.today():
+            return True, ""
+        return False, "La fecha de pago no puede ser futura."
+    except ValueError:
+        return False, "La fecha de pago no tiene un formato válido. Debe ser YYYY-MM-DD."
+
+def validar_descripcion(descripcion):
+    if len(descripcion.strip()) > 0:
+        return True, ""
+    return False, "La descripción no puede estar vacía."
+
+def validar_beneficiario(beneficiario):
+    if beneficiario and beneficiario.isdigit():
+        return True, ""
+    return False, "El ID del beneficiario no es válido."
