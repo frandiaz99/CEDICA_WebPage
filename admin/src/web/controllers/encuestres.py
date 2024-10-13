@@ -9,7 +9,8 @@ from src.core.equipo import Empleado
 
 from src.web.handlers.auth import check
 
-from src.web.helpers import generar_url_firmada
+from src.web.controllers.documentos import generar_nombre 
+
 
 
 
@@ -343,7 +344,7 @@ def subir_documento():
         nuevo_documento = documento_encuestre.DocumentoEncuestre(
             titulo=file.filename,
             tipo=tipo_documento,
-            url=f"{current_app.config['MINIO_SERVER']}/grupo49/{file.name}",
+            url=f"{current_app.config['MINIO_SERVER']}/grupo49/documento_encuestre%2{file.filename}",
             encuestre=encuestre_aux
         )
         
@@ -361,15 +362,21 @@ def subir_documento():
 @check("encuestre_show")
 def descargar_documento(document_id):
     documento = documento_encuestre.DocumentoEncuestre.query.get_or_404(document_id)
+    encuestre = documento_encuestre.DocumentoEncuestre.get_encuestre_by_document_id(document_id)
+    client = current_app.storage.client
+    object_name = f'documentos_encuestres/{documento.titulo}'
     
-    #url_firmada = generar_url_firmada("grupo49", documento.titulo)
     if(documento.is_document):
-        url_descarga = f"https://{documento.url}"
+        url_descarga = url_for('encuestre.detalle_encuestre', id=encuestre.id)
+        client.fget_object("grupo49", object_name, "src/downloads/" + generar_nombre(documento.titulo))
+        flash('El documento se ha descargado con exito.', 'success')
     else: 
         url_descarga = documento.url
 
     return redirect(url_descarga)
 
+
+    
 
 @encuestre_bp.route('/eliminar_documento/<int:document_id>', methods=['POST'])
 @check("encuestre_destroy")
