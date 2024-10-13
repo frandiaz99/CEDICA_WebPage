@@ -169,6 +169,7 @@ def run():
         obra_social="OSDE", 
         numero_afiliado="112233", 
         condicion="Personal Rentado", 
+        fecha_cese=datetime(2025, 12, 11),
         user_id=fede.id
     )
 
@@ -186,6 +187,7 @@ def run():
         obra_social="Swiss Medical", 
         numero_afiliado="445566", 
         condicion="Voluntario", 
+        fecha_cese=datetime(2025, 11, 15),
         user_id=mati.id
     )
 
@@ -203,6 +205,7 @@ def run():
         obra_social="Galeno", 
         numero_afiliado="778899", 
         condicion="Personal Rentado", 
+        fecha_cese=datetime(2025, 10, 1),
         user_id=miguel.id
     )
 
