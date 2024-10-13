@@ -37,7 +37,7 @@
             <!-- DNI -->
             <div class="mb-4">
                 <label for="dni" class="block text-sm font-medium text-gray-700">DNI</label>
-                <input type="text" id="dni" name="dni" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ empleado.dni }}" pattern="\d{8}" title="El DNI debe tener exactamente 8 dígitos">
+                <input type="text" id="dni" name="dni" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm grey" value="{{ empleado.dni }}" readonly>
             </div>
 
             <!-- Domicilio -->
@@ -110,7 +110,7 @@
             <!-- Fecha de Cese -->
             <div class="mb-4">
                 <label for="fecha_cese" class="block text-sm font-medium text-gray-700">Fecha de Cese</label>
-                <input type="date" id="fecha_cese" name="fecha_cese" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ empleado.fecha_cese }}">
+                <input type="date" id="fecha_cese" name="fecha_cese" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ empleado.fecha_cese.strftime('%Y-%m-%d') }}">
             </div>
             <!-- Contacto de Emergencia -->
             <div class="mb-4">
@@ -127,15 +127,15 @@
             <!-- Número de Afiliado -->
             <div class="mb-4">
                 <label for="n_afiliado" class="block text-sm font-medium text-gray-700">N° de Afiliado</label>
-                <input type="text" id="n_afiliado" name="n_afiliado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{empleado.n_afiliado}}" pattern="\d+" title="El número de afiliado solo acepta dígitos">
+                <input type="text" id="n_afiliado" name="n_afiliado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{empleado.numero_afiliado}}" pattern="\d+" title="El número de afiliado solo acepta dígitos">
             </div>
 
             <!-- Condición -->
             <div class="mb-4">
                 <label for="condicion" class="block text-sm font-medium text-gray-700">Condición</label>
                 <select id="condicion" name="condicion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{empleado.condicion}}">
-                    <option value="Voluntario">Voluntario</option>
-                    <option value="Personal Rentado">Personal Rentado</option>
+                    <option value="Voluntario" {%if empleado.condicion=="Voluntario"%}selected{%endif%}>Voluntario</option>
+                    <option value="Personal Rentado"{%if empleado.condicion=="Personal Rentado"%}selected{%endif%}>Personal Rentado</option>
                 </select>
             </div>
 
@@ -143,8 +143,8 @@
             <div class="mb-4">
                 <label for="activo" class="block text-sm font-medium text-gray-700">Activo</label>
                 <select id="activo" name="activo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{empleado.activo}}">
-                    <option value="si">Sí</option>
-                    <option value="no">No</option>
+                    <option value="Sí">Sí</option>
+                    <option value="No">No</option>
                 </select>
             </div>
             <div class="flex justify-between mt-6">
