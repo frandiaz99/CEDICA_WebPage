@@ -2,10 +2,12 @@ from flask import Blueprint, render_template, request, abort, flash, url_for, re
 from sqlalchemy import asc, desc
 from src.core.database import db
 from datetime import datetime
-from src.core.equipo import Empleado, documento
+from src.core.equipo import Empleado
+from src.core.equipo.documento import Documento
 from src.web.handlers.auth import check
+from src.web.controllers.documentos import generar_nombre
 import os
-from src.web.controllers.validador import (
+from src.web.validadores.validador import (
     validar_nombre, validar_apellido, validar_dni, validar_domicilio,
     validar_email, validar_localidad, validar_telefono, validar_profesion,
     validar_puesto_laboral, validar_fecha_inicio, validar_fecha_cese,
@@ -89,7 +91,7 @@ def detalle_empleado(id):
         abort(404)
 
     registros_por_pagina = 5
-    query = documento.Documento.query
+    query = Documento.query.filter_by(empleado_id=id)
     pagina = request.args.get('pagina', 1, type=int)
     pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
     documentos = pagination.items
@@ -299,3 +301,100 @@ def editar_empleado(id):
             flash(f'Error al editar el empleado: {str(e)}', 'danger')
 
     return render_template('equipo/editar_empleado.html', empleado=empleado_aux)
+
+@equipo_bp.route('/subir_documento', methods=['POST'])
+@check("equipo_update")
+def subir_documento():
+
+    MAX_FILE_SIZE = 16 * 1024 * 1024
+
+    if 'file' not in request.files:
+        flash('No se seleccionó ningún archivo', 'error')
+        return redirect(url_for('equipo.detalle_empleado', id=request.form.get('empleado_id')))
+    
+    file = request.files['file']
+
+    client = current_app.storage.client 
+
+    file_size = os.fstat(file.fileno()).st_size
+    
+    if file_size > MAX_FILE_SIZE:
+        flash('El archivo excede el tamaño máximo permitido (16MB)', 'error')
+        return redirect(url_for('equipo.detalle_empleado', id=request.form.get('empleado_id')))
+    
+    if file.filename == '':
+        flash('Nombre de archivo vacío', 'error')
+        return redirect(url_for('equipo.detalle_empleado', id=request.form.get('empleado_id')))
+    
+    #ulid = str(ULID())
+    #extension = os.path.splitext(file.filename)[1]
+    #nombre_unico = f"{extension}"
+
+    
+    try:
+        client.put_object(
+            'grupo49',
+            f'documentos_equipo/{file.filename}',
+            file,
+            file_size, 
+            content_type=file.content_type
+        )
+        
+        empleado_id = request.form.get('empleado_id')
+        
+        nuevo_documento = Documento(
+            titulo=file.filename,
+            url=f"{current_app.config['MINIO_SERVER']}/grupo49/documento_equipo%2{file.filename}",
+            empleado_id=empleado_id
+        )
+        
+        db.session.add(nuevo_documento)
+        db.session.commit()
+        
+        flash('Documento subido exitosamente', 'success')
+    except Exception as e:
+        flash(f'Error al subir el documento: {str(e)}', 'error')
+    
+    return redirect(url_for('equipo.detalle_empleado', id=request.form.get('empleado_id')))
+
+
+@equipo_bp.route('/descargar_documento/<int:document_id>')
+@check("equipo_show")
+def descargar_documento(document_id):
+    documento = Documento.query.filter_by(id=document_id).first()
+    client = current_app.storage.client
+    object_name = f'documentos_equipo/{documento.titulo}'
+    
+    client.fget_object("grupo49", object_name, "src/downloads/" + generar_nombre(documento.titulo))
+    flash('El documento se ha descargado con exito.', 'success')
+
+    return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))
+
+
+    
+
+@equipo_bp.route('/eliminar_documento/<int:document_id>', methods=['POST'])
+@check("equipo_destroy")
+def eliminar_documento(document_id):
+
+    documento = Documento.query.get_or_404(document_id)
+
+    if(documento.is_document):
+        eliminar_de_minio(documento.titulo)
+
+
+    try:
+        db.session.delete(documento)
+        db.session.commit()
+
+        flash('Documento eliminado correctamente.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar el documento: {str(e)}', 'danger')
+
+    return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))
+
+def eliminar_de_minio(file):
+    client = current_app.storage.client
+    object_name = f'documentos_equipo/{file}'
+    client.remove_object('grupo49', object_name)

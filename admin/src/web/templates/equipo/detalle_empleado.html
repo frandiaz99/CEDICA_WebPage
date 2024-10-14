@@ -69,8 +69,12 @@
                         <!-- Selector de acciones -->
                         <select class="actions-select" data-document-id="{{ documento.id }}">
                             <option value="" selected disabled>Seleccionar acción</option>
-                            <option value="eliminar">Eliminar</option>
-                            <option value="descargar">Descargar</option>
+                            {% if check_permission(session, "equipo_show") %}
+                            <option value="eliminar" data-url="{{ url_for('equipo.eliminar_documento', document_id=documento.id) }}">Eliminar</option>
+                            {% endif %}
+                            {% if check_permission(session, "equipo_destroy") %}
+                            <option value="descargar" data-url="{{ url_for('equipo.descargar_documento', document_id=documento.id) }}">Descargar</option>
+                            {% endif %}
                         </select>
                     </td>
                 </tr>

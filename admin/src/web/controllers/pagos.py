@@ -4,7 +4,7 @@ from src.core.database import db
 from src.web.handlers.auth import check
 from src.core.equipo import Empleado
 from datetime import datetime
-from src.web.controllers.validador import (
+from src.web.validadores.validador import (
     validar_tipo_pago, validar_monto, validar_fecha_pago, validar_descripcion, validar_beneficiario
 )
 
