@@ -69,8 +69,12 @@
                         <!-- Selector de acciones -->
                         <select class="actions-select" data-document-id="{{ documento.id }}">
                             <option value="" selected disabled>Seleccionar acción</option>
-                            <option value="eliminar">Eliminar</option>
-                            <option value="descargar">Descargar</option>
+                            {% if check_permission(session, "equipo_show") %}
+                            <option value="eliminar" data-url="{{ url_for('equipo.eliminar_documento', document_id=documento.id) }}">Eliminar</option>
+                            {% endif %}
+                            {% if check_permission(session, "equipo_destroy") %}
+                            <option value="descargar" data-url="{{ url_for('equipo.descargar_documento', document_id=documento.id) }}">Descargar</option>
+                            {% endif %}
                         </select>
                     </td>
                 </tr>
@@ -106,30 +110,41 @@
 </div>
 <script src="{{ url_for('static', filename='funcionalidad/script_informacion_general.js') }}"></script>
 <script>
-    $(document).ready(function () {
-        // Inicializar Select2
-        $('.actions-select').select2({
-            placeholder: "Seleccione una acción",
-            minimumResultsForSearch: Infinity // Ocultar la barra de búsqueda
-        });
+    $(document).ready(function() {
+    $('.actions-select').on('change', function() {
+    var action = $(this).val();
+    var documentId = $(this).data('document-id');
+    var url = $(this).find('option:selected').data('url');
 
-        // Manejar la acción seleccionada
-        $('.actions-select').on('change', function () {
-            var action = $(this).val();
-            var documentId = $(this).data('document-id');
-            if (action === 'eliminar') {
-                if (confirm('¿Está seguro de que desea eliminar este documento?')) {
-                    // Llamar a la ruta de eliminación
-                    $.post(`/eliminar_documento/${documentId}`, function (response) {
-                        location.reload(); // Recargar la página tras eliminar
-                    });
+    if (action === 'eliminar') {
+        // Mostrar el mensaje de confirmación
+        var confirmacion = confirm("¿Estás seguro de que deseas eliminar este documento?");
+        
+        if (confirmacion) {
+            // Si el usuario confirma, se ejecuta la solicitud POST para eliminar
+            $.ajax({ //permite hacer un post sin necesidad de recargar la pagina, apenas se clickea el select se envia los datos al back
+                url: url, //al ser ejecutadas en segundo plano, el flash ni redirect funcionan 
+                type: 'POST', 
+                success: function(response) {
+                    // Recargar la página para reflejar los cambios
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    alert('Ocurrió un error al eliminar el documento.');
                 }
-            } else if (action === 'descargar') {
-                // Llamar a la ruta de descarga
-                window.location.href = `/descargar_documento/${documentId}`;
-            }
-        });
-    });
+            });
+        } else {
+            // Si el usuario cancela, reseteamos el selector
+            $(this).val('');
+        }
+    }
+
+    else if(action =="descargar"){
+        window.location.href = url;
+    }
+});
+});
+
 </script>
 </body>
 {% endblock %}
