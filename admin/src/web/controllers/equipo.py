@@ -362,25 +362,32 @@ def subir_documento():
 @check("equipo_show")
 def descargar_documento(document_id):
     documento = Documento.query.filter_by(id=document_id).first()
+    
+    if documento is None:
+        flash('El documento no existe.', 'danger')
+        return redirect(url_for('equipo.index'))  
+
     client = current_app.storage.client
     object_name = f'documentos_equipo/{documento.titulo}'
     
     client.fget_object("grupo49", object_name, "src/downloads/" + generar_nombre(documento.titulo))
-    flash('El documento se ha descargado con exito.', 'success')
+    flash('El documento se ha descargado con éxito.', 'success')
 
     return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))
 
-
-    
 
 @equipo_bp.route('/eliminar_documento/<int:document_id>', methods=['POST'])
 @check("equipo_destroy")
 def eliminar_documento(document_id):
 
-    documento = Documento.query.get_or_404(document_id)
+    documento = Documento.query.filter_by(id=document_id).first()
 
-    if(documento.is_document):
-        eliminar_de_minio(documento.titulo)
+    if not documento:
+        flash('El documento no fue encontrado.', 'danger')
+        return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))
+
+
+    eliminar_de_minio(documento.titulo)
 
 
     try:
@@ -397,4 +404,9 @@ def eliminar_documento(document_id):
 def eliminar_de_minio(file):
     client = current_app.storage.client
     object_name = f'documentos_equipo/{file}'
-    client.remove_object('grupo49', object_name)
+
+    try:
+        client.remove_object('grupo49', object_name)
+        flash(f'Archivo {object_name} eliminado de MinIO.', 'success')
+    except Exception as e:
+        flash(f'Error eliminando el archivo en MinIO: {str(e)}', 'danger')
