@@ -2,36 +2,40 @@ from flask import Blueprint, render_template, request, abort, flash, url_for, re
 from sqlalchemy import asc, desc
 from src.core.database import db
 from datetime import datetime
-equipo_bp = Blueprint('equipo', __name__, url_prefix='/equipo')
-
-from flask import Blueprint, render_template, request
-from sqlalchemy import asc, desc
-from src.core.equipo import Empleado, documento
+from src.core.equipo import Empleado
+from src.core.equipo.documento import Documento
 from src.web.handlers.auth import check
-import os 
-from src.web.controllers.validador import (
-    validar_nombre, validar_apellido, validar_dni, validar_domicilio, 
-    validar_email, validar_localidad, validar_telefono, validar_profesion, 
-    validar_puesto_laboral, validar_fecha_inicio, validar_fecha_cese, 
-    validar_contacto_emergencia, validar_obra_social, validar_numero_afiliado, 
+from src.web.controllers.documentos import generar_nombre
+import os
+from src.web.validadores.validador import (
+    validar_nombre, validar_apellido, validar_dni, validar_domicilio,
+    validar_email, validar_localidad, validar_telefono, validar_profesion,
+    validar_puesto_laboral, validar_fecha_inicio, validar_fecha_cese,
+    validar_contacto_emergencia, validar_obra_social, validar_numero_afiliado,
     validar_condicion, validar_activo
 )
+
 equipo_bp = Blueprint('equipo', __name__, url_prefix='/equipo')
+
 
 @equipo_bp.get("/")
 @check('equipo_index')
 def index():
+    """
+    Controlador para la página de inicio del equipo. Muestra una lista de empleados con
+    paginación y filtros de búsqueda.
+
+    :return: Renderiza la plantilla 'equipo/equipo.html' con los empleados y parámetros de búsqueda.
+    """
     registros_por_pagina = 5
-    # Obtener parámetros de búsqueda y orden desde la URL
     search = request.args.get('search', '')
-    filter_by = request.args.get('filter_by', 'nombre')  # Por defecto 'nombre'
-    order = request.args.get('order', 'asc')  # Por defecto ascendente
+    filter_by = request.args.get('filter_by', 'nombre')
+    order = request.args.get('order', 'asc')
     order_prop = request.args.get('order_prop', 'nombre')
     pagina = int(request.args.get('pagina', 1, type=int))
-    # Construir la query base
+
     query = Empleado.query
 
-    # Filtrar según el campo seleccionado (filter_by)
     if search:
         if filter_by == 'nombre':
             query = query.filter(Empleado.nombre.ilike(f'%{search}%'))
@@ -44,14 +48,12 @@ def index():
         elif filter_by == 'puesto':
             query = query.filter(Empleado.puesto_laboral.ilike(f'%{search}%'))
 
-    # Adicionalmente, ordenar por order_prop si es distinto de filter_by
     if order_prop != filter_by:
         if order == 'asc':
             query = query.order_by(asc(getattr(Empleado, order_prop)))
         else:
             query = query.order_by(desc(getattr(Empleado, order_prop)))
 
-    # Si se quiere ordenar por nombre, apellido o fecha de creación adicionalmente
     if order_prop == 'nombre':
         query = query.order_by(asc(Empleado.nombre)) if order == 'asc' else query.order_by(desc(Empleado.nombre))
     elif order_prop == 'apellido':
@@ -61,15 +63,13 @@ def index():
 
     pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
     empleados = pagination.items
-
     total_paginas = pagination.pages
 
-    # Renderizar la plantilla y pasar los empleados y los parámetros
     return render_template(
-        "equipo/equipo.html", 
-        empleados=empleados, 
-        search=search, 
-        filter_by=filter_by, 
+        "equipo/equipo.html",
+        empleados=empleados,
+        search=search,
+        filter_by=filter_by,
         order=order,
         order_prop=order_prop,
         pagina=pagina,
@@ -80,41 +80,58 @@ def index():
 @equipo_bp.route('/detalle/<int:id>', methods=['GET'])
 @check("equipo_show")
 def detalle_empleado(id):
+    """
+    Muestra el detalle de un empleado y su documentación asociada.
+
+    :param id: ID del empleado.
+    :return: Renderiza la plantilla 'equipo/detalle_empleado.html' con los detalles del empleado y documentos.
+    """
     empleado = Empleado.query.get(id)
     if empleado is None:
-        abort(404)  # error 404 si no se encuentra el empleado
-    
+        abort(404)
+
     registros_por_pagina = 5
-    query = documento.Documento.query
+    query = Documento.query.filter_by(empleado_id=id)
     pagina = request.args.get('pagina', 1, type=int)
     pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
     documentos = pagination.items
     total_paginas = pagination.pages
-    
+
     return render_template('equipo/detalle_empleado.html', empleado=empleado, documentos=documentos, pagina=pagina, total_paginas=total_paginas)
+
 
 @equipo_bp.route('/eliminar/<int:id>', methods=['POST'])
 @check("equipo_destroy")
 def eliminar_empleado(id):
-    # Buscar el encuestre por ID
+    """
+    Elimina un empleado de la base de datos.
+
+    :param id: ID del empleado a eliminar.
+    :return: Redirige a la página de índice del equipo.
+    """
     empleado_aux = Empleado.query.get_or_404(id)
-    
+
     try:
         db.session.delete(empleado_aux)
         db.session.commit()
-
         flash('Empleado eliminado correctamente.', 'success')
     except Exception as e:
         db.session.rollback()
         flash(f'Error al eliminar el empleado: {str(e)}', 'danger')
-    return redirect(url_for('equipo.index')) 
+
+    return redirect(url_for('equipo.index'))
 
 
 @equipo_bp.route('/registrar', methods=['GET', 'POST'])
 @check("equipo_new")
 def registrar_empleado():
+    """
+    Registra un nuevo empleado. Realiza validaciones sobre los campos del formulario
+    y guarda el nuevo empleado en la base de datos.
+
+    :return: Redirige a la página de detalles del empleado registrado o muestra mensajes de error.
+    """
     if request.method == 'POST':
-        # Recoger los datos del formulario
         nombre = request.form.get('nombre')
         apellido = request.form.get('apellido')
         dni = request.form.get('dni')
@@ -132,16 +149,18 @@ def registrar_empleado():
         condicion = request.form.get('condicion')
         activo = request.form.get('activo')
 
-        # Validar que los campos requeridos no estén vacíos
         if not (nombre and apellido and dni and domicilio and email and localidad and telefono and profesion and puesto_laboral and fecha_inicio_str and fecha_cese_str and contacto_emergencia and condicion and activo):
             flash('Faltan completar campos obligatorios', 'danger')
             return redirect(url_for('equipo.registrar_empleado'))
 
         dni_aux = Empleado.query.filter_by(dni=dni).first()
+        email_aux = Empleado.query.filter_by(email=email).first()
         if dni_aux:
             flash('El DNI ingresado ya se encuentra registrado.', 'danger')
             return redirect(url_for('equipo.registrar_empleado'))
-        # Validadores
+        if email_aux:
+            flash('El email ingresado ya se encuentra registrado.', 'danger')
+            return redirect(url_for('equipo.registrar_empleado'))
         validadores = [
             (validar_nombre, [nombre]),
             (validar_apellido, [apellido]),
@@ -153,7 +172,7 @@ def registrar_empleado():
             (validar_profesion, [profesion]),
             (validar_puesto_laboral, [puesto_laboral]),
             (validar_fecha_inicio, [fecha_inicio_str]),
-            (validar_fecha_cese, [fecha_cese_str, fecha_inicio_str]),  # Aquí también se pasa la fecha de inicio
+            (validar_fecha_cese, [fecha_cese_str, fecha_inicio_str]),
             (validar_contacto_emergencia, [contacto_emergencia]),
             (validar_obra_social, [obra_social]),
             (validar_numero_afiliado, [numero_afiliado]),
@@ -161,14 +180,12 @@ def registrar_empleado():
             (validar_activo, [activo])
         ]
 
-        # Ejecutar validaciones
         for validar_funcion, args in validadores:
-            es_valido, mensaje_error = validar_funcion(*args)  # Desempaquetamos los argumentos
+            es_valido, mensaje_error = validar_funcion(*args)
             if not es_valido:
                 flash(mensaje_error, 'danger')
-                return redirect(url_for('equipo.registrar_empleado'))  # Redirige si hay error
+                return redirect(url_for('equipo.registrar_empleado'))
 
-        # Crear el objeto Empleado
         nuevo_empleado = Empleado(
             nombre=nombre,
             apellido=apellido,
@@ -189,7 +206,6 @@ def registrar_empleado():
         )
 
         try:
-            # Subir a la base de datos
             db.session.add(nuevo_empleado)
             db.session.commit()
             flash('Empleado registrado exitosamente', 'success')
@@ -197,35 +213,42 @@ def registrar_empleado():
         except Exception as e:
             db.session.rollback()
             flash(f'Error al registrar el empleado: {str(e)}', 'danger')
-            return redirect(url_for('equipo.registrar_empleado'))
 
     return render_template('equipo/registrar_empleado.html')
+
 
 @equipo_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @check("equipo_update")
 def editar_empleado(id):
-    empleado_aux = Empleado.query.get(id)
-    if empleado_aux is None:
-        abort(404) 
+    """
+    Edita los datos de un empleado existente.
+
+    :param id: ID del empleado a editar.
+    :return: Redirige a la página de detalles del empleado editado o muestra mensajes de error.
+    """
+    empleado_aux = Empleado.query.get_or_404(id)
 
     if request.method == 'POST':
-        # Obtener datos del formulario
-        nombre = request.form['nombre']
-        apellido = request.form['apellido']
-        dni = request.form['dni']
-        domicilio = request.form['domicilio']
-        email = request.form['email']
-        localidad = request.form['localidad']
-        telefono = request.form['telefono']
-        profesion = request.form['profesion']
-        puesto_laboral = request.form['puesto_laboral']
+        nombre = request.form.get('nombre')
+        apellido = request.form.get('apellido')
+        dni = request.form.get('dni')
+        domicilio = request.form.get('domicilio')
+        email = request.form.get('email')
+        localidad = request.form.get('localidad')
+        telefono = request.form.get('telefono')
+        profesion = request.form.get('profesion')
+        puesto_laboral = request.form.get('puesto_laboral')
         fecha_inicio_str = request.form.get('fecha_inicio')
         fecha_cese_str = request.form.get('fecha_cese')
-        contacto_emergencia = request.form['contacto_emergencia']
-        obra_social = request.form['obra_social']
-        numero_afiliado = request.form['n_afiliado']
-        condicion = request.form['condicion']
-        activo = request.form['activo']
+        contacto_emergencia = request.form.get('contacto_emergencia')
+        obra_social = request.form.get('obra_social')
+        numero_afiliado = request.form.get('numero_afiliado')
+        condicion = request.form.get('condicion')
+        activo = request.form.get('activo')
+
+        if not (nombre and apellido and dni and domicilio and email and localidad and telefono and profesion and puesto_laboral and fecha_inicio_str):
+            flash('Faltan completar campos obligatorios', 'danger')
+            return redirect(url_for('equipo.editar_empleado', id=id))
 
         validadores = [
             (validar_nombre, [nombre]),
@@ -238,7 +261,7 @@ def editar_empleado(id):
             (validar_profesion, [profesion]),
             (validar_puesto_laboral, [puesto_laboral]),
             (validar_fecha_inicio, [fecha_inicio_str]),
-            (validar_fecha_cese, [fecha_cese_str, fecha_inicio_str]),  # Aquí sí hay dos argumentos
+            (validar_fecha_cese, [fecha_cese_str, fecha_inicio_str]),
             (validar_contacto_emergencia, [contacto_emergencia]),
             (validar_obra_social, [obra_social]),
             (validar_numero_afiliado, [numero_afiliado]),
@@ -247,10 +270,10 @@ def editar_empleado(id):
         ]
 
         for validar_funcion, args in validadores:
-            es_valido, mensaje_error = validar_funcion(*args)  # Desempaquetamos los argumentos
+            es_valido, mensaje_error = validar_funcion(*args)
             if not es_valido:
                 flash(mensaje_error, 'danger')
-                return redirect(url_for('equipo.editar_empleado', id=id))  # Redirige si hay error
+                return redirect(url_for('equipo.editar_empleado', id=id))
 
         empleado_aux.nombre = nombre
         empleado_aux.apellido = apellido
@@ -262,32 +285,27 @@ def editar_empleado(id):
         empleado_aux.profesion = profesion
         empleado_aux.puesto_laboral = puesto_laboral
         empleado_aux.fecha_inicio = datetime.strptime(fecha_inicio_str, '%Y-%m-%d')
-        empleado_aux.fecha_cese = datetime.strptime(fecha_cese_str, '%Y-%m-%d')
+        empleado_aux.fecha_cese = datetime.strptime(fecha_cese_str, '%Y-%m-%d') if fecha_cese_str else None
         empleado_aux.contacto_emergencia = contacto_emergencia
         empleado_aux.obra_social = obra_social
         empleado_aux.numero_afiliado = numero_afiliado
         empleado_aux.condicion = condicion
-        empleado_aux.activo = activo == 'Sí' 
+        empleado_aux.activo = (activo == 'Sí')
 
-        # Guardar cambios en la base de datos
         try:
             db.session.commit()
-            flash('Los cambios se han guardado exitosamente.', 'success')
+            flash('Empleado editado exitosamente', 'success')
             return redirect(url_for('equipo.detalle_empleado', id=empleado_aux.id))
         except Exception as e:
             db.session.rollback()
-            flash(f'Error al actualizar el empleado: {str(e)}', 'danger')
-            return redirect(url_for('equipo.editar_empleado', id=id))
+            flash(f'Error al editar el empleado: {str(e)}', 'danger')
 
-    return render_template(
-        'equipo/editar_empleado.html', 
-        empleado=empleado_aux, 
-        fecha_hoy=datetime.today().date()
-    )
+    return render_template('equipo/editar_empleado.html', empleado=empleado_aux)
 
 @equipo_bp.route('/subir_documento', methods=['POST'])
 @check("equipo_update")
 def subir_documento():
+
     MAX_FILE_SIZE = 16 * 1024 * 1024
 
     if 'file' not in request.files:
@@ -308,24 +326,26 @@ def subir_documento():
         flash('Nombre de archivo vacío', 'error')
         return redirect(url_for('equipo.detalle_empleado', id=request.form.get('empleado_id')))
     
+    #ulid = str(ULID())
+    #extension = os.path.splitext(file.filename)[1]
+    #nombre_unico = f"{extension}"
+
+    
     try:
         client.put_object(
             'grupo49',
-            file.filename,
+            f'documentos_equipo/{file.filename}',
             file,
             file_size, 
             content_type=file.content_type
         )
         
-        # Obtener el empleado asociado
         empleado_id = request.form.get('empleado_id')
-        empleado_aux = Empleado.query.get(empleado_id)
         
-        # Crear el documento y asociarlo al empleado
-        nuevo_documento = documento.Documento(
+        nuevo_documento = Documento(
             titulo=file.filename,
-            url=f"{current_app.config['MINIO_SERVER']}/grupo49/{file.name}",
-            empleado=empleado_aux
+            url=f"{current_app.config['MINIO_SERVER']}/grupo49/documento_equipo%2{file.filename}",
+            empleado_id=empleado_id
         )
         
         db.session.add(nuevo_documento)
@@ -337,20 +357,39 @@ def subir_documento():
     
     return redirect(url_for('equipo.detalle_empleado', id=request.form.get('empleado_id')))
 
+
 @equipo_bp.route('/descargar_documento/<int:document_id>')
 @check("equipo_show")
 def descargar_documento(document_id):
-    documento = documento.Documento.query.get_or_404(document_id)  
-    url_descarga = f"https://{documento.url}"  
-    return redirect(url_descarga)
+    documento = Documento.query.filter_by(id=document_id).first()
+    
+    if documento is None:
+        flash('El documento no existe.', 'danger')
+        return redirect(url_for('equipo.index'))  
+
+    client = current_app.storage.client
+    object_name = f'documentos_equipo/{documento.titulo}'
+    
+    client.fget_object("grupo49", object_name, "src/downloads/" + generar_nombre(documento.titulo))
+    flash('El documento se ha descargado con éxito.', 'success')
+
+    return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))
 
 
 @equipo_bp.route('/eliminar_documento/<int:document_id>', methods=['POST'])
 @check("equipo_destroy")
 def eliminar_documento(document_id):
-    print("Eliminando documento...")
-    documento = documento.Documento.query.get_or_404(document_id)  
-    eliminar_de_minio(documento.titulo)  
+
+    documento = Documento.query.filter_by(id=document_id).first()
+
+    if not documento:
+        flash('El documento no fue encontrado.', 'danger')
+        return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))
+
+
+    eliminar_de_minio(documento.titulo)
+
+
     try:
         db.session.delete(documento)
         db.session.commit()
@@ -360,9 +399,14 @@ def eliminar_documento(document_id):
         db.session.rollback()
         flash(f'Error al eliminar el documento: {str(e)}', 'danger')
 
-    return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))  
+    return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))
 
 def eliminar_de_minio(file):
     client = current_app.storage.client
-    object_name = f'documentos_empleados/{file}' 
-    client.remove_object('grupo49', object_name)
+    object_name = f'documentos_equipo/{file}'
+
+    try:
+        client.remove_object('grupo49', object_name)
+        flash(f'Archivo {object_name} eliminado de MinIO.', 'success')
+    except Exception as e:
+        flash(f'Error eliminando el archivo en MinIO: {str(e)}', 'danger')
