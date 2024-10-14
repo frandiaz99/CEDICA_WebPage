@@ -11,7 +11,13 @@ from src.web.handlers.auth import check
 
 from src.web.controllers.documentos import generar_nombre 
 
+from src.web.validadores.validador import (
+    validar_nombre, validar_fecha_ingreso,
+    validar_fecha_nacimiento, validar_sexo,
+    validar_raza, validar_pelaje, validar_compra_donacion, 
+    validar_tipo_ja_asignado, validar_entrenadores_conductores, validar_sede_asignada
 
+)
 
 
 # from ulid import ULID
@@ -175,60 +181,44 @@ def registrar_encuestre():
         sexo = request.form.get('sexo')
         raza = request.form.get('raza')
         pelaje = request.form.get('pelaje')
-        compra_donacion = request.form.get('tipo_ingreso')  # Compra o Donación
+        compra_donacion = request.form.get('tipo_ingreso')
         fecha_ingreso_str = request.form.get('fecha_ingreso')
         sede_asignada = request.form.get('sede_asignada')
         tipo_ja_asignado = request.form.get('tipo_ja_asignado')
         entrenadores_conductores_ids = request.form.getlist('entrenadores_conductores')
 
-        
-
         if not (nombre and sexo and raza and pelaje and compra_donacion and sede_asignada and entrenadores_conductores_ids and tipo_ja_asignado):
             flash(' Faltan completar campos', 'danger')
             return redirect(url_for('encuestre.registrar_encuestre'))
-        
-        if not fecha_nacimiento_str:
-            flash('La fecha de nacimiento es obligatoria', 'danger')
-            return redirect(url_for('encuestre.registrar_encuestre'))
 
-        try:
-            fecha_nacimiento = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d')
-            if fecha_nacimiento > datetime.today():
-                flash('La fecha de nacimiento no puede ser futura', 'danger')
+        validadores = [
+            (validar_nombre, [nombre]),
+            (validar_fecha_ingreso, [fecha_ingreso_str]),
+            (validar_fecha_nacimiento, [fecha_nacimiento_str]),
+            (validar_sexo, [sexo]),
+            (validar_raza, [raza]),
+            (validar_pelaje, [pelaje]),
+            (validar_compra_donacion, [compra_donacion]),
+            (validar_tipo_ja_asignado, [tipo_ja_asignado]),
+            (validar_entrenadores_conductores, [entrenadores_conductores_ids]),
+            (validar_sede_asignada, [sede_asignada])
+        ]
+
+        for validar_funcion, args in validadores:
+            es_valido, mensaje_error = validar_funcion(*args)
+            if not es_valido:
+                flash(mensaje_error, 'danger')
                 return redirect(url_for('encuestre.registrar_encuestre'))
-        except ValueError or UnboundLocalError:
-            flash('Formato de fecha de nacimiento inválido', 'danger')
-            return redirect(url_for('encuestre.registrar_encuestre'))
-
-        # Validar y convertir la fecha de ingreso
-        if not fecha_ingreso_str:
-            flash('La fecha de ingreso es obligatoria', 'danger')
-            return redirect(url_for('encuestre.registrar_encuestre'))
-
-        try:
-            fecha_ingreso = datetime.strptime(fecha_ingreso_str, '%Y-%m-%d')
-            if fecha_ingreso > datetime.today():
-                flash('La fecha de ingreso no puede ser futura', 'danger')
-                return redirect(url_for('encuestre.registrar_encuestre'))
-        except ValueError or UnboundLocalError:
-            flash('Formato de fecha de ingreso inválido', 'danger')
-            return redirect(url_for('encuestre.registrar_encuestre'))
-
-        
-        # Aquí irían las demás validaciones para los campos si es necesario
-
-        # Si todo está bien, continuar con el registro
-        # Por ejemplo, crear el objeto Encustre y guardarlo en la base de datos
 
         # Crear el objeto encuestre
         nuevo_encuestre = encuestre.Encuestre(
             nombre=nombre,
-            fecha_nacimiento=fecha_nacimiento,
+            fecha_nacimiento=datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d'),
             sexo=sexo,
             raza=raza,
             pelaje=pelaje,
             compra_donacion=compra_donacion,
-            fecha_ingreso=fecha_ingreso,
+            fecha_ingreso=datetime.strptime(fecha_ingreso_str, '%Y-%m-%d'),
             sede_asignada=sede_asignada,
             tipo_ja_asignado=tipo_ja_asignado
         )
@@ -274,6 +264,27 @@ def editar_encuestre(id):
         
         # Procesar entrenadores y conductores seleccionados
         entrenadores_conductores_ids = request.form.getlist('entrenadores_conductores')
+
+        if not (encuestre_aux.nombre and encuestre_aux.sexo and encuestre_aux.raza and encuestre_aux.pelaje and encuestre_aux.compra_donacion and encuestre_aux.sede_asignada and entrenadores_conductores_ids and encuestre_aux.tipo_ja_asignado):
+            flash(' Faltan completar campos', 'danger')
+            return redirect(url_for('encuestre.registrar_encuestre'))
+
+        validadores = [
+            (validar_nombre, [encuestre_aux.nombre]),
+            (validar_sexo, [encuestre_aux.sexo]),
+            (validar_raza, [encuestre_aux.raza]),
+            (validar_pelaje, [encuestre_aux.pelaje]),
+            (validar_compra_donacion, [encuestre_aux.compra_donacion]),
+            (validar_tipo_ja_asignado, [encuestre_aux.tipo_ja_asignado]),
+            (validar_entrenadores_conductores, [entrenadores_conductores_ids]),
+            (validar_sede_asignada, [encuestre_aux.ede_asignada])
+        ]
+
+        for validar_funcion, args in validadores:
+            es_valido, mensaje_error = validar_funcion(*args)
+            if not es_valido:
+                flash(mensaje_error, 'danger')
+                return redirect(url_for('encuestre.registrar_encuestre'))
 
         empleados_seleccionados = Empleado.query.filter(Empleado.id.in_(entrenadores_conductores_ids)).all()
         encuestre_aux.entrenadores_conductores = empleados_seleccionados
