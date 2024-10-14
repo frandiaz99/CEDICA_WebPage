@@ -48,11 +48,11 @@ def index():
         if beneficiario:
             pago.beneficiario = beneficiario.nombre +" "+ beneficiario.apellido  # Asignar el correo al objeto pago
 
-    return render_template('pagos/pagos.html', pagos=pagos)
+    return render_template('cobros/cobros.html', pagos=pagos)
 
 @cobros_bp.route('/registrar', methods=['GET', 'POST'])
-@check("registro_pagos_new")
-def registrar_pago():
+@check("registro_cobros_new")
+def registrar_cobro():
     if request.method == 'POST':
         # Obtener datos del formulario
         tipo_pago = request.form['tipo_pago']
@@ -101,8 +101,8 @@ def registrar_pago():
     return render_template('pagos/registrar_pago.html', empleados=empleados,fecha_hoy=datetime.today().date())
 
 @cobros_bp.route('/detalle/<int:id>', methods=['GET'])
-@check("registro_pagos_show")
-def detalle_pago(id):
+@check("registro_cobro_show")
+def detalle_cobro(id):
     pago = Pago.query.get(id)
     if pago is None:
         abort(404) 
@@ -112,8 +112,8 @@ def detalle_pago(id):
     return render_template('pagos/detalle_pago.html', pago=pago)
 
 @cobros_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
-@check("registro_pagos_update")
-def editar_pago(id):
+@check("registro_cobros_update")
+def editar_cobro(id):
     pago_aux = Pago.query.get(id)
     if pago_aux is None:
         abort(404) 
@@ -167,8 +167,8 @@ def editar_pago(id):
     )
 
 @cobros_bp.route('/eliminar/<int:id>', methods=['POST'])
-@check("registro_pagos_destroy")
-def eliminar_pago(id):
+@check("registro_cobros_destroy")
+def eliminar_cobro(id):
     # Buscar el pago por ID
     pago_aux = Pago.query.get_or_404(id)
     
