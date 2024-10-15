@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from src.core.equipo import Empleado
 
 def validar_string(string):
     """
@@ -383,3 +384,149 @@ def validar_beneficiario(beneficiario):
     if beneficiario and beneficiario.isdigit():
         return True, ""
     return False, "El ID del beneficiario no es válido."
+
+
+def validar_fecha_ingreso(fecha_ingreso_str):
+    """
+    Valida si la fecha de ingreso es válida y no es futura.
+
+    Args:
+        fecha_ingreso_str (str): La fecha de ingreso a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válida y un mensaje de error.
+    """
+    try:
+        fecha_ingreso = datetime.strptime(fecha_ingreso_str, '%Y-%m-%d')
+        if fecha_ingreso <= datetime.today():
+            return True, ""
+        return False, "La fecha de ingreso no puede ser futura."
+    except ValueError:
+        return False, "La fecha de ingreso no tiene un formato válido. Debe ser YYYY-MM-DD."
+    
+def validar_fecha_nacimiento(fecha_nacimiento_str):
+    """
+    Valida si la fecha de nacimiento es válida y no es futura.
+
+    Args:
+        fecha_nacimiento_str (str): La fecha de nacimiento a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válida y un mensaje de error.
+    """
+    try:
+        fecha_nacimiento = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d')
+        if fecha_nacimiento <= datetime.today():
+            return True, ""
+        return False, "La fecha de nacimiento no puede ser futura."
+    except ValueError:
+        return False, "La fecha de nacimiento no tiene un formato válido. Debe ser YYYY-MM-DD."
+    
+
+def validar_sexo(sexo):
+    """Valida que el sexo sea uno de los valores permitidos.
+    
+    Arrgs: 
+        sexo (str): sexo a validar
+    
+    Returns:
+        turple: (bool,str) Retorna un booleano indicando si es válida y un mensaje de error.
+    
+    """
+    sexos_permitidos = ['masculino', 'femenino']
+    if sexo not in sexos_permitidos:
+        return False, f"El sexo debe ser uno de los siguientes: {', '.join(sexos_permitidos)}."
+    return True, ""
+
+def validar_raza(raza):
+    """
+    Valida si la raza es válido.
+
+    Args:
+        raza (str): La raza a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if not raza:
+        return False, "La raza del caballo es requerido."
+    if not validar_string(raza):
+        return False, "La raza del caballo solo debe contener letras y espacios."
+    return True, ""
+
+def validar_pelaje(pelaje):
+    """
+    Valida si el pelaje es válido.
+
+    Args:
+        pelaje (str): El pelaje a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if not pelaje:
+        return False, "El pelaje del caballo es requerido."
+    if not validar_string(pelaje):
+        return False, "El pelaje del caballo solo debe contener letras y espacios."
+    return True, ""
+
+def validar_compra_donacion(compra_donacion):
+    """Valida que el tipo (compra/donacion) sea uno de los valores permitidos.
+    
+    Args: 
+        compra_donacion(str): tipo a validar
+    
+    Returns:
+        turple: (bool,str) Retorna un booleano indicando si es válida y un mensaje de error.
+    
+    """
+    tipos = ['compra', 'donacion']
+    if compra_donacion not in tipos:
+        return False, f"El tipo debe ser uno de los siguientes: {', '.join(tipos)}."
+    return True, ""
+
+def validar_tipo_ja_asignado(tipo_ja_asignado):
+    """Valida que el tipo de J&A asignado sea uno de los valores permitidos.
+    
+    Args: 
+        tipo_ja_asignado(str): tipo a validar
+    
+    Returns:
+        turple: (bool,str) Retorna un booleano indicando si es válida y un mensaje de error.
+    
+    """
+    tipos_permitidos = ['Hipoterapia', 'Monta Terapéutica', 'Deporte Ecuestre Adaptado', 'Actividades Recreativas', 'Equitación']
+    if tipo_ja_asignado not in tipos_permitidos:
+        return False, f"El tipo de J&A asignado debe ser uno de los siguientes: {', '.join(tipos_permitidos)}."
+    return True, ""
+
+def validar_entrenadores_conductores(entrenadores_conductores_ids):
+    """Valida que los entrenadores/condcutores formen parte del equipo.
+    
+    Args: 
+        entrenadores_cnductores_ids(int): tipo a validar
+    
+    Returns:
+        turple: (bool,str) Retorna un booleano indicando si es válida y un mensaje de error.
+    
+    """
+    entrenadores_conductores = Empleado.query.filter(Empleado.id.in_(entrenadores_conductores_ids), Empleado.puesto_laboral.in_(['Entrenador de caballos', 'Conductor'])).all()
+    
+    if not entrenadores_conductores:
+        return False, "Debe seleccionar entrenadores o conductores válidos."
+    return True, ""
+
+# Validar sede asignada (si fuera necesario)
+def validar_sede_asignada(sede_asignada):
+    """Valida la sede asignada sea ingresada.
+    
+    Args: 
+        sede_asignada(str): tipo a validar
+    
+    Returns:
+        turple: (bool,str) Retorna un booleano indicando si es válida y un mensaje de error.
+    
+    """
+    if not sede_asignada:
+        return False, "La sede asignada es obligatoria."
+    return True, ""
