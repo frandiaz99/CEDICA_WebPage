@@ -3,28 +3,40 @@
 {% block title %}Registro de cobros J&A{% endblock %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=True) %}
+{% if messages %}
+<div class="flex justify-center mt-4">
+    <div class="w-full max-w-2xl">
+        {% for category, message in messages %}
+        <div
+            class="bg-{{category == 'success' and 'green' or 'red'}}-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+            <p class="text-lg font-semibold">{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endwith %}
 <div class="bg-white p-6 rounded-lg shadow-md">
     <h1 class="text-2xl font-bold mb-6 text-gray-700">Registro de cobros J&A</h1>
-
-
-
-
-    <!--Seguir con esto. Acondicionarlo para los cobros-->
-
-
-
 
     <!-- Contenedor para el botón y filtros -->
     <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Botón de registro -->
         <div class="flex justify-start">
-            <a href="{{ url_for('cobros.registrar_cobro') }}"
+            <a target="_blank" href="{{ url_for('cobros.registrar_cobro') }}"
                 class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-all duration-200 ease-in-out transform hover:scale-105">
                 Registrar nuevo cobro
             </a>
         </div>
 
         <!-- Formulario de búsqueda y filtros -->
+
+
+        <!-- AGREGAR BUSQUEDA POR NOMBRE Y/O APELLIDO DEL BENEFICIARIO -->
+
+
+
         <form method="GET" action="{{ url_for('cobros.index') }}"
             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 w-full">
             <input type="date" name="fecha_inicio"
@@ -35,13 +47,13 @@
                 placeholder="Fecha Fin" value="{{ request.args.get('fecha_fin') }}">
             <select name="tipo_pago"
                 class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
-                <option value="">Seleccione...</option>
-                <option value="honorarios" {% if request.args.get('tipo_pago')=='honorarios' %}selected{% endif %}>
-                    Honorarios</option>
-                <option value="proveedor" {% if request.args.get('tipo_pago')=='proveedor' %}selected{% endif %}>
-                    Proveedor</option>
-                <option value="gastos_varios" {% if request.args.get('tipo_pago')=='gastos_varios' %}selected{% endif
-                    %}>Gastos Varios</option>
+                <option value="">Todos</option>
+                <option value="efectivo" {% if request.args.get('tipo_pago')=='efectivo' %}selected{% endif %}>
+                    Efectivo</option>
+                <option value="credito" {% if request.args.get('tipo_pago')=='credito' %}selected{% endif %}>
+                    Tarjeta de crédito</option>
+                <option value="debito" {% if request.args.get('tipo_pago')=='debito' %}selected{% endif %}>Tarjeta de
+                    débito</option>
             </select>
             <button type="submit"
                 class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
@@ -53,34 +65,45 @@
         <table class="min-w-full bg-white shadow-md rounded-lg">
             <thead class="bg-gray-100">
                 <tr>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Beneficiario</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">J&A</th>
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Monto</th>
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">
-                        <a href="{{ url_for('pagos.index', fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin'), tipo_pago=request.args.get('tipo_pago'), orden='asc') }}"
+                        <a href="{{ url_for('cobros.index', fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin'), tipo_pago=request.args.get('tipo_pago'), orden='asc') }}"
                             class="text-gray-600 hover:underline">Fecha de Pago &#8593;</a>
                         |
-                        <a href="{{ url_for('pagos.index', fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin'), tipo_pago=request.args.get('tipo_pago'), orden='desc') }}"
+                        <a href="{{ url_for('cobros.index', fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin'), tipo_pago=request.args.get('tipo_pago'), orden='desc') }}"
                             class="text-gray-600 hover:underline">Fecha de Pago &#8595;</a>
                     </th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Tipo de Pago</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Descripción</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Acciones</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Medio de Pago</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Beneficiario</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Observaciones</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">En deuda</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium"></th>
                 </tr>
             </thead>
             <tbody>
-                {% for pago in pagos %}
+                {% if cobros %}
+                {% for cobro in cobros %}
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-2 border-b">{{ pago.beneficiario }}</td>
-                    <td class="px-4 py-2 border-b">{{ pago.monto }}</td>
-                    <td class="px-4 py-2 border-b">{{ pago.fecha_pago.strftime('%Y-%m-%d') }}</td>
-                    <td class="px-4 py-2 border-b">{{ pago.tipo_pago }}</td>
-                    <td class="px-4 py-2 border-b">{{ pago.descripcion }}</td>
+                    <td class="px-4 py-2 border-b">Jinete</td>
+                    <td class="px-4 py-2 border-b">{{ cobro.monto }}</td>
+                    <td class="px-4 py-2 border-b">{{ cobro.fecha_pago.strftime('%Y-%m-%d') }}</td>
+                    <td class="px-4 py-2 border-b">{{ "Efectivo" if cobro.tipo_pago == "efectivo" else "Tarjeta de
+                        crédito" if cobro.tipo_pago == "credito" else "Tarjeta de débito"}}</td>
+                    <td class="px-4 py-2 border-b">{{ cobro.beneficiario }}</td>
+                    <td class="px-4 py-2 border-b">{{ cobro.observaciones }}</td>
+                    <td class="px-4 py-2 border-b">{{ "Sí" if cobro.en_deuda else "No" }}</td>
                     <td class="px-4 py-2 border-b">
-                        <a href="{{ url_for('pagos.detalle_pago', id=pago.id) }}"
+                        <a href="{{ url_for('cobros.detalle_cobro', id=cobro.id) }}"
                             class="text-blue-500 hover:underline">Ver Detalle</a>
                     </td>
                 </tr>
                 {% endfor %}
+                {%else%}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-3 py-3">No hay cobros registrados.</td>
+                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>

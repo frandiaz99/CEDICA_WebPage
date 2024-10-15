@@ -1,64 +1,68 @@
 from flask import Blueprint, render_template, request, abort, redirect, url_for, flash
-from src.core.registro_pagos import Pago
+from src.core.cobros import Cobro
 from src.core.database import db
 from src.web.handlers.auth import check
 from src.core.equipo import Empleado
 from datetime import datetime
-from src.web.controllers.validador import (validar_tipo_pago, validar_monto, validar_fecha_pago, validar_descripcion, validar_beneficiario)
+from src.web.validadores.validador import (validar_tipo_pago, validar_monto, validar_fecha_pago, validar_descripcion, validar_beneficiario)
 cobros_bp = Blueprint('cobros', __name__, url_prefix='/cobros')
 
 @cobros_bp.get('/')
 @check("registro_cobros_index")
 def index():
+
+
+    #QUEDA PODER BUSCAR POR NOMBRE O APELLIDO DEL BENEFICIARIO.
+
+
     tipo_pago = request.args.get('tipo_pago')
     fecha_inicio = request.args.get('fecha_inicio')
     fecha_fin = request.args.get('fecha_fin')
     orden = request.args.get('orden', 'asc')  # Obtener el parámetro de orden, por defecto es 'asc'
 
-    query = Pago.query
+    query = Cobro.query
 
-    # Filtrar por fechas y tipo de pago
-    if fecha_inicio:
-        query = query.filter(Pago.fecha_pago >= fecha_inicio)
-    if fecha_fin:
-        query = query.filter(Pago.fecha_pago <= fecha_fin)
+    if fecha_inicio and fecha_fin:
+        #Chequear que la fecha de inicio no sea mayor a la final y viceversa
+        if fecha_inicio > fecha_fin:
+            cobros = query.all()
+            flash("El rango de fechas ingresado es inválido.", 'danger')
+            return render_template('cobros/cobros.html', cobros=cobros)
+        # Filtrar por fechas y tipo de pago
+        query = query.filter(Cobro.fecha_pago >= fecha_inicio)
+        query = query.filter(Cobro.fecha_pago <= fecha_fin)
+        
     if tipo_pago:
-        query = query.filter(Pago.tipo_pago == tipo_pago)
+        query = query.filter(Cobro.tipo_pago == tipo_pago)
 
     # Ordenar resultados
     if orden == 'desc':
-        query = query.order_by(Pago.fecha_pago.desc())
+        query = query.order_by(Cobro.fecha_pago.desc())
     else:
-        query = query.order_by(Pago.fecha_pago.asc())
+        query = query.order_by(Cobro.fecha_pago.asc())
 
-    pagos = query.all()
-
-    if tipo_pago:
-        query = query.filter_by(tipo_pago=tipo_pago)
-
-    if fecha_inicio and fecha_fin:
-        query = query.filter(Pago.fecha_pago.between(fecha_inicio, fecha_fin))
-
-    # Obtener la lista de pagos
-    pagos = query.order_by(Pago.fecha_pago.desc()).all()
+    cobros = query.all()
 
     # Agregar el email del beneficiario a cada pago
-    for pago in pagos:
-        beneficiario = Empleado.query.filter_by(id=pago.beneficiario).first()
+    for cobro in cobros:
+        beneficiario = Empleado.query.filter_by(id=cobro.beneficiario).first()
         if beneficiario:
-            pago.beneficiario = beneficiario.nombre +" "+ beneficiario.apellido  # Asignar el correo al objeto pago
+            cobro.beneficiario = beneficiario.nombre +" "+ beneficiario.apellido  # Asignar el correo al objeto cobro
 
-    return render_template('cobros/cobros.html', pagos=pagos)
+    return render_template('cobros/cobros.html', cobros=cobros)
+
 
 @cobros_bp.route('/registrar', methods=['GET', 'POST'])
 @check("registro_cobros_new")
 def registrar_cobro():
     if request.method == 'POST':
         # Obtener datos del formulario
+        jinete = request.form['jinete'] #Cuando este la db J&A, cambiar en select para que no sea siempre 1.
         tipo_pago = request.form['tipo_pago']
         monto = request.form['monto']
         fecha_pago_str = request.form.get('fecha_pago')
-        descripcion = request.form['descripcion']
+        deuda = request.form.get('deuda')
+        observaciones = request.form['observaciones']
         beneficiario = request.form['beneficiario']
 
         # Validadores de los campos
@@ -66,7 +70,7 @@ def registrar_cobro():
             (validar_tipo_pago, [tipo_pago]),
             (validar_monto, [monto]),
             (validar_fecha_pago, [fecha_pago_str]),
-            (validar_descripcion, [descripcion]),
+            (validar_descripcion, [observaciones]),
             (validar_beneficiario, [beneficiario])
         ]
 
@@ -75,41 +79,47 @@ def registrar_cobro():
             es_valido, mensaje_error = validar_funcion(*args)
             if not es_valido:
                 flash(mensaje_error, 'danger')
-                return redirect(url_for('pagos.registrar_pago'))  # Redirige si hay error
+                return redirect(url_for('cobros.registrar_cobro'))  # Redirige si hay error
 
-        # Crear el nuevo pago
-        nuevo_pago = Pago(
+        # Crear el nuevo cobro
+        if deuda == 'si':
+            deuda = True
+        else:
+            deuda = False
+        nuevo_cobro = Cobro(
+            id_ja = jinete,
+            fecha_pago=datetime.strptime(fecha_pago_str, '%Y-%m-%d'),
             tipo_pago=tipo_pago,
             monto=float(monto),
-            fecha_pago=datetime.strptime(fecha_pago_str, '%Y-%m-%d'),
-            descripcion=descripcion,
-            beneficiario=beneficiario
+            beneficiario=beneficiario,
+            en_deuda = deuda,
+            observaciones=observaciones
         )
 
         # Guardar en la base de datos
         try:
-            db.session.add(nuevo_pago)
+            db.session.add(nuevo_cobro)
             db.session.commit()
-            flash('Pago registrado exitosamente.', 'success')
-            return redirect(url_for('pagos.index'))
+            flash('El cobro ha sido registrado.', 'success')
+            return redirect(url_for('cobros.index'))
         except Exception as e:
             db.session.rollback()
-            flash(f'Error al registrar el pago: {str(e)}', 'danger')
-            return redirect(url_for('pagos.registrar_pago'))
+            flash(f'Error al registrar el cobro: {str(e)}', 'danger')
+            return redirect(url_for('cobros.registrar_cobro'))
 
     empleados = Empleado.query.all()
-    return render_template('pagos/registrar_pago.html', empleados=empleados,fecha_hoy=datetime.today().date())
+    return render_template('cobros/registrar_cobro.html', empleados=empleados,fecha_hoy=datetime.today().date())
 
 @cobros_bp.route('/detalle/<int:id>', methods=['GET'])
 @check("registro_cobro_show")
 def detalle_cobro(id):
-    pago = Pago.query.get(id)
-    if pago is None:
+    cobro = Cobro.query.get(id)
+    if cobro is None:
         abort(404) 
-    beneficiario = Empleado.query.filter_by(id=pago.beneficiario).first()
+    beneficiario = Empleado.query.filter_by(id=cobro.beneficiario).first()
     if beneficiario:
-        pago.beneficiario = beneficiario.nombre +" "+ beneficiario.apellido  
-    return render_template('pagos/detalle_pago.html', pago=pago)
+        cobro.beneficiario = beneficiario.nombre +" "+ beneficiario.apellido  
+    return render_template('cobros/detalle_cobro.html', cobro=cobro)
 
 @cobros_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @check("registro_cobros_update")

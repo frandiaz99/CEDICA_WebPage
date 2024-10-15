@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %}Detalle_Pago{% endblock %}
+
+{% block content %}
+
+<body class="bg-gray-100"></body>
+<div class="max-w-4xl mx-auto mt-10">
+    <h1 class="text-3xl font-bold text-center mb-6">Detalle de Pago</h1>
+    
+    <!-- Sección de pestañas -->
+    <div class="flex justify-center mb-6">
+        <button id="infoBtn"
+            class="tab-button bg-blue-500 text-white px-4 py-2 rounded-l-md focus:outline-none">Información
+            General</button>
+    </div>
+
+    <!-- Sección de Información General -->
+    <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold mb-4">Información General</h2>
+        <p><strong>Tipo de Pago:</strong> {{ pago.tipo_pago }}</p>
+        <p><strong>Fecha de Pago:</strong> {{ pago.fecha_pago.strftime('%Y-%m-%d') }}</p>
+        <p><strong>Monto:</strong> {{ pago.monto }}</p>
+        <p><strong>Descripción:</strong> {{ pago.descripcion }}</p>
+        {% if pago.tipo_pago == 'honorarios' %}
+        <p><strong>Nombre del Beneficiario:</strong> {{ pago.beneficiario }}</p>
+        {% endif %}
+    </div>
+
+    <div class="flex justify-end mt-6 space-x-4">
+        <a href="{{ url_for('pagos.editar_pago', id=pago.id) }}" 
+           class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+           Editar
+        </a>
+        <form action="{{ url_for('pagos.eliminar_pago', id=pago.id) }}" method="POST">
+            <button type="submit" 
+                    class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600" 
+                    onclick="return confirm('¿Estás seguro de que deseas eliminar este pago? Esta acción no se puede deshacer.');">
+                Eliminar
+            </button>
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='funcionalidad/script_informacion_general.js') }}"></script>
+</body>
+
+{% endblock %}
