@@ -21,19 +21,17 @@
     <div class="max-w-4xl mx-auto mt-10">
         <h1 class="text-3xl font-bold text-center mb-6">Editar Caballo</h1>
         <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('encuestre.editar_encuestre', id=encuestre.id) }}" method="POST">
-            <!-- Nombre -->
+
             <div class="mb-4">
                 <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
                 <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ encuestre.nombre }}" placeholder="Ingrese el nombre del caballo">
             </div>
 
-            <!-- Fecha de Nacimiento -->
             <div class="mb-4">
                 <label for="fecha_nacimiento" class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
                 <input type="text" id="fecha_nacimiento" name="fecha_nacimiento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-gray-600" value="{{ encuestre.fecha_nacimiento.strftime('%d/%m/%Y') }}" readonly disabled>
             </div>
 
-            <!-- Sexo -->
             <div class="mb-4">
                 <label for="sexo" class="block text-sm font-medium text-gray-700">Sexo</label>
                 <select id="sexo" name="sexo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -42,19 +40,16 @@
                 </select>
             </div>
 
-            <!-- Raza -->
             <div class="mb-4">
                 <label for="raza" class="block text-sm font-medium text-gray-700">Raza</label>
                 <input type="text" id="raza" name="raza" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ encuestre.raza }}" placeholder="Ingrese la raza">
             </div>
 
-            <!-- Pelaje -->
             <div class="mb-4">
                 <label for="pelaje" class="block text-sm font-medium text-gray-700">Pelaje</label>
                 <input type="text" id="pelaje" name="pelaje" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ encuestre.pelaje }}" placeholder="Ingrese el color del pelaje">
             </div>
 
-            <!-- Compra/Donación -->
             <div class="mb-4">
                 <label for="tipo_ingreso" class="block text-sm font-medium text-gray-700">Compra/Donación</label>
                 <select id="tipo_ingreso" name="tipo_ingreso" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -63,19 +58,16 @@
                 </select>
             </div>
 
-            <!-- Fecha de Ingreso -->
             <div class="mb-4">
                 <label for="fecha_ingreso" class="block text-sm font-medium text-gray-700">Fecha de Ingreso</label>
                 <input type="text" id="fecha_nacimiento" name="fecha_nacimiento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-gray-600" value="{{ encuestre.fecha_ingreso.strftime('%d/%m/%Y') }}" readonly disabled>
             </div>
 
-            <!-- Sede Asignada -->
             <div class="mb-4">
                 <label for="sede_asignada" class="block text-sm font-medium text-gray-700">Sede Asignada</label>
                 <input type="text" id="sede_asignada" name="sede_asignada" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ encuestre.sede_asignada }}" placeholder="Ingrese la sede asignada">
             </div>
 
-            <!-- Asociar Entrenadores y Conductores -->
             <div class="mb-4">
                 <label for="entrenadores_conductores" class="block text-sm font-medium text-gray-700">Asociar Entrenadores y Conductores</label>
                 <select id="entrenadores_conductores" name="entrenadores_conductores" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" multiple="multiple">
@@ -85,7 +77,6 @@
                 </select>
             </div>
 
-            <!-- Tipo de J&A Asignados -->
             <div class="mb-4">
                 <label for="tipo_ja_asigado" class="block text-sm font-medium text-gray-700">Tipo de J&A Asignados</label>
                 <select id="tipo_ja" name="tipo_ja_asignado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
@@ -97,7 +88,6 @@
                 </select>
             </div>
 
-            <!-- Botones de Guardar y Cancelar -->
             <div class="flex justify-between mt-6">
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Guardar Cambios</button>
                 <a href="{{ url_for('encuestre.detalle_encuestre', id=encuestre.id) }}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">Cancelar</a>
