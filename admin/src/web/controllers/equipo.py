@@ -305,73 +305,92 @@ def editar_empleado(id):
 @equipo_bp.route('/subir_documento', methods=['POST'])
 @check("equipo_update")
 def subir_documento():
+    """
+    Sube un documento para un empleado a MinIO y lo guarda en la base de datos.
 
+    Verifica que el archivo no exceda el tamaño permitido y que no haya errores 
+    durante la subida. Si todo es exitoso, añade la información del archivo a la 
+    base de datos.
+
+    Returns:
+        Redirect: Redirige al detalle del empleado correspondiente después de 
+        procesar la solicitud.
+    """
     MAX_FILE_SIZE = 16 * 1024 * 1024
 
     if 'file' not in request.files:
         flash('No se seleccionó ningún archivo', 'error')
         return redirect(url_for('equipo.detalle_empleado', id=request.form.get('empleado_id')))
-    
-    file = request.files['file']
 
-    client = current_app.storage.client 
+    file = request.files['file']
+    client = current_app.storage.client
 
     file_size = os.fstat(file.fileno()).st_size
-    
+
     if file_size > MAX_FILE_SIZE:
         flash('El archivo excede el tamaño máximo permitido (16MB)', 'error')
         return redirect(url_for('equipo.detalle_empleado', id=request.form.get('empleado_id')))
-    
+
     if file.filename == '':
         flash('Nombre de archivo vacío', 'error')
         return redirect(url_for('equipo.detalle_empleado', id=request.form.get('empleado_id')))
-    
-    #ulid = str(ULID())
-    #extension = os.path.splitext(file.filename)[1]
-    #nombre_unico = f"{extension}"
 
-    
     try:
         client.put_object(
             'grupo49',
             f'documentos_equipo/{file.filename}',
             file,
-            file_size, 
+            file_size,
             content_type=file.content_type
         )
-        
+
         empleado_id = request.form.get('empleado_id')
-        
         nuevo_documento = Documento(
             titulo=file.filename,
             url=f"{current_app.config['MINIO_SERVER']}/grupo49/documento_equipo%2{file.filename}",
             empleado_id=empleado_id
         )
-        
+
         db.session.add(nuevo_documento)
         db.session.commit()
-        
+
         flash('Documento subido exitosamente', 'success')
+
     except Exception as e:
         flash(f'Error al subir el documento: {str(e)}', 'error')
-    
+
     return redirect(url_for('equipo.detalle_empleado', id=request.form.get('empleado_id')))
 
 
 @equipo_bp.route('/descargar_documento/<int:document_id>')
 @check("equipo_show")
 def descargar_documento(document_id):
+    """
+    Descarga un documento desde MinIO basado en su ID.
+
+    Si el documento no existe, muestra un mensaje de error.
+
+    Args:
+        document_id (int): ID del documento a descargar.
+
+    Returns:
+        Redirect: Redirige al detalle del empleado o a la página principal si el 
+        documento no existe.
+    """
     documento = Documento.query.filter_by(id=document_id).first()
-    
+
     if documento is None:
         flash('El documento no existe.', 'danger')
-        return redirect(url_for('equipo.index'))  
+        return redirect(url_for('equipo.index'))
 
     client = current_app.storage.client
     object_name = f'documentos_equipo/{documento.titulo}'
-    
-    client.fget_object("grupo49", object_name, "src/downloads/" + generar_nombre(documento.titulo))
-    flash('El documento se ha descargado con éxito.', 'success')
+
+    try:
+        client.fget_object("grupo49", object_name, "src/downloads/" + generar_nombre(documento.titulo))
+        flash('El documento se ha descargado con éxito.', 'success')
+    except Exception as e:
+        flash(f'Error al descargar el documento: {str(e)}', 'danger')
 
     return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))
 
@@ -379,21 +398,30 @@ def descargar_documento(document_id):
 @equipo_bp.route('/eliminar_documento/<int:document_id>', methods=['POST'])
 @check("equipo_destroy")
 def eliminar_documento(document_id):
+    """
+    Elimina un documento desde MinIO y su referencia en la base de datos.
 
+    Verifica si el documento existe antes de proceder con la eliminación. Si el 
+    documento se elimina exitosamente, se actualiza la base de datos.
+
+    Args:
+        document_id (int): ID del documento a eliminar.
+
+    Returns:
+        Redirect: Redirige al detalle del empleado correspondiente o muestra un 
+        mensaje de error.
+    """
     documento = Documento.query.filter_by(id=document_id).first()
 
     if not documento:
         flash('El documento no fue encontrado.', 'danger')
         return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))
 
-
     eliminar_de_minio(documento.titulo)
-
 
     try:
         db.session.delete(documento)
         db.session.commit()
-
         flash('Documento eliminado correctamente.', 'success')
     except Exception as e:
         db.session.rollback()
@@ -401,7 +429,14 @@ def eliminar_documento(document_id):
 
     return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))
 
+
 def eliminar_de_minio(file):
+    """
+    Elimina un archivo desde el servicio de MinIO.
+
+    Args:
+        file (str): Nombre del archivo a eliminar.
+    """
     client = current_app.storage.client
     object_name = f'documentos_equipo/{file}'
 
