@@ -10,14 +10,11 @@ cobros_bp = Blueprint('cobros', __name__, url_prefix='/cobros')
 @cobros_bp.get('/')
 @check("registro_cobros_index")
 def index():
-
-
-    #QUEDA PODER BUSCAR POR NOMBRE O APELLIDO DEL BENEFICIARIO.
-
-
     tipo_pago = request.args.get('tipo_pago')
     fecha_inicio = request.args.get('fecha_inicio')
     fecha_fin = request.args.get('fecha_fin')
+    nombre = request.args.get('nombre')
+    apellido = request.args.get('apellido')
     orden = request.args.get('orden', 'asc')  # Obtener el parámetro de orden, por defecto es 'asc'
 
     query = Cobro.query
@@ -35,19 +32,22 @@ def index():
     if tipo_pago:
         query = query.filter(Cobro.tipo_pago == tipo_pago)
 
+    cobros = query.all()
+
+    for cobro in cobros:
+        beneficiario = Empleado.query.filter_by(id=cobro.beneficiario).first()
+        if beneficiario:
+            cobro.beneficiario = beneficiario.nombre +" "+ beneficiario.apellido
+        if nombre:
+            query = query.filter(cobro.beneficiario.ilike(f"%{nombre}%"))
+        if apellido:
+            query = query.filter(cobro.beneficiario.ilike(f"%{apellido}%"))
+
     # Ordenar resultados
     if orden == 'desc':
         query = query.order_by(Cobro.fecha_pago.desc())
     else:
         query = query.order_by(Cobro.fecha_pago.asc())
-
-    cobros = query.all()
-
-    # Agregar el email del beneficiario a cada pago
-    for cobro in cobros:
-        beneficiario = Empleado.query.filter_by(id=cobro.beneficiario).first()
-        if beneficiario:
-            cobro.beneficiario = beneficiario.nombre +" "+ beneficiario.apellido  # Asignar el correo al objeto cobro
 
     return render_template('cobros/cobros.html', cobros=cobros)
 

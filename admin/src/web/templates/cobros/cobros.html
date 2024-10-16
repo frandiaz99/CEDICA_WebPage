@@ -31,12 +31,6 @@
         </div>
 
         <!-- Formulario de búsqueda y filtros -->
-
-
-        <!-- AGREGAR BUSQUEDA POR NOMBRE Y/O APELLIDO DEL BENEFICIARIO -->
-
-
-
         <form method="GET" action="{{ url_for('cobros.index') }}"
             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 w-full">
             <input type="date" name="fecha_inicio"
@@ -55,6 +49,10 @@
                 <option value="debito" {% if request.args.get('tipo_pago')=='debito' %}selected{% endif %}>Tarjeta de
                     débito</option>
             </select>
+            <input type="text" name="nombre" placeholder="Nombre"
+                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+            <input type="text" name="apellido" placeholder="Apellido"
+                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
             <button type="submit"
                 class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
         </form>
