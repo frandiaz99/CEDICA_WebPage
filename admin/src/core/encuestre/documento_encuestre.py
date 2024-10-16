@@ -1,4 +1,3 @@
-# src/core/equipo/models.py
 from datetime import datetime
 from src.core.database import db
 from src.core.encuestre import Encuestre
@@ -23,9 +22,7 @@ class DocumentoEncuestre(db.Model):
 
     @staticmethod
     def get_encuestre_by_document_id(document_id):
-    # Busca el documento por ID
         documento = db.session.query(DocumentoEncuestre).get(document_id)
         if documento:
-        # Si el documento existe, devuelve el encuestre relacionado
             return documento.encuestre
-        return None  # Si no se encuentra, devuelve None
+        return None 

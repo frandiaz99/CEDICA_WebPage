@@ -21,15 +21,12 @@
     <div class="max-w-4xl mx-auto mt-10">
         <h1 class="text-3xl font-bold text-center mb-6">Detalle de Caballo</h1>
         
-        <!-- Sección de pestañas -->
         <div class="flex justify-center mb-6">
             <button id="infoBtn" class="tab-button bg-blue-500 text-white px-4 py-2 rounded-l-md focus:outline-none">Información General</button>
             <button id="docsBtn" class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-r-md focus:outline-none">Documentos</button>
         </div>
 
-        <!-- Sección de Información General -->
         <div class="relative">
-            <!-- Contenido de la Información General -->
             <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-semibold mb-4">Información General</h2>
                 <p><strong>Nombre:</strong> {{ encuestre.nombre }}</p>
@@ -46,8 +43,6 @@
                     {% endfor %}
                 </p>
                 <p><strong>Tipo de J&A Asignados:</strong> {{ encuestre.tipo_ja_asignado }}</p>
-        
-                <!-- Botones de Editar y Eliminar -->
                 <div class="flex justify-end mt-6 space-x-4">
                     <a href="{{ url_for('encuestre.editar_encuestre', id=encuestre.id) }}" 
                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
@@ -66,11 +61,8 @@
         </div>
         
 
-    <!-- Sección de Documentos -->
 <div id="docsSection" class="p-6 bg-white rounded-lg shadow-md">
-    <!-- Filtros de búsqueda -->
     <form method="GET" class="mb-4">
-        <!-- Fila para el campo de búsqueda y el título -->
         <div class="flex items-center space-x-4 mb-4">
             <input type="text" name="search" id="documentSearch" value="{{ search }}" placeholder="Buscar por título..." class="px-4 py-2 border rounded-md flex-grow max-w-xs">
             
@@ -84,7 +76,6 @@
             </select>
         </div>
 
-        <!-- Fila para el botón de filtrar y los selectores de orden -->
         <div class="flex items-center space-x-4">
             <select name="order_prop" id="orderField" class="px-4 py-2 border rounded-md">
                 <option value="titulo" {% if order_prop == 'titulo' %}selected{% endif %}>Título</option>
@@ -99,11 +90,6 @@
             <button type="submit" id="filterButton" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Filtrar</button>
         </div>
     </form>
-
-    <!-- Ordenar documentos -->
-    
-
-    <!-- Tabla de Documentos -->
     <table class="min-w-full table-auto border-collapse">
         <thead>
             <tr class="border-b">
@@ -120,7 +106,6 @@
                 <td class="px-4 py-2">{{ documento.tipo }}</td>
                 <td class="px-4 py-2">{{ documento.inserted_at.strftime('%d/%m/%Y') }}</td>
                 <td class="px-4 py-2">
-                    <!-- Selector de acciones -->
                     <select class="actions-select" data-document-id="{{ documento.id }}">
                         <option value="">Seleccione una acción</option>
                         {% if check_permission(session, "encuestre_show") %}
@@ -149,7 +134,6 @@
         </tbody>
     </table>
 
-    <!-- Paginación -->
     <div class="flex justify-between items-center mt-4">
         <span class="text-gray-600">Página {{ pagina }} de {{ total_paginas }}</span>
 
@@ -164,9 +148,8 @@
         </div>
     </div>
 
-    <!-- Botones para agregar documentos -->
 <div class="flex flex-col space-y-4 mt-4">
-    <!-- Formulario para agregar enlace -->
+
     <form method="POST" action="{{ url_for('encuestre.subir_enlace') }}" class="flex flex-col space-y-2">
         <input type="hidden" name="encuestre_id" value="{{ encuestre.id }}">
         <input type="url" name="enlace" placeholder="https://example.com" required class="px-4 py-2 border rounded-md">
@@ -185,7 +168,6 @@
         </button>
     </form>
 
-    <!-- Formulario para subir documento -->
     <form method="POST" enctype="multipart/form-data" action="{{ url_for('encuestre.subir_documento') }}" class="flex flex-col space-y-2">
         <input type="hidden" name="encuestre_id" value="{{ encuestre.id }}">
         <input type="file" name="file" accept=".pdf,.doc,.docx,.jpg,.png" required>
@@ -220,16 +202,15 @@
         var url = $(this).find('option:selected').data('url');
 
         if (action === 'eliminar') {
-            // Mostrar el mensaje de confirmación
             var confirmacion = confirm("¿Estás seguro de que deseas eliminar este documento?");
             
             if (confirmacion) {
-                // Si el usuario confirma, se ejecuta la solicitud POST para eliminar
-                $.ajax({ //permite hacer un post sin necesidad de recargar la pagina, apenas se clickea el select se envia los datos al back
-                    url: url, //al ser ejecutadas en segundo plano, el flash ni redirect funcionan 
+               
+                $.ajax({ 
+                    url: url, 
                     type: 'POST', 
                     success: function(response) {
-                        // Recargar la página para reflejar los cambios
+                        
                         location.reload();
                     },
                     error: function(xhr, status, error) {
@@ -237,7 +218,6 @@
                     }
                 });
             } else {
-                // Si el usuario cancela, reseteamos el selector
                 $(this).val('');
             }
         }

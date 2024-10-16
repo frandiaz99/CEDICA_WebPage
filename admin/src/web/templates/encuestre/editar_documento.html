@@ -22,7 +22,7 @@
     <div class="max-w-4xl mx-auto mt-10">
         <h1 class="text-3xl font-bold text-center mb-6">Editar Documento</h1>
         <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('encuestre.editar_documento', document_id=documento.id) }}" method="POST">
-            <!-- Nombre -->
+           
             <div class="mb-4">
                 <label for="nombre" class="block text-sm font-medium text-gray-700">Titulo</label>
                 <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ documento.titulo }}" placeholder="Ingrese titulo del documento">
@@ -40,7 +40,6 @@
                 </select>
             </div>
 
-            <!-- Botones de Guardar y Cancelar -->
             <div class="flex justify-between mt-6">
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Guardar Cambios</button>
                 <a href="{{ url_for('encuestre.detalle_encuestre', id=encuestre.id) }}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">Cancelar</a>
