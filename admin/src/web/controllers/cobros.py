@@ -35,13 +35,14 @@ def index():
     cobros = query.all()
 
     for cobro in cobros:
-        beneficiario = Empleado.query.filter_by(id=cobro.beneficiario).first()
-        if beneficiario:
-            cobro.beneficiario = beneficiario.nombre +" "+ beneficiario.apellido
-        if nombre:
-            query = query.filter(cobro.beneficiario.ilike(f"%{nombre}%"))
-        if apellido:
-            query = query.filter(cobro.beneficiario.ilike(f"%{apellido}%"))
+        empleado = Empleado.query.filter_by(id=cobro.beneficiario).first()
+        if empleado:
+            cobro.beneficiario = empleado.nombre +" "+ empleado.apellido
+
+    if nombre:
+        cobros = [cobro for cobro in cobros if nombre.lower() in cobro.beneficiario.lower()]
+    if apellido:
+        cobros = [cobro for cobro in cobros if apellido.lower() in cobro.beneficiario.lower()]
 
     # Ordenar resultados
     if orden == 'desc':
@@ -50,7 +51,6 @@ def index():
         query = query.order_by(Cobro.fecha_pago.asc())
 
     return render_template('cobros/cobros.html', cobros=cobros)
-
 
 @cobros_bp.route('/registrar', methods=['GET', 'POST'])
 @check("registro_cobros_new")
@@ -111,7 +111,7 @@ def registrar_cobro():
     return render_template('cobros/registrar_cobro.html', empleados=empleados,fecha_hoy=datetime.today().date())
 
 @cobros_bp.route('/detalle/<int:id>', methods=['GET'])
-@check("registro_cobro_show")
+@check("registro_cobros_show")
 def detalle_cobro(id):
     cobro = Cobro.query.get(id)
     if cobro is None:
@@ -124,8 +124,8 @@ def detalle_cobro(id):
 @cobros_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @check("registro_cobros_update")
 def editar_cobro(id):
-    pago_aux = Pago.query.get(id)
-    if pago_aux is None:
+    cobro = Cobro.query.get(id)
+    if cobro is None:
         abort(404) 
 
     if request.method == 'POST':
@@ -133,7 +133,8 @@ def editar_cobro(id):
         tipo_pago = request.form['tipo_pago']
         monto = request.form['monto']
         fecha_pago_str = request.form.get('fecha_pago')
-        descripcion = request.form['descripcion']
+        observaciones = request.form['observaciones']
+        en_deuda = request.form['deuda']
         beneficiario = request.form['beneficiario']
 
         # Validadores de los campos
@@ -141,37 +142,43 @@ def editar_cobro(id):
             (validar_tipo_pago, [tipo_pago]),
             (validar_monto, [monto]),
             (validar_fecha_pago, [fecha_pago_str]),
-            (validar_descripcion, [descripcion]),
+            (validar_descripcion, [observaciones]),
             (validar_beneficiario, [beneficiario])
         ]
+
+        if en_deuda == 'si':
+            en_deuda = True
+        else:
+            en_deuda = False
 
         # Validar cada campo
         for validar_funcion, args in validadores:
             es_valido, mensaje_error = validar_funcion(*args)
             if not es_valido:
                 flash(mensaje_error, 'danger')
-                return redirect(url_for('pagos.editar_pago', id=id))  # Redirige si hay error
+                return redirect(url_for('cobros.editar_cobro', id=id))  # Redirige si hay error
 
         # Actualizar los campos del pago
-        pago_aux.tipo_pago = tipo_pago
-        pago_aux.monto = float(monto)
-        pago_aux.fecha_pago = datetime.strptime(fecha_pago_str, '%Y-%m-%d')
-        pago_aux.descripcion = descripcion
-        pago_aux.beneficiario = beneficiario
+        cobro.tipo_pago = tipo_pago
+        cobro.monto = float(monto)
+        cobro.fecha_pago = datetime.strptime(fecha_pago_str, '%Y-%m-%d')
+        cobro.observaciones = observaciones
+        cobro.en_deuda = en_deuda
+        cobro.beneficiario = beneficiario
 
         # Guardar los cambios en la base de datos
         try:
             db.session.commit()
-            flash('El pago se ha actualizado exitosamente.', 'success')
-            return redirect(url_for('pagos.detalle_pago', id=pago_aux.id))
+            flash('El cobro se ha actualizado.', 'success')
+            return redirect(url_for('cobros.detalle_cobro', id=cobro.id))
         except Exception as e:
             db.session.rollback()
-            flash(f'Error al actualizar el pago: {str(e)}', 'danger')
-            return redirect(url_for('pagos.editar_pago', id=id))
+            flash(f'Error al actualizar el cobro: {str(e)}', 'danger')
+            return redirect(url_for('cobros.editar_cobro', id=id))
     empleados = Empleado.query.all()
     return render_template(
-        'pagos/editar_pago.html', 
-        pago=pago_aux, 
+        'cobros/editar_cobro.html', 
+        cobro=cobro, 
         empleados=empleados,
         fecha_hoy=datetime.today().date()
     )
@@ -179,15 +186,14 @@ def editar_cobro(id):
 @cobros_bp.route('/eliminar/<int:id>', methods=['POST'])
 @check("registro_cobros_destroy")
 def eliminar_cobro(id):
-    # Buscar el pago por ID
-    pago_aux = Pago.query.get_or_404(id)
+
+    cobro = Cobro.query.get_or_404(id)
     
     try:
-        db.session.delete(pago_aux)
+        db.session.delete(cobro)
         db.session.commit()
-
-        flash('Pago eliminado correctamente.', 'success')
+        flash('Cobro eliminado correctamente.', 'success')
     except Exception as e:
         db.session.rollback()
-        flash(f'Error al eliminar el pago: {str(e)}', 'danger')
-    return redirect(url_for('pagos.index'))
+        flash(f'Error al eliminar el cobro: {str(e)}', 'danger')
+    return redirect(url_for('cobros.index'))

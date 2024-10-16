@@ -12,7 +12,7 @@ class Cobro(db.Model):
     tipo_pago = db.Column(db.String(50), nullable=False)
     monto = db.Column(db.Float, nullable=False)
     beneficiario = db.Column(db.String(100), nullable=True)   
-    en_deuda = db.Column(db.Boolean, nullable=False) 
+    en_deuda = db.Column(db.Boolean, nullable=False, default=False) 
     observaciones = db.Column(db.String(255), nullable=False)
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
