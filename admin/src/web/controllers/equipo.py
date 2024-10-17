@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, abort, flash, url_for, redirect, current_app
+from flask import Blueprint, render_template, request, abort, flash, url_for, redirect, current_app, send_file
 from sqlalchemy import asc, desc
 from src.core.database import db
 from datetime import datetime
@@ -7,6 +7,7 @@ from src.core.equipo.documento import Documento
 from src.web.handlers.auth import check
 from src.web.controllers.documentos import generar_nombre
 import os
+import io
 from src.web.validadores.validador import (
     validar_nombre, validar_apellido, validar_dni, validar_domicilio,
     validar_email, validar_localidad, validar_telefono, validar_profesion,
@@ -387,9 +388,12 @@ def descargar_documento(document_id):
     object_name = f'documentos_equipo/{documento.titulo}'
 
     try:
-        client.fget_object("grupo49", object_name, "src/downloads/" + generar_nombre(documento.titulo))
+        response = client.get_object("grupo49", object_name)
+        doc = io.BytesIO(response.read())
+        return send_file(doc, as_attachment=True, download_name=documento.titulo)
         flash('El documento se ha descargado con éxito.', 'success')
     except Exception as e:
+        print(e)
         flash(f'Error al descargar el documento: {str(e)}', 'danger')
 
     return redirect(url_for('equipo.detalle_empleado', id=documento.empleado_id))
