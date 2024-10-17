@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, render_template, jsonify, request, abort, flash, url_for, redirect, current_app
+from flask import Blueprint, render_template, jsonify, request, abort, flash, url_for, redirect, current_app, send_file
 from sqlalchemy import asc, desc
 from src.core.database import db 
 from datetime import datetime
@@ -16,6 +16,7 @@ from src.web.validadores.validador import (
 
 )
 from src.web import storage
+import io
 
 encuestre_bp = Blueprint('encuestre', __name__, url_prefix='/encuestre')
 
@@ -358,7 +359,7 @@ def subir_documento():
         nuevo_documento = documento_encuestre.DocumentoEncuestre(
             titulo=file.filename,
             tipo=tipo_documento,
-            url=f"{current_app.config['MINIO_SERVER']}/grupo49/documento_encuestre%2{file.filename}",
+            url=f"{current_app.config['MINIO_SERVER']}/grupo49/documento_encuestre/{file.filename}",
             encuestre=encuestre_aux
         )
         
@@ -382,16 +383,29 @@ def descargar_documento(document_id):
     :return: Redirige al enlace del documento o al detalle del ecuestre, dependiendo si es un enlace o un documento o retorna error. 
     """
     documento = documento_encuestre.DocumentoEncuestre.query.get_or_404(document_id)
+
+    if documento is None:
+        flash('No se encontro el documento/enlace.', 'danger')
+        return redirect(url_for('equipo.index'))
+    
     encuestre = documento_encuestre.DocumentoEncuestre.get_encuestre_by_document_id(document_id)
     client = current_app.storage.client
     object_name = f'documentos_encuestres/{documento.titulo}'
     
-    if(documento.is_document):
-        url_descarga = url_for('encuestre.detalle_encuestre', id=encuestre.id)
-        client.fget_object("grupo49", object_name, "src/downloads/" + generar_nombre(documento.titulo))
-        flash('El documento se ha descargado con exito.', 'success')
-    else: 
-        url_descarga = documento.url
+    try: 
+        if(documento.is_document):
+            url_descarga = url_for('encuestre.detalle_encuestre', id=encuestre.id)
+            response = client.get_object("grupo49", object_name)
+            doc = io.BytesIO(response.read())
+            flash('El documento se ha descargado con éxito.', 'success')
+            return send_file(doc, as_attachment=True, download_name=documento.titulo)
+            
+        else: 
+            url_descarga = documento.url
+    except Exception as e: 
+        flash(f'Error en la descarga: {str(e)}', 'danger')
+
+
 
     return redirect(url_descarga)
 
