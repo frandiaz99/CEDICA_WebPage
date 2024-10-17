@@ -25,17 +25,6 @@
 <div class="bg-white p-6 rounded-lg shadow-md">
     <h1 class="text-2xl font-bold mb-6 text-gray-700">Lista de usuarios</h1>
 
-    <div id="confirmModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-        <div class="bg-white rounded-lg p-6 max-w-sm w-full">
-            <h2 class="text-lg font-bold mb-4">Confirmación</h2>
-            <p>¿Estás seguro de que querés eliminarlo?</p>
-            <div class="mt-4 flex justify-end">
-                <button id="cancelButton" class="bg-gray-300 text-gray-800 px-4 py-2 rounded-md mr-2">Cancelar</button>
-                <button id="confirmButton" class="bg-red-500 text-white px-4 py-2 rounded-md">Confirmar</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Ver si conviene poner order_prop y order debajo de los otros 2, asi no confundimos los filtros para la busqueda y el resultado-->
 
     <!-- Contenedor para el botón y filtros -->
@@ -136,8 +125,12 @@
                     </td>
                     <td class="text-center py-2 px-4 border-b">
                         {% if user.rol_id != 5 %}
-                        <button type="button" onclick="eliminarUsuario('{{user.id}}')"
-                            class="text-center bg-red-400 py-1 rounded-md hover:bg-red-500 hover:text-white w-full transition-colors duration-200">Eliminar</button>
+                        <form action="{{ url_for('users.eliminar_usuario', id=user.id) }}" method="POST">
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                                onclick="return confirm('¿Estás seguro de que deseas eliminarlo? Esta acción no se puede deshacer.');">
+                                Eliminar
+                            </button>
+                        </form>
                         {% endif %}
                     </td>
                 </tr>
@@ -185,17 +178,6 @@
     function registrarUsuario() {
         const url = "{{ url_for('users.crear_usuario') }}";
         window.open(url, '_blank');
-    }
-
-    function eliminarUsuario(id) {
-        const modal = document.getElementById('confirmModal');
-        modal.classList.remove('hidden');
-        document.getElementById('cancelButton').onclick = function () {
-            modal.classList.add('hidden');
-        };
-        document.getElementById('confirmButton').onclick = function () {
-            window.location.href = "{{ url_for('users.eliminar_usuario', id=0)}}".replace(/0/, id);
-        };
     }
 </script>
 

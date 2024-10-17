@@ -1,4 +1,4 @@
-from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso # Importa el módulo equipo
+from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso, cobros # Importa el módulo equipo
 from datetime import datetime
 from itertools import chain 
 

@@ -15,7 +15,8 @@
     <div class="flex justify-center mt-4">
         <div class="w-full max-w-2xl">
             {% for category, message in messages %}
-            <div class="bg-red-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+            <div
+                class="bg-{{category == 'success' and 'green' or 'red'}}-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
                 <p class="text-lg font-semibold">{{ message }}</p>
             </div>
             {% endfor %}

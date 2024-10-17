@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block title %}Editar cobro{% endblock %}
+
+{% block content %}
+
+<body class="bg-gray-100">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flex justify-center mt-4">
+        <div class="w-full max-w-2xl">
+            {% for category, message in messages %}
+            <div class="bg-red-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                <p class="text-lg font-semibold">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="max-w-4xl mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Editar cobro</h1>
+        <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('cobros.editar_cobro', id=cobro.id) }}"
+            method="POST" enctype="multipart/form-data">
+
+            <!-- Tipo de Pago -->
+            <div class="mb-4">
+                <label for="tipo_pago" class="block text-sm font-medium text-gray-700">Tipo de pago</label>
+                <select id="tipo_pago" name="tipo_pago"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="efectivo" {% if cobro.tipo_pago=='efectivo' %}selected{% endif %}>Efectivo
+                    </option>
+                    <option value="credito" {% if cobro.tipo_pago=='credito' %}selected{% endif %}>Tarjeta de crédito
+                    </option>
+                    <option value="debito" {% if cobro.tipo_pago=='debito' %}selected{% endif %}>Tarjeta de débito
+                    </option>
+                </select>
+            </div>
+
+            <!-- Beneficiario -->
+            <div id="beneficiario_container" class="mb-4">
+                <label for="beneficiario" class="block text-sm font-medium text-gray-700">Beneficiario</label>
+                <select
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="beneficiario" name="beneficiario" required>
+                    {% for empleado in empleados %}
+                    <option value="{{ empleado.id }}" {% if empleado.id==cobro.beneficiario %}selected{% endif %}>
+                        {{ empleado.nombre }} - {{ empleado.puesto_laboral }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <!-- Monto -->
+            <div class="mb-4">
+                <label for="monto" class="block text-sm font-medium text-gray-700">Monto</label>
+                <input type="number" id="monto" name="monto"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    value="{{ cobro.monto }}" min="0" title="Ingrese un monto válido">
+            </div>
+
+            <!-- Deuda -->
+            <div id="deuda_container" class="mb-4">
+                <label for="deuda" class="block text-sm font-medium text-gray-700">En deuda</label>
+                <select
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="deuda" name="deuda" required>
+                    <option value="si" {% if cobro.en_deuda%}selected{% endif %}>Si</option>
+                    <option value="no" {% if not cobro.en_deuda%}selected{% endif %}>No</option>
+                </select>
+            </div>
+
+            <!-- Fecha de Pago -->
+            <div class="mb-4">
+                <label for="fecha_pago" class="block text-sm font-medium text-gray-700">Fecha del pago</label>
+                <input type="date" id="fecha_pago" name="fecha_pago"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    value="{{ cobro.fecha_pago.strftime('%Y-%m-%d') }}">
+            </div>
+
+            <!-- Observaciones -->
+            <div class="mb-4">
+                <label for="observaciones" class="block text-sm font-medium text-gray-700">Observaciones</label>
+                <textarea id="observaciones" name="observaciones"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ cobro.observaciones }}</textarea>
+            </div>
+
+            <div class="flex justify-between mt-6">
+                <button type="submit"
+                    class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Guardar</button>
+                <a href="{{ url_for('cobros.detalle_cobro', id=cobro.id) }}"
+                    class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</body>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}Detalle - Cobro{% endblock %}
+
+{% block content %}
+
+<body class="bg-gray-100"></body>
+<div class="max-w-4xl mx-auto mt-10">
+    <h1 class="text-3xl font-bold text-center mb-6">Detalle del cobro</h1>
+
+    <!-- Sección de Información General -->
+    <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold mb-4">Información General</h2>
+        <p><strong>Tipo de pago:</strong> {{ "Efectivo" if cobro.tipo_pago == "efectivo" else "Tarjeta de
+            crédito" if cobro.tipo_pago == "credito" else "Tarjeta de débito"}}</p>
+        <p><strong>Fecha del cobro:</strong> {{ cobro.fecha_pago.strftime('%Y-%m-%d') }}</p>
+        <p><strong>Monto:</strong> {{ cobro.monto }}</p>
+        <p><strong>En deuda:</strong> {{ "Sí" if cobro.en_deuda else "No" }}</p>
+        <p><strong>Observaciones:</strong> {{ cobro.observaciones }}</p>
+        <p><strong>Nombre del beneficiario:</strong> {{ cobro.beneficiario }}</p>
+    </div>
+
+    {% if check_permission(session, "registro_cobros_update") and check_permission(session, "registro_cobros_destroy")
+    %}
+    <div class="flex justify-end mt-6 space-x-4">
+        <a href="{{ url_for('cobros.editar_cobro', id=cobro.id) }}"
+            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+            Editar
+        </a>
+        <form action="{{ url_for('cobros.eliminar_cobro', id=cobro.id) }}" method="POST">
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                onclick="return confirm('¿Estás seguro de que deseas eliminar este cobro? Esta acción no se puede deshacer.');">
+                Eliminar
+            </button>
+        </form>
+    </div>
+    {%endif%}
+</div>
+
+<script src="{{ url_for('static', filename='funcionalidad/script_informacion_general.js') }}"></script>
+</body>
+
+{% endblock %}
