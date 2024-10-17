@@ -1,0 +1,310 @@
+{% extends "layout.html" %}
+
+{% block title %}Detalle Jinetes/Amazonas{% endblock %}
+
+{% block content %}
+<body class="bg-gray-100"></body>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flex justify-center mt-4">
+            <div class="w-full max-w-2xl">
+                {% for category, message in messages %}
+                    <div class="bg-red-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                        <p class="text-lg font-semibold">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% endwith %}
+    <div class="max-w-4xl mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Detalle de Jinete/Amazona</h1>
+        
+        <!-- Sección de pestañas -->
+        <div class="flex justify-center mb-6">
+            <button id="infoBtn" class="tab-button bg-blue-500 text-white px-4 py-2 rounded-l-md focus:outline-none">Información General</button>
+            <button id="docsBtn" class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-r-md focus:outline-none">Documentos</button>
+        </div>
+
+        <!-- Sección de Información General -->
+        <div class="relative">
+            <!-- Contenido de la Información General -->
+            <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-4">Información General</h2>
+                <p><strong>Nombre:</strong> {{ jinete.nombre }}</p>
+                <p><strong>Apellido:</strong> {{ jinete.apellido }}</p>
+                <p><strong>DNI:</strong> {{ jinete.dni }}</p>
+                <p><strong>Edad:</strong> {{ jinete.edad }}</p>
+                <p><strong>Fecha de Nacimiento:</strong> {{ jinete.fecha_nacimiento.strftime('%d/%m/%Y') }}</p>
+                <p><strong>Lugar de Nacimiento (Localidad):</strong> {{ jinete.lugar_nacimiento_localidad }}</p>
+                <p><strong>Lugar de Nacimiento (Provincia):</strong> {{ jinete.lugar_nacimiento_provincia }}</p>
+                <p><strong>Domicilio Actual:</strong> {{ jinete.domicilio_actual }}</p>
+                <p><strong>Teléfono:</strong> {{ jinete.telefono }}</p>
+
+                <p><strong>Contacto de Emergencia:</strong> {{ jinete.contacto_emergencia }}</p>
+                <p><strong>Teléfono de Emergencia:</strong> {{ jinete.telefono_emergencia }}</p>
+
+                <p><strong>Becado:</strong> {{"Si" if jinete.becado else "No"}}</p>
+                <p><strong>Observaciones sobre Beca:</strong> {{ jinete.beca_observaciones }}</p>
+
+                <p><strong>Certificado de Discapacidad:</strong> {{"Si" if jinete.certificado_discapacidad else "No"}}</p>
+                <p><strong>Diagnóstico de Discapacidad:</strong> {{ jinete.diagnostico_discapacidad }}</p>
+                <p><strong>Tipo de Discapacidad:</strong> {{ jinete.tipo_discapacidad }}</p>
+
+                <p><strong>Asignación Familiar:</strong> {{"Si" if jinete.percibe_asignacion_familiar else "No"}}</p>
+                <p><strong>Asignación por Hijo:</strong> {{"Si" if jinete.asignacion_hijo else "No"}}</p>
+                <p><strong>Asignación por Hijo con Discapacidad:</strong> {{"Si" if jinete.asignacion_hijo_discapacidad else "No"}}</p>
+                <p><strong>Asignación de Ayuda Escolar:</strong> {{"Si" if jinete.asignacion_ayuda_escolar else "No"}}</p>
+                <p><strong>Pensión:</strong> {{ jinete.pension }}</p>
+                <p><strong>Obra Social:</strong> {{ jinete.obra_social }}</p>
+                <p><strong>Número de Afiliado:</strong> {{ jinete.numero_afiliado }}</p>
+                <p><strong>Curatela:</strong> {{"Si" if jinete.curatela else "No"}}</p>
+                <p><strong>Observaciones Previsionales:</strong> {{ jinete.observaciones_previsionales }}</p>
+
+                <p><strong>Institución Escolar:</strong> {{ jinete.institucion_escolar }}</p>
+                <p><strong>Dirección de la Institución:</strong> {{ jinete.direccion_institucion }}</p>
+                <p><strong>Teléfono de la Institución:</strong> {{ jinete.telefono_institucion }}</p>
+                <p><strong>Grado/Año Actual:</strong> {{ jinete.grado_anio_actual }}</p>
+                <p><strong>Observaciones de la Institución:</strong> {{ jinete.observaciones_institucion }}</p>
+                <p><strong>Profesionales que Atienden:</strong> {{ jinete.profesionales_atienden }}</p>
+
+                <p><strong>Parentesco del Familiar 1:</strong> {{ jinete.parentesco_familiar_1 }}</p>
+                <p><strong>Nombre del Familiar 1:</strong> {{ jinete.nombre_familiar_1 }}</p>
+                <p><strong>Apellido del Familiar 1:</strong> {{ jinete.apellido_familiar_1 }}</p>
+                <p><strong>DNI del Familiar 1:</strong> {{ jinete.dni_familiar_1 }}</p>
+                <p><strong>Domicilio del Familiar 1:</strong> {{ jinete.domicilio_familiar_1 }}</p>
+                <p><strong>Celular del Familiar 1:</strong> {{ jinete.celular_familiar_1 }}</p>
+                <p><strong>Email del Familiar 1:</strong> {{ jinete.email_familiar_1 }}</p>
+                <p><strong>Escolaridad del Familiar 1:</strong> {{ jinete.escolaridad_familiar_1 }}</p>
+                <p><strong>Ocupación del Familiar 1:</strong> {{ jinete.ocupacion_familiar_1 }}</p>
+
+                <p><strong>Parentesco del Familiar 2:</strong> {{ jinete.parentesco_familiar_2 }}</p>
+                <p><strong>Nombre del Familiar 2:</strong> {{ jinete.nombre_familiar_2 }}</p>
+                <p><strong>Apellido del Familiar 2:</strong> {{ jinete.apellido_familiar_2 }}</p>
+                <p><strong>DNI del Familiar 2:</strong> {{ jinete.dni_familiar_2 }}</p>
+                <p><strong>Domicilio del Familiar 2:</strong> {{ jinete.domicilio_familiar_2 }}</p>
+                <p><strong>Celular del Familiar 2:</strong> {{ jinete.celular_familiar_2 }}</p>
+                <p><strong>Email del Familiar 2:</strong> {{ jinete.email_familiar_2 }}</p>
+                <p><strong>Escolaridad del Familiar 2:</strong> {{ jinete.escolaridad_familiar_2 }}</p>
+                <p><strong>Ocupación del Familiar 2:</strong> {{ jinete.ocupacion_familiar_2 }}</p>
+
+                <p><strong>Propuesta de Trabajo Institucional:</strong> {{ jinete.propuesta_trabajo }}</p>
+                <p><strong>Condicion:</strong> {{ jinete.condicion }}</p>
+                <p><strong>Sede:</strong> {{ jinete.sede }}</p>
+                <p><strong>Dias:</strong> {{ jinete.dia }}</p>
+                <p><strong>Profesor o Terapeuta:</strong> {{ profesor_terapeuta.nombre }} {{profesor_terapeuta.apellido}}</p>
+                <p><strong>Conductor:</strong> {{ conductor.nombre }} {{conductor.apellido}}</p>
+                <p><strong>Caballo:</strong> {{ caballo.nombre }}</p>
+                <p><strong>Auxiliar de Pista:</strong> {{ auxiliar_pista.nombre}} {{auxiliar_pista.apellido}}</p>
+
+                <!-- Botones de Editar y Eliminar -->
+                <div class="flex justify-end mt-6 space-x-4">
+                    <a href="{{ url_for('jinetes_amazonas.editar', id=jinete.id) }}" 
+                       class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                       Editar
+                    </a>
+                    <form action="{{ url_for('jinetes_amazonas.eliminar', id=jinete.id) }}" method="POST">
+                        
+                        <button type="submit" 
+                                class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600" 
+                                onclick="return confirm('¿Estás seguro de que deseas eliminar este jinete/amazona? Esta acción no se puede deshacer.');">
+                            Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+
+    <!-- Sección de Documentos -->
+<div id="docsSection" class="p-6 bg-white rounded-lg shadow-md">
+    <!-- Filtros de búsqueda -->
+    <form method="GET" class="mb-4">
+        <!-- Fila para el campo de búsqueda y el título -->
+        <div class="flex items-center space-x-4 mb-4">
+            <input type="text" name="search" id="documentSearch" value="{{ search }}" placeholder="Buscar por título..." class="px-4 py-2 border rounded-md flex-grow max-w-xs">
+            
+            <select name="tipo" id="documentType" class="px-4 py-2 border rounded-md">
+                <option value="" {% if tipo == '' %}selected{% endif %}>Seleccionar tipo</option>
+                <option value="entrevista" {% if tipo == 'entrevista' %}selected{% endif %}>Entrevista</option>
+                <option value="evaluacion" {% if tipo == 'evaluacion' %}selected{% endif %}>Evaluacion</option>
+                <option value="planificaciones" {% if tipo == 'planificaciones' %}selected{% endif %}>Planificaciones</option>
+                <option value="evolucion" {% if tipo == 'evolucion' %}selected{% endif %}>Evolución</option>
+                <option value="cronicas" {% if tipo == 'cronicas' %}selected{% endif %}>Crónicas</option>
+                <option value="documental" {% if tipo == 'documental' %}selected{% endif %}>Documental</option>
+            </select>
+        </div>
+
+        <!-- Fila para el botón de filtrar y los selectores de orden -->
+        <div class="flex items-center space-x-4">
+            <select name="order_prop" id="orderField" class="px-4 py-2 border rounded-md">
+                <option value="titulo" {% if order_prop == 'titulo' %}selected{% endif %}>Título</option>
+                <option value="inserted_at" {% if order_prop == 'inserted_at' %}selected{% endif %}>Fecha de subida</option>
+            </select>
+
+            <select name="order" id="orderDirection" class="px-4 py-2 border rounded-md">
+                <option value="asc" {% if order == 'asc' %}selected{% endif %}>Ascendente</option>
+                <option value="desc" {% if order == 'desc' %}selected{% endif %}>Descendente</option>
+            </select>
+
+            <button type="submit" id="filterButton" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Filtrar</button>
+        </div>
+    </form>
+
+    <!-- Ordenar documentos -->
+    
+
+    <!-- Tabla de Documentos -->
+    <table class="min-w-full table-auto border-collapse">
+        <thead>
+            <tr class="border-b">
+                <th class="px-4 py-2 text-left">Nombre</th>
+                <th class="px-4 py-2 text-left">Tipo</th>
+                <th class="px-4 py-2 text-left">Fecha</th>
+                <th class="px-4 py-2 text-left">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="documentTable">
+            {% for documento in documentos %}
+            <tr class="border-b">
+                <td class="px-4 py-2 break-all overflow-hidden text-ellipsis">{{ documento.titulo }}</td>
+                <td class="px-4 py-2">{{ documento.tipo }}</td>
+                <td class="px-4 py-2">{{ documento.inserted_at.strftime('%d/%m/%Y') }}</td>
+                <td class="px-4 py-2">
+                    <!-- Selector de acciones -->
+                    <select class="actions-select" data-document-id="{{ documento.id }}">
+                        <option value="">Seleccione una acción</option>
+                        {% if check_permission(session, "ja_show") %}
+                        <option value="descargar" data-url="{{ url_for('jinetes_amazonas.descargar_documento', document_id=documento.id) }}">
+                        {% if documento.is_document %}
+                            Descargar
+                        {% else %}
+                            Ir al enlace
+                        {% endif %}
+                        </option>
+                        {% endif %}
+                        {% if check_permission(session, "ja_update") %}
+                        <option value="editar" data-url="{{ url_for('jinetes_amazonas.editar_documento', document_id=documento.id) }}">Editar</option>
+                        {% endif %}
+                        {% if check_permission(session, "ja_destroy") %}
+                        <option value="eliminar" data-url="{{ url_for('jinetes_amazonas.eliminar_documento', document_id=documento.id) }}">Eliminar</option>
+                        {% endif %}
+                    </select>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center px-4 py-2">No hay documentos disponibles.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Paginación -->
+    <div class="flex justify-between items-center mt-4">
+        <span class="text-gray-600">Página {{ pagina }} de {{ total_paginas }}</span>
+
+        <div class="flex space-x-2">
+            {% if pagina > 1 %}
+                <a href="{{ url_for('jinetes_amazonas.detalle',id=jinete.id, pagina=pagina-1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Anterior</a>
+            {% endif %}
+            
+            {% if pagina < total_paginas %}
+                <a href="{{ url_for('jinetes_amazonas.detalle',id=jinete.id, pagina=pagina+1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Siguiente</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Botones para agregar documentos -->
+<div class="flex flex-col space-y-4 mt-4">
+    <!-- Formulario para agregar enlace -->
+    <form method="POST" action="{{ url_for('jinetes_amazonas.subir_enlace') }}" class="flex flex-col space-y-2">
+        <input type="hidden" name="jinete_amazonas_id" value="{{ jinete.id }}">
+        <input type="url" name="enlace" placeholder="https://example.com" required class="px-4 py-2 border rounded-md">
+        <select class="actions-select" name="tipo_documento" id="tipo_documento" required>
+            <option value="entrevista" {% if tipo == 'entrevista' %}selected{% endif %}>Entrevista</option>
+            <option value="evaluacion" {% if tipo == 'evaluacion' %}selected{% endif %}>Evaluacion</option>
+            <option value="planificaciones" {% if tipo == 'planificaciones' %}selected{% endif %}>Planificaciones</option>
+            <option value="evolucion" {% if tipo == 'evolucion' %}selected{% endif %}>Evolución</option>
+            <option value="cronicas" {% if tipo == 'cronicas' %}selected{% endif %}>Crónicas</option>
+            <option value="documental" {% if tipo == 'documental' %}selected{% endif %}>Documental</option>
+        </select>
+        <button type="submit" class="bg-green-100 text-green-700 px-4 py-2 rounded-md hover:bg-green-200 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Agregar Enlace
+        </button>
+    </form>
+
+    <!-- Formulario para subir documento -->
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('jinetes_amazonas.subir_documento') }}" class="flex flex-col space-y-2">
+        <input type="hidden" name="jinete_amazonas_id" value="{{ jinete.id }}">
+        <input type="file" name="file" accept=".pdf,.doc,.docx,.jpg,.png" required>
+        <select class="actions-select" name="tipo_documento" id="tipo_documento" required>
+            <option value="entrevista" {% if tipo == 'entrevista' %}selected{% endif %}>Entrevista</option>
+            <option value="evaluacion" {% if tipo == 'evaluacion' %}selected{% endif %}>Evaluacion</option>
+            <option value="planificaciones" {% if tipo == 'planificaciones' %}selected{% endif %}>Planificaciones</option>
+            <option value="evolucion" {% if tipo == 'evolucion' %}selected{% endif %}>Evolución</option>
+            <option value="cronicas" {% if tipo == 'cronicas' %}selected{% endif %}>Crónicas</option>
+            <option value="documental" {% if tipo == 'documental' %}selected{% endif %}>Documental</option>
+        </select>
+        <button type="submit" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-md hover:bg-blue-200 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Subir
+        </button>
+    </form>
+</div>
+
+
+</div>
+       
+</div>
+
+    <script src="{{ url_for('static', filename='funcionalidad/script_informacion_general.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+        $('.actions-select').on('change', function() {
+        var action = $(this).val();
+        var documentId = $(this).data('document-id');
+        var url = $(this).find('option:selected').data('url');
+
+        if (action === 'eliminar') {
+            // Mostrar el mensaje de confirmación
+            var confirmacion = confirm("¿Estás seguro de que deseas eliminar este documento?");
+            
+            if (confirmacion) {
+                // Si el usuario confirma, se ejecuta la solicitud POST para eliminar
+                $.ajax({ //permite hacer un post sin necesidad de recargar la pagina, apenas se clickea el select se envia los datos al back
+                    url: url, //al ser ejecutadas en segundo plano, el flash ni redirect funcionan 
+                    type: 'POST', 
+                    success: function(response) {
+                        // Recargar la página para reflejar los cambios
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Ocurrió un error al eliminar el documento.');
+                    }
+                });
+            } else {
+                // Si el usuario cancela, reseteamos el selector
+                $(this).val('');
+            }
+        }
+
+        else if(action =="descargar"){
+            window.location.href = url;
+        }
+
+        else if(action =="editar"){
+            window.location.href = url;
+        }
+    });
+});
+
+    </script>
+{% endblock %}

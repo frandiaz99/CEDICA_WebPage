@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}Editar Documento Jinete/Amazona{% endblock %}
+
+{% block content %}
+
+<body class="bg-gray-100">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flex justify-center mt-4">
+            <div class="w-full max-w-2xl">
+                {% for category, message in messages %}
+                    <div class="bg-red-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                        <p class="text-lg font-semibold">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="max-w-4xl mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Editar Documento</h1>
+        <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('jinetes_amazonas.editar_documento', document_id=documento.id) }}" method="POST">
+            <!-- Nombre -->
+            <div class="mb-4">
+                <label for="nombre" class="block text-sm font-medium text-gray-700">Titulo</label>
+                <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ documento.titulo }}" placeholder="Ingrese titulo del documento">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Tipo de Documento</label>
+                <select id="tipo_documento" name="tipo_documento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                    <option value="" {% if tipo == '' %}selected{% endif %}>Seleccionar tipo</option>
+                    <option value="entrevista" {% if tipo == 'entrevista' %}selected{% endif %}>Entrevista</option>
+                    <option value="evaluacion" {% if tipo == 'evaluacion' %}selected{% endif %}>Evaluacion</option>
+                    <option value="planificaciones" {% if tipo == 'planificaciones' %}selected{% endif %}>Planificaciones</option>
+                    <option value="evolucion" {% if tipo == 'evolucion' %}selected{% endif %}>Evolución</option>
+                    <option value="cronicas" {% if tipo == 'cronicas' %}selected{% endif %}>Crónicas</option>
+                    <option value="documental" {% if tipo == 'documental' %}selected{% endif %}>Documental</option>
+                </select>
+            </div>
+
+            <!-- Botones de Guardar y Cancelar -->
+            <div class="flex justify-between mt-6">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Guardar Cambios</button>
+                <a href="{{ url_for('jinetes_amazonas.detalle', id=jinete_amazonas.id) }}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+{% endblock %}
