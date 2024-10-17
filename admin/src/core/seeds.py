@@ -1,4 +1,4 @@
-from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso # Importa el módulo equipo
+from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso, cobros # Importa el módulo equipo
 from datetime import datetime
 from itertools import chain 
 
@@ -170,7 +170,6 @@ def run():
         numero_afiliado="112233", 
         condicion="Personal Rentado", 
         fecha_cese=datetime(2025, 12, 11),
-        user_id=fede.id
     )
 
     empleado2 = equipo.create_empleado(
@@ -188,7 +187,6 @@ def run():
         numero_afiliado="445566", 
         condicion="Voluntario", 
         fecha_cese=datetime(2025, 11, 15),
-        user_id=mati.id
     )
 
     empleado3 = equipo.create_empleado(
@@ -206,7 +204,6 @@ def run():
         numero_afiliado="778899", 
         condicion="Personal Rentado", 
         fecha_cese=datetime(2025, 10, 1),
-        user_id=miguel.id
     )
 
     caballo1 = encuestre.create_encuestre(
