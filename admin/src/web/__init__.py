@@ -7,6 +7,7 @@ from src.web.controllers.auth import login_bp
 from src.web.controllers.encuestres import encuestre_bp
 from src.web.controllers.users import users_bp
 from src.web.controllers.pagos import pagos_bp
+from src.web.controllers.jinetes_amazonas import jinete_amazonas_bp
 from src.web.handlers.auth import is_authenticated
 from src.web.handlers.auth import check_permission
 from src.core import database
@@ -45,10 +46,6 @@ def create_app(env="development", static_folder="../../static"):
     def home():
         return render_template("home.html")
     
-    @app.route("/jinetes_amazonas")
-    def jinetes_amazonas():
-        return render_template("jinetes_amazonas.html")
-    
     
     app.register_error_handler(404, error.not_found_error)
     app.register_error_handler(403, error.forbidden)
@@ -65,6 +62,8 @@ def create_app(env="development", static_folder="../../static"):
     app.register_blueprint(users_bp)
 
     app.register_blueprint(pagos_bp)
+
+    app.register_blueprint(jinete_amazonas_bp)
 
     app.jinja_env.globals.update(is_authenticated=is_authenticated)
 

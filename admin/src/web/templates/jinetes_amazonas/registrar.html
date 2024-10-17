@@ -1,0 +1,518 @@
+{% extends "layout.html" %}
+
+{% block title %}Registrar Jinete/Amazona{% endblock %}
+
+{% block content %}
+<body class="bg-gray-100">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flex justify-center mt-4">
+            <div class="w-full max-w-2xl">
+                {% for category, message in messages %}
+                    <div class="bg-red-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                        <p class="text-lg font-semibold">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% set messages = None %}
+    {% endwith %}
+
+
+    <div class="max-w-4xl mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Registro de Jinete/Amazona</h1>
+        <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('jinetes_amazonas.registrar') }}" method="POST">
+            <!-- Nombre -->
+            <div class="mb-4">
+                <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+                <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre">
+            </div>
+
+            <!-- Apellido -->
+            <div class="mb-4">
+                <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
+                <input type="text" id="apellido" name="apellido" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el apellido">
+            </div>
+
+            <!-- DNI -->
+            <div class="mb-4">
+                <label for="dni" class="block text-sm font-medium text-gray-700">DNI</label>
+                <input type="text" id="dni" name="dni" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el DNI">
+            </div>
+
+            <!-- Edad -->
+            <div class="mb-4">
+                <label for="edad" class="block text-sm font-medium text-gray-700">Edad</label>
+                <input type="text" id="edad" name="edad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la edad">
+            </div>
+
+            <!-- Fecha de nacimiento -->
+            <div class="mb-4">
+                <label for="fecha_nacimiento" class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
+                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" max="{{ fecha_hoy }}">
+            </div>
+
+            <!-- Lugar de nacimiento (localidad) -->
+            <div class="mb-4">
+                <label for="lugar_nacimiento_localidad" class="block text-sm font-medium text-gray-700">Lugar de Nacimiento (Localidad)</label>
+                <input type="text" id="lugar_nacimiento_localidad" name="lugar_nacimiento_localidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la localidad">
+            </div>
+
+            <!-- Lugar de nacimiento (provincia) -->
+            <div class="mb-4">
+                <label for="lugar_nacimiento_provincia" class="block text-sm font-medium text-gray-700">Lugar de Nacimiento (Provincia)</label>
+                <input type="text" id="lugar_nacimiento_provincia" name="lugar_nacimiento_provincia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la provincia">
+            </div>
+
+            <!-- Domicilio actual -->
+            <div class="mb-4">
+                <label for="domicilio_actual" class="block text-sm font-medium text-gray-700">Domicilio Actual</label>
+                <input type="text" id="domicilio_actual" name="domicilio_actual" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el domicilio actual">
+            </div>
+
+            <!-- Teléfono -->
+            <div class="mb-4">
+                <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                <input type="text" id="telefono" name="telefono" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono">
+            </div>
+
+            <!-- Contacto de emergencia -->
+            <div class="mb-4">
+                <label for="contacto_emergencia" class="block text-sm font-medium text-gray-700">Contacto de Emergencia</label>
+                <input type="text" id="contacto_emergencia" name="contacto_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el contacto de emergencia">
+            </div>
+
+            <!-- Teléfono de emergencia -->
+            <div class="mb-4">
+                <label for="telefono_emergencia" class="block text-sm font-medium text-gray-700">Teléfono de Emergencia</label>
+                <input type="text" id="telefono_emergencia" name="telefono_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono de emergencia">
+            </div>
+
+            <!-- Becado -->
+            <div class="mb-4">
+                <label for="becado" class="block text-sm font-medium text-gray-700">¿Es Becado?</label>
+                <select id="becado" name="becado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="True">Sí</option>
+                    <option value="False">No</option>
+                </select>
+            </div>
+
+            <!-- Observaciones sobre la beca -->
+            <div class="mb-4">
+                <label for="beca_observaciones" class="block text-sm font-medium text-gray-700">Observaciones sobre la Beca</label>
+                <input type="text" id="beca_observaciones" name="beca_observaciones" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese observaciones sobre la beca">
+            </div>
+
+            <!-- Certificado de discapacidad -->
+            <div class="mb-4">
+                <label for="certificado_discapacidad" class="block text-sm font-medium text-gray-700">Certificado de Discapacidad</label>
+                <select id="certificado_discapacidad" name="certificado_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="si">Sí</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+
+            <!-- Diagnóstico de discapacidad -->
+            <div class="mb-4">
+                <label for="diagnostico_discapacidad" class="block text-sm font-medium text-gray-700">Diagnóstico de Discapacidad</label>
+                <select id="diagnostico_discapacidad" name="diagnostico_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="ECNE">ECNE</option>
+                    <option value="Lesión post-traumática">Lesión post-traumática</option>
+                    <option value="Mielomeningocele">Mielomeningocele</option>
+                    <option value="Esclerosis Múltiple">Esclerosis Múltiple</option>
+                    <option value="Escoliosis Leve">Escoliosis Leve</option>
+                    <option value="Secuelas de ACV">Secuelas de ACV</option>
+                    <option value="Discapacidad Intelectual">Discapacidad Intelectual</option>
+                    <option value="Trastorno del Espectro Autista">Trastorno del Espectro Autista</option>
+                    <option value="Trastorno del Aprendizaje">Trastorno del Aprendizaje</option>
+                    <option value="Trastorno por Déficit de Atención/Hiperactividad">Trastorno por Déficit de Atención/Hiperactividad</option>
+                    <option value="Trastorno de la Comunicación">Trastorno de la Comunicación</option>
+                    <option value="Trastorno de Ansiedad">Trastorno de Ansiedad</option>
+                    <option value="Síndrome de Down">Síndrome de Down</option>
+                    <option value="Retraso Madurativo">Retraso Madurativo</option>
+                    <option value="Psicosis">Psicosis</option>
+                    <option value="Trastorno de Conducta">Trastorno de Conducta</option>
+                    <option value="Trastornos del ánimo y afectivos">Trastornos del ánimo y afectivos</option>
+                    <option value="Trastorno Alimentario">Trastorno Alimentario</option>
+                    <option value="OTRO">OTRO</option>
+                </select>
+            </div>
+            
+
+            <!-- Tipo de discapacidad -->
+            <div class="mb-4">
+                <label for="tipo_discapacidad" class="block text-sm font-medium text-gray-700">Tipo de Discapacidad</label>
+                <select id="tipo_discapacidad" name="tipo_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="Mental">Mental</option>
+                    <option value="Motora">Motora</option>
+                    <option value="Sensorial">Sensorial</option>
+                    <option value="Visceral">Visceral</option>
+                </select>
+            </div>
+
+            <!-- Percibe asignación familiar -->
+            <div class="mb-4">
+                <label for="percibe_asignacion_familiar" class="block text-sm font-medium text-gray-700">¿Percibe Asignación Familiar?</label>
+                <select id="percibe_asignacion_familiar" name="percibe_asignacion_familiar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="True">Sí</option>
+                    <option value="False">No</option>
+                </select>
+            </div>
+
+            <!-- Asignación por hijo -->
+            <div class="mb-4">
+                <label for="asignacion_hijo" class="block text-sm font-medium text-gray-700">Asignación por Hijo</label>
+                <select id="asignacion_hijo" name="asignacion_hijo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="True">Sí</option>
+                    <option value="False">No</option>
+                </select>
+            </div>
+
+            <!-- Asignación por hijo con discapacidad -->
+            <div class="mb-4">
+                <label for="asignacion_hijo_discapacidad" class="block text-sm font-medium text-gray-700">Asignación por Hijo con Discapacidad</label>
+                <select id="asignacion_hijo_discapacidad" name="asignacion_hijo_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="True">Sí</option>
+                    <option value="False">No</option>
+                </select>
+            </div>
+
+            <!-- Asignación de ayuda escolar -->
+            <div class="mb-4">
+                <label for="asignacion_ayuda_escolar" class="block text-sm font-medium text-gray-700">Asignación de Ayuda Escolar</label>
+                <select id="asignacion_ayuda_escolar" name="asignacion_ayuda_escolar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="True">Sí</option>
+                    <option value="False">No</option>
+                </select>
+            </div>
+
+            <!-- Pensión -->
+            <div class="mb-4">
+                <label for="pension" class="block text-sm font-medium text-gray-700">Pensión</label>
+                <select id="pension" name="pension" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="si">Sí</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+
+            <!-- Obra social -->
+            <div class="mb-4">
+                <label for="obra_social" class="block text-sm font-medium text-gray-700">Obra Social</label>
+                <input type="text" id="obra_social" name="obra_social" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la obra social">
+            </div>
+
+            <!-- Número de afiliado -->
+            <div class="mb-4">
+                <label for="numero_afiliado" class="block text-sm font-medium text-gray-700">Número de Afiliado</label>
+                <input type="text" id="numero_afiliado" name="numero_afiliado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el número de afiliado">
+            </div>
+
+            <!-- Curatela -->
+            <div class="mb-4">
+                <label for="curatela" class="block text-sm font-medium text-gray-700">Curatela</label>
+                <select id="curatela" name="curatela" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="True">Sí</option>
+                    <option value="False">No</option>
+                </select>
+            </div>
+
+            <!-- Observaciones previsionales -->
+            <div class="mb-4">
+                <label for="observaciones_previsionales" class="block text-sm font-medium text-gray-700">Observaciones Previsionales</label>
+                <input type="text" id="observaciones_previsionales" name="observaciones_previsionales" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese las observaciones previsionales">
+            </div>
+
+            <!-- Institución escolar -->
+            <div class="mb-4">
+                <label for="institucion_escolar" class="block text-sm font-medium text-gray-700">Institución Escolar</label>
+                <input type="text" id="institucion_escolar" name="institucion_escolar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la institución escolar">
+            </div>
+
+            <!-- Dirección de la institución -->
+            <div class="mb-4">
+                <label for="direccion_institucion" class="block text-sm font-medium text-gray-700">Dirección de la Institución</label>
+                <input type="text" id="direccion_institucion" name="direccion_institucion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la dirección de la institución">
+            </div>
+
+            <!-- Teléfono de la institución -->
+            <div class="mb-4">
+                <label for="telefono_institucion" class="block text-sm font-medium text-gray-700">Teléfono de la Institución</label>
+                <input type="text" id="telefono_institucion" name="telefono_institucion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono de la institución">
+            </div>
+
+            <!-- Grado/Año actual -->
+            <div class="mb-4">
+                <label for="grado_anio_actual" class="block text-sm font-medium text-gray-700">Grado/Año Actual</label>
+                <input type="text" id="grado_anio_actual" name="grado_anio_actual" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el grado/año actual">
+            </div>
+
+            <!-- Observaciones de la institución -->
+            <div class="mb-4">
+                <label for="observaciones_institucion" class="block text-sm font-medium text-gray-700">Observaciones de la Institución</label>
+                <input type="text" id="observaciones_institucion" name="observaciones_institucion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese las observaciones de la institución">
+            </div>
+
+            <!-- Profesionales que atienden -->
+            <div class="mb-4">
+                <label for="profesionales_atienden" class="block text-sm font-medium text-gray-700">Profesionales que Atienden</label>
+                <input type="text" id="profesionales_atienden" name="profesionales_atienden" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese los profesionales que atienden">
+            </div>
+
+            <!-- Parentesco Familiar 1 -->
+            <div class="mb-4">
+                <label for="parentesco_familiar_1" class="block text-sm font-medium text-gray-700">Parentesco Familiar 1</label>
+                <input type="text" id="parentesco_familiar_1" name="parentesco_familiar_1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el parentesco del familiar 1">
+            </div>
+
+            <!-- Nombre Familiar 1 -->
+            <div class="mb-4">
+                <label for="nombre_familiar_1" class="block text-sm font-medium text-gray-700">Nombre Familiar 1</label>
+                <input type="text" id="nombre_familiar_1" name="nombre_familiar_1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre del familiar 1">
+            </div>
+
+            <!-- Apellido Familiar 1 -->
+            <div class="mb-4">
+                <label for="apellido_familiar_1" class="block text-sm font-medium text-gray-700">Apellido Familiar 1</label>
+                <input type="text" id="apellido_familiar_1" name="apellido_familiar_1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el apellido del familiar 1">
+            </div>
+
+            <!-- DNI Familiar 1 -->
+            <div class="mb-4">
+                <label for="dni_familiar_1" class="block text-sm font-medium text-gray-700">DNI Familiar 1</label>
+                <input type="text" id="dni_familiar_1" name="dni_familiar_1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el DNI del familiar 1">
+            </div>
+
+            <!-- Domicilio Familiar 1 -->
+            <div class="mb-4">
+                <label for="domicilio_familiar_1" class="block text-sm font-medium text-gray-700">Domicilio Familiar 1</label>
+                <input type="text" id="domicilio_familiar_1" name="domicilio_familiar_1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el domicilio del familiar 1">
+            </div>
+
+            <!-- Celular Familiar 1 -->
+            <div class="mb-4">
+                <label for="celular_familiar_1" class="block text-sm font-medium text-gray-700">Celular Familiar 1</label>
+                <input type="text" id="celular_familiar_1" name="celular_familiar_1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el celular del familiar 1">
+            </div>
+
+            <!-- Email Familiar 1 -->
+            <div class="mb-4">
+                <label for="email_familiar_1" class="block text-sm font-medium text-gray-700">Email Familiar 1</label>
+                <input type="text" id="email_familiar_1" name="email_familiar_1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el email del familiar 1">
+            </div>
+
+            <!-- Escolaridad Familiar 1 -->
+            <div class="mb-4">
+                <label for="escolaridad_familiar_1" class="block text-sm font-medium text-gray-700">Escolaridad Familiar 1</label>
+                <select id="escolaridad_familiar_1" name="escolaridad_familiar_1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="Primario">Primario</option>
+                    <option value="Secundario">Secundario</option>
+                    <option value="Terciario">Terciario</option>
+                    <option value="Universitario">Universitario</option>
+                </select>
+            </div>
+
+            <!-- Ocupación Familiar 1 -->
+            <div class="mb-4">
+                <label for="ocupacion_familiar_1" class="block text-sm font-medium text-gray-700">Ocupación Familiar 1</label>
+                <input type="text" id="ocupacion_familiar_1" name="ocupacion_familiar_1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la ocupación del familiar 1">
+            </div>
+
+            <!-- Parentesco Familiar 2 -->
+            <div class="mb-4">
+                <label for="parentesco_familiar_2" class="block text-sm font-medium text-gray-700">Parentesco Familiar 2</label>
+                <input type="text" id="parentesco_familiar_2" name="parentesco_familiar_2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el parentesco del familiar 2">
+            </div>
+
+            <!-- Nombre Familiar 2 -->
+            <div class="mb-4">
+                <label for="nombre_familiar_2" class="block text-sm font-medium text-gray-700">Nombre Familiar 2</label>
+                <input type="text" id="nombre_familiar_2" name="nombre_familiar_2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre del familiar 2">
+            </div>
+
+            <!-- Apellido Familiar 2 -->
+            <div class="mb-4">
+                <label for="apellido_familiar_2" class="block text-sm font-medium text-gray-700">Apellido Familiar 2</label>
+                <input type="text" id="apellido_familiar_2" name="apellido_familiar_2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el apellido del familiar 2">
+            </div>
+
+            <!-- DNI Familiar 2 -->
+            <div class="mb-4">
+                <label for="dni_familiar_2" class="block text-sm font-medium text-gray-700">DNI Familiar 2</label>
+                <input type="text" id="dni_familiar_2" name="dni_familiar_2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el DNI del familiar 2">
+            </div>
+
+            <!-- Domicilio Familiar 2 -->
+            <div class="mb-4">
+                <label for="domicilio_familiar_2" class="block text-sm font-medium text-gray-700">Domicilio Familiar 2</label>
+                <input type="text" id="domicilio_familiar_2" name="domicilio_familiar_2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el domicilio del familiar 2">
+            </div>
+
+            <!-- Celular Familiar 2 -->
+            <div class="mb-4">
+                <label for="celular_familiar_2" class="block text-sm font-medium text-gray-700">Celular Familiar 2</label>
+                <input type="text" id="celular_familiar_2" name="celular_familiar_2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el celular del familiar 2">
+            </div>
+
+            <!-- Email Familiar 2 -->
+            <div class="mb-4">
+                <label for="email_familiar_2" class="block text-sm font-medium text-gray-700">Email Familiar 2</label>
+                <input type="text" id="email_familiar_2" name="email_familiar_2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el email del familiar 2">
+            </div>
+
+            <!-- Escolaridad Familiar 2 -->
+            <div class="mb-4">
+                <label for="escolaridad_familiar_2" class="block text-sm font-medium text-gray-700">Escolaridad Familiar 2</label>
+                <select id="escolaridad_familiar_2" name="escolaridad_familiar_2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="Primario">Primario</option>
+                    <option value="Secundario">Secundario</option>
+                    <option value="Terciario">Terciario</option>
+                    <option value="Universitario">Universitario</option>
+                </select>
+            </div>
+
+            <!-- Ocupación Familiar 2 -->
+            <div class="mb-4">
+                <label for="ocupacion_familiar_2" class="block text-sm font-medium text-gray-700">Ocupación Familiar 2</label>
+                <input type="text" id="ocupacion_familiar_2" name="ocupacion_familiar_2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la ocupación del familiar 2">
+            </div>
+
+            <h2 class="text-2xl font-semibold mb-4">Trabajo en nuestra institución</h2>
+
+            <!-- Propuesta de trabajo institucional -->
+            <div class="mb-4">
+                <label for="propuesta_trabajo" class="block text-sm font-medium text-gray-700">Propuesta de trabajo institucional</label>
+                <select id="propuesta_trabajo" name="propuesta_trabajo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="Hipoterapia">Hipoterapia</option>
+                    <option value="Monta Terapéutica">Monta Terapéutica</option>
+                    <option value="Deporte Ecuestre Adaptado">Deporte Ecuestre Adaptado</option>
+                    <option value="Actividades Recreativas">Actividades Recreativas</option>
+                    <option value="Equitación">Equitación</option>
+                </select>
+            </div>
+
+            <!-- Condición -->
+            <div class="mb-4">
+                <label for="condicion" class="block text-sm font-medium text-gray-700">Condición</label>
+                <select id="condicion" name="condicion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="REGULAR">REGULAR</option>
+                    <option value="DE BAJA">DE BAJA</option>
+                </select>
+            </div>
+
+            <!-- Sede -->
+            <div class="mb-4">
+                <label for="sede" class="block text-sm font-medium text-gray-700">Sede</label>
+                <select id="sede" name="sede" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                    <option value="CASJ">CASJ</option>
+                    <option value="HLP">HLP</option>
+                    <option value="OTRO">OTRO</option>
+                </select>
+            </div>
+
+            <!-- Día -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Día</label>
+                <div class="mt-1">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="dia" value="Lunes" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <span class="ml-2 text-gray-700">Lunes</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="dia" value="Martes" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <span class="ml-2 text-gray-700">Martes</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="dia" value="Miércoles" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <span class="ml-2 text-gray-700">Miércoles</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="dia" value="Jueves" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <span class="ml-2 text-gray-700">Jueves</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="dia" value="Viernes" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <span class="ml-2 text-gray-700">Viernes</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="dia" value="Sábado" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <span class="ml-2 text-gray-700">Sábado</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" name="dia" value="Domingo" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <span class="ml-2 text-gray-700">Domingo</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Asociar profesor o terapeuta -->
+            <div class="mb-4">
+                <label for="profesor_terapeuta" class="block text-sm font-medium text-gray-700">Asociar Profesor o Terapeuta</label>
+                <select id="profesor_terapeuta" name="profesor_terapeuta" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
+                {% for terapeuta in terapeutas %}
+                    <option value="{{ terapeuta.id }}">{{ terapeuta.nombre }} {{terapeuta.apellido}} - {{ terapeuta.puesto_laboral }}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <!-- Asociar Conductor -->
+            <div class="mb-4">
+                <label for="conductor" class="block text-sm font-medium text-gray-700">Asociar Conductor</label>
+                <select id="conductor" name="conductor" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" >
+                    <option value="">Seleccione una opción</option>
+                {% for conductor in conductores %}
+                    <option value="{{ conductor.id }}">{{ conductor.nombre }} {{ conductor.apellido }}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <!-- Asociar caballo -->
+            <div class="mb-4">
+                <label for="caballo" class="block text-sm font-medium text-gray-700">Asociar Caballo</label>
+                <select id="caballo" name="caballo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" >
+                    <option value="">Seleccione una opción</option>
+                {% for caballo in caballos %}
+                    <option value="{{ caballo.id }}">{{ caballo.nombre }}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <!-- Asociar auxiliar de pista -->
+            <div class="mb-4">
+                <label for="auxiliar_pista" class="block text-sm font-medium text-gray-700">Asociar Auxiliar de Pista</label>
+                <select id="auxiliar_pista" name="auxiliar_pista" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" >
+                    <option value="">Seleccione una opción</option>
+                {% for auxiliar in auxiliares %}
+                    <option value="{{ auxiliar.id }}">{{ auxiliar.nombre }} {{ auxiliar.apellido }}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <!-- Botón de Enviar -->
+            <div class="text-center">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Guardar</button>
+            </div>
+        </form>
+        
+
+    </div>
+
+
+</body>
+{% endblock %}
