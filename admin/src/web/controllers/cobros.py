@@ -3,6 +3,7 @@ from src.core.cobros import Cobro
 from src.core.database import db
 from src.web.handlers.auth import check
 from src.core.equipo import Empleado
+from src.core.jinetes_amazonas import JineteAmazona
 from datetime import datetime
 from src.web.validadores.validador import (validar_tipo_pago, validar_monto, validar_fecha_pago, validar_descripcion, validar_beneficiario)
 cobros_bp = Blueprint('cobros', __name__, url_prefix='/cobros')
@@ -10,6 +11,8 @@ cobros_bp = Blueprint('cobros', __name__, url_prefix='/cobros')
 @cobros_bp.get('/')
 @check("registro_cobros_index")
 def index():
+
+    #Para busqueda
     tipo_pago = request.args.get('tipo_pago')
     fecha_inicio = request.args.get('fecha_inicio')
     fecha_fin = request.args.get('fecha_fin')
@@ -32,6 +35,12 @@ def index():
     if tipo_pago:
         query = query.filter(Cobro.tipo_pago == tipo_pago)
 
+    # Ordenar resultados
+    if orden == 'desc':
+        query = query.order_by(Cobro.fecha_pago.desc())
+    else:
+        query = query.order_by(Cobro.fecha_pago.asc())
+
     cobros = query.all()
 
     for cobro in cobros:
@@ -44,20 +53,18 @@ def index():
     if apellido:
         cobros = [cobro for cobro in cobros if apellido.lower() in cobro.beneficiario.lower()]
 
-    # Ordenar resultados
-    if orden == 'desc':
-        query = query.order_by(Cobro.fecha_pago.desc())
-    else:
-        query = query.order_by(Cobro.fecha_pago.asc())
+    jinetes = JineteAmazona.query.all()
 
-    return render_template('cobros/cobros.html', cobros=cobros)
+    return render_template('cobros/cobros.html', cobros=cobros, jinetes=jinetes)
 
 @cobros_bp.route('/registrar', methods=['GET', 'POST'])
 @check("registro_cobros_new")
 def registrar_cobro():
+    jinetes = JineteAmazona.query.all()
+    print(jinetes)
     if request.method == 'POST':
         # Obtener datos del formulario
-        jinete = request.form['jinete']
+        jinete_id = request.form['jinete']
         tipo_pago = request.form['tipo_pago']
         monto = request.form['monto']
         fecha_pago_str = request.form.get('fecha_pago')
@@ -79,7 +86,7 @@ def registrar_cobro():
             es_valido, mensaje_error = validar_funcion(*args)
             if not es_valido:
                 flash(mensaje_error, 'danger')
-                return redirect(url_for('cobros.registrar_cobro'))  # Redirige si hay error
+                return redirect(url_for('cobros.registrar_cobro', jinetes))
 
         # Crear el nuevo cobro
         if deuda == 'si':
@@ -87,7 +94,7 @@ def registrar_cobro():
         else:
             deuda = False
         nuevo_cobro = Cobro(
-            id_ja = jinete,
+            id_ja = jinete_id,
             fecha_pago=datetime.strptime(fecha_pago_str, '%Y-%m-%d'),
             tipo_pago=tipo_pago,
             monto=float(monto),
@@ -105,10 +112,10 @@ def registrar_cobro():
         except Exception as e:
             db.session.rollback()
             flash(f'Error al registrar el cobro: {str(e)}', 'danger')
-            return redirect(url_for('cobros.registrar_cobro'))
+            return redirect(url_for('cobros.registrar_cobro', jinetes))
 
     empleados = Empleado.query.all()
-    return render_template('cobros/registrar_cobro.html', empleados=empleados,fecha_hoy=datetime.today().date())
+    return render_template('cobros/registrar_cobro.html', empleados=empleados, jinetes=jinetes, fecha_hoy=datetime.today().date())
 
 @cobros_bp.route('/detalle/<int:id>', methods=['GET'])
 @check("registro_cobros_show")
@@ -119,7 +126,8 @@ def detalle_cobro(id):
     beneficiario = Empleado.query.filter_by(id=cobro.beneficiario).first()
     if beneficiario:
         cobro.beneficiario = beneficiario.nombre +" "+ beneficiario.apellido  
-    return render_template('cobros/detalle_cobro.html', cobro=cobro)
+    jinetes = JineteAmazona.query.all()
+    return render_template('cobros/detalle_cobro.html', cobro=cobro, jinetes=jinetes)
 
 @cobros_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @check("registro_cobros_update")
@@ -128,8 +136,11 @@ def editar_cobro(id):
     if cobro is None:
         abort(404) 
 
+    jinetes = JineteAmazona.query.all()
+
     if request.method == 'POST':
         # Obtener datos del formulario
+        jinete_id = request.form['jinete']
         tipo_pago = request.form['tipo_pago']
         monto = request.form['monto']
         fecha_pago_str = request.form.get('fecha_pago')
@@ -159,6 +170,7 @@ def editar_cobro(id):
                 return redirect(url_for('cobros.editar_cobro', id=id))  # Redirige si hay error
 
         # Actualizar los campos del pago
+        cobro.id_ja = jinete_id
         cobro.tipo_pago = tipo_pago
         cobro.monto = float(monto)
         cobro.fecha_pago = datetime.strptime(fecha_pago_str, '%Y-%m-%d')
@@ -170,7 +182,7 @@ def editar_cobro(id):
         try:
             db.session.commit()
             flash('El cobro se ha actualizado.', 'success')
-            return redirect(url_for('cobros.detalle_cobro', id=cobro.id))
+            return redirect(url_for('cobros.detalle_cobro', id=cobro.id, jinetes=jinetes))
         except Exception as e:
             db.session.rollback()
             flash(f'Error al actualizar el cobro: {str(e)}', 'danger')
@@ -180,7 +192,8 @@ def editar_cobro(id):
         'cobros/editar_cobro.html', 
         cobro=cobro, 
         empleados=empleados,
-        fecha_hoy=datetime.today().date()
+        fecha_hoy=datetime.today().date(),
+        jinetes=jinetes
     )
 
 @cobros_bp.route('/eliminar/<int:id>', methods=['POST'])

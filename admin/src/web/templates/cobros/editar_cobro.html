@@ -24,6 +24,19 @@
         <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('cobros.editar_cobro', id=cobro.id) }}"
             method="POST" enctype="multipart/form-data">
 
+            <!-- Jinete asociado -->
+            <div class="mb-4">
+                <label for="jinete" class="block text-sm font-medium text-gray-700">J&A</label>
+                <select
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="jinete" name="jinete" required>
+                    {% for jinete in jinetes %}
+                    <option value="{{ jinete.id }}" {% if cobro.id_ja==jinete.id %}selected{% endif %}>{{ jinete.nombre
+                        }} {{ jinete.apellido }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
             <!-- Tipo de Pago -->
             <div class="mb-4">
                 <label for="tipo_pago" class="block text-sm font-medium text-gray-700">Tipo de pago</label>

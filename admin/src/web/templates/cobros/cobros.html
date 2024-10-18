@@ -66,27 +66,34 @@
         <table class="min-w-full bg-white shadow-md rounded-lg">
             <thead class="bg-gray-100">
                 <tr>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">J&A</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Monto</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">J&A</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Monto</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">
                         <a href="{{ url_for('cobros.index', fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin'), tipo_pago=request.args.get('tipo_pago'), orden='asc') }}"
-                            class="text-gray-600 hover:underline">Fecha de Pago &#8593;</a>
+                            class="text-gray-600 hover:underline text-center">Fecha de Pago &#8595;</a>
                         |
                         <a href="{{ url_for('cobros.index', fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin'), tipo_pago=request.args.get('tipo_pago'), orden='desc') }}"
-                            class="text-gray-600 hover:underline">Fecha de Pago &#8595;</a>
+                            class="text-gray-600 hover:underline text-center">Fecha de Pago &#8593;</a>
                     </th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Medio de Pago</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Beneficiario</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Observaciones</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">En deuda</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium"></th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Medio de Pago</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Beneficiario</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Observaciones</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">En deuda</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center"></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="text-center">
                 {% if cobros %}
                 {% for cobro in cobros %}
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-2 border-b"></td>
+                    <td class="px-4 py-2 border-b">
+                        {% for jinete in jinetes %}
+                        {% if jinete.id == cobro.id_ja %}
+                        {{ jinete.nombre }}
+                        {{ jinete.apellido }}
+                        {% endif %}
+                        {% endfor %}
+                    </td>
                     <td class="px-4 py-2 border-b">{{ cobro.monto }}</td>
                     <td class="px-4 py-2 border-b">{{ cobro.fecha_pago.strftime('%Y-%m-%d') }}</td>
                     <td class="px-4 py-2 border-b">{{ "Efectivo" if cobro.tipo_pago == "efectivo" else "Tarjeta de
