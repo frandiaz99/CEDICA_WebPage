@@ -57,7 +57,7 @@ def index():
 def registrar_cobro():
     if request.method == 'POST':
         # Obtener datos del formulario
-        jinete = request.form['jinete'] #Cuando este la db J&A, cambiar en select para que no sea siempre 1.
+        jinete = request.form['jinete']
         tipo_pago = request.form['tipo_pago']
         monto = request.form['monto']
         fecha_pago_str = request.form.get('fecha_pago')

@@ -86,7 +86,7 @@
                 {% if cobros %}
                 {% for cobro in cobros %}
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-2 border-b">Jinete</td>
+                    <td class="px-4 py-2 border-b"></td>
                     <td class="px-4 py-2 border-b">{{ cobro.monto }}</td>
                     <td class="px-4 py-2 border-b">{{ cobro.fecha_pago.strftime('%Y-%m-%d') }}</td>
                     <td class="px-4 py-2 border-b">{{ "Efectivo" if cobro.tipo_pago == "efectivo" else "Tarjeta de
