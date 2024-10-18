@@ -214,7 +214,7 @@ def run():
         pelaje="Castaño",
         compra_donacion="Compra",
         fecha_ingreso=datetime.now(),
-        sede_asignada = "la plata",
+        sede_asignada = "CASJ",
         tipo_ja_asignado="Hipoterapia",
         
     )
@@ -227,7 +227,7 @@ def run():
         pelaje="Blanco",
         compra_donacion="Donación",
         fecha_ingreso=datetime.now(),
-        sede_asignada = "la plata",
+        sede_asignada = "HLP",
         tipo_ja_asignado="Monta Terapeutica",
         
     )
@@ -240,7 +240,7 @@ def run():
     pelaje="Negro",
     compra_donacion="Compra",
     fecha_ingreso=datetime.now(),
-    sede_asignada="Buenos Aires",
+    sede_asignada="AAAA",
     tipo_ja_asignado="Equitación",
     
 )

@@ -13,11 +13,13 @@ class Encuestre(db.Model):
     compra_donacion = db.Column(db.String(80), nullable=False)
     fecha_ingreso = db.Column(db.DateTime, default=datetime.now())
     sede_asignada = db.Column(db.String(100), nullable=True)
-    tipo_ja_asignado = db.Column(db.String(80), nullable = False)
+    tipo_ja_asignado = db.Column(db.String(80), nullable = True)
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     entrenadores_conductores = db.relationship('Empleado', secondary='encuestre_empleado',cascade="all, delete", back_populates='encuestres')
+
+    jinete_amazona = db.relationship('JineteAmazona', back_populates='encuestre')
 
     documentos = db.relationship('DocumentoEncuestre', back_populates='encuestre', cascade="all, delete-orphan")
 

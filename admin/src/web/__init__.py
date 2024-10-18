@@ -37,22 +37,18 @@ def create_app(env="development", static_folder="../../static"):
     @app.route("/")
     def login():
         return render_template("auth/login.html")
-        
-    
-    @app.route("/about")
-    def about():
-        return render_template("about.html")
     
     @app.route("/home")
     def home():
         return render_template("home.html")
     
+    @app.route("/perfil")
+    def perfil():
+        return render_template("auth/perfil.html")
     
     app.register_error_handler(404, error.not_found_error)
     app.register_error_handler(403, error.forbidden)
     app.register_error_handler(401, error.unauthorized)
-    
-    app.register_blueprint(issues_bp)
 
     app.register_blueprint(equipo_bp)
 

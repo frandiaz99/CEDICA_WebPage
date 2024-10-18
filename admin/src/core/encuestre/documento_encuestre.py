@@ -13,7 +13,7 @@ class DocumentoEncuestre(db.Model):
     is_document = db.Column(db.Boolean, nullable=False, default=True)
 
     encuestre_id = db.Column(db.Integer, db.ForeignKey('encuestres.id'), nullable=True)
-    #ja_id = db.Column(db.Integer, db.ForeignKey('ja.id'), nullable=True)
+    
 
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)

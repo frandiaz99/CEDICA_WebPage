@@ -88,6 +88,7 @@ class JineteAmazona(db.Model):
 
     #Relacion con caballo
     caballo = db.Column(db.Integer, db.ForeignKey('encuestres.id'), nullable=False)
+    encuestre = db.relationship('Encuestre', back_populates='jinete_amazona')
 
     # Relacionado con la gestión de archivos/documentos
     documentos = db.relationship('DocumentoJinete', backref='jinete_amazona', lazy=True, cascade="all")

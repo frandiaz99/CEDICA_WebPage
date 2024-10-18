@@ -397,9 +397,9 @@
                 <select id="propuesta_trabajo" name="propuesta_trabajo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     <option value="">Seleccione una opción</option>
                     <option value="Hipoterapia">Hipoterapia</option>
-                    <option value="Monta Terapéutica">Monta Terapéutica</option>
-                    <option value="Deporte Ecuestre Adaptado">Deporte Ecuestre Adaptado</option>
-                    <option value="Actividades Recreativas">Actividades Recreativas</option>
+                    <option value="Monta Terapéutica" >Monta Terapéutica</option>
+                    <option value="Deporte Ecuestre Adaptado" >Deporte Ecuestre Adaptado</option>
+                    <option value="Actividades Recreativas" >Actividades Recreativas</option>
                     <option value="Equitación">Equitación</option>
                 </select>
             </div>
@@ -514,5 +514,59 @@
     </div>
 
 
-</body>
+    <script>
+        $(document).ready(function() {
+            // Definir la URL base para la llamada AJAX
+            var urlBase = "{{ url_for('jinetes_amazonas.filtrar_caballos') }}";
+    
+            // Cuando se cambie la propuesta de trabajo o la sede
+            $('#propuesta_trabajo, #sede').on('change', function() {
+                var propuestaTrabajo = $('#propuesta_trabajo').val();
+                var sede = $('#sede').val();
+    
+                // Llamar a la función de filtrado si se selecciona al menos una opción
+                if (propuestaTrabajo || sede) {
+                    filtrarCaballos(propuestaTrabajo, sede);
+                } else {
+                    // Si no hay ninguna selección, vaciar el select de caballos
+                    $('#caballo').empty();
+                    $('#caballo').append('<option value="">Seleccione una opción</option>');
+                }
+            });
+    
+            // Función para filtrar los caballos
+            function filtrarCaballos(propuestaTrabajo, sede) {
+                $.ajax({
+                    url: urlBase,  // Usar la URL base definida arriba
+                    type: 'GET',
+                    data: {
+                        propuesta_trabajo: propuestaTrabajo,
+                        sede: sede
+                    },
+                    success: function(response) {
+                        // Limpiar el select de caballos
+                        $('#caballo').empty();
+                        $('#caballo').append('<option value="">Seleccione una opción</option>');
+    
+                        // Añadir los caballos filtrados al select
+                        if (response.caballos.length > 0) {
+                            $.each(response.caballos, function(index, caballo) {
+                                $('#caballo').append('<option value="' + caballo.id + '">' + caballo.nombre + '</option>');
+                            });
+                        } else {
+                            $('#caballo').append('<option value="">No se encontraron caballos</option>');
+                        }
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            }
+        });
+    </script>
+    
+    
+    
+
+
 {% endblock %}

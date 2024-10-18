@@ -263,7 +263,7 @@ def editar_encuestre(id):
         encuestre_aux.sede_asignada = request.form['sede_asignada']
         entrenadores_conductores_ids = request.form.getlist('entrenadores_conductores')
 
-        if not (encuestre_aux.nombre and encuestre_aux.sexo and encuestre_aux.raza and encuestre_aux.pelaje and encuestre_aux.compra_donacion and encuestre_aux.sede_asignada and entrenadores_conductores_ids and encuestre_aux.tipo_ja_asignado):
+        if not (encuestre_aux.nombre and encuestre_aux.sexo and encuestre_aux.raza and encuestre_aux.pelaje and encuestre_aux.compra_donacion and encuestre_aux.sede_asignada and entrenadores_conductores_ids):
             flash(' Faltan completar campos', 'danger')
             return redirect(url_for('encuestre.registrar_encuestre'))
 
@@ -273,7 +273,6 @@ def editar_encuestre(id):
             (validar_raza, [encuestre_aux.raza]),
             (validar_pelaje, [encuestre_aux.pelaje]),
             (validar_compra_donacion, [encuestre_aux.compra_donacion]),
-            (validar_tipo_ja_asignado, [encuestre_aux.tipo_ja_asignado]),
             (validar_entrenadores_conductores, [entrenadores_conductores_ids]),
             (validar_sede_asignada, [encuestre_aux.ede_asignada])
         ]

@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}CEDICA - Equinoterapia{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -12,20 +12,35 @@
 
 {% block content %}
 {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="mb-4">
-                    {% for category, message in messages %}
-                    <div class="bg-green-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
-                        <p class="text-lg font-semibold">{{ message }}</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-            {% set messages = None %}
-            {% endwith %}
+    {% if messages %}
+        <div class="mb-4">
+            {% for category, message in messages %}
+            <div class="bg-green-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                <p class="text-lg font-semibold">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% set messages = None %}
+{% endwith %}
 
+<section class="text-center py-12 bg-gray-100">
+    <h1 class="text-4xl font-bold text-gray-800">Bienvenidos a CEDICA</h1>
+    <p class="text-xl text-gray-600 mt-6 mx-auto max-w-2xl">
+        CEDICA es una ONG dedicada a mejorar la calidad de vida de personas con diversas condiciones físicas, 
+        mentales y emocionales a través de la equinoterapia. Nuestro enfoque integral combina el poder terapéutico 
+        de los caballos con un equipo de profesionales altamente capacitados para brindar un espacio seguro y de 
+        crecimiento personal.
+    </p>
+</section>
 
-<h1 class="bg-orange-500">Inicio</h1>
-<p>Página de inicio de la aplicación</p>
-<a href="{{ url_for('about') }}">About</a>
+<section class="py-12 bg-white">
+    <div class="max-w-5xl mx-auto text-center">
+        <h2 class="text-3xl font-semibold text-gray-800">¿Qué es la Equinoterapia?</h2>
+        <p class="mt-4 text-lg text-gray-600">
+            La equinoterapia es una terapia asistida con caballos que busca desarrollar habilidades motoras, cognitivas y emocionales en sus participantes. 
+            En CEDICA, nuestros caballos se convierten en compañeros esenciales en el proceso terapéutico, creando un entorno inclusivo y transformador.
+        </p>
+    </div>
+</section>
 {% endblock %}

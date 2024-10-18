@@ -450,6 +450,32 @@ def editar(id):
     fecha_hoy = datetime.now().strftime('%Y-%m-%d')
     return render_template("jinetes_amazonas/editar_jinete.html", jinete=jinete_amazonas_aux, fecha_hoy=fecha_hoy, terapeutas=terapeutas, auxiliares=auxiliares, caballos=caballos, conductores=conductores)
 
+@jinete_amazonas_bp.route('/filtrar_caballos', methods=['GET'])
+def filtrar_caballos():
+    propuesta_trabajo = request.args.get('propuesta_trabajo')
+    sede = request.args.get('sede')     
+
+    print("sedeeeeeeeeeeee--------------------------> ", sede)
+
+    # Crear una consulta base
+    query = Encuestre.query
+
+    # Añadir filtros opcionales basados en los parámetros presentes
+    if propuesta_trabajo and sede == "":
+        query = query.filter(Encuestre.tipo_ja_asignado == propuesta_trabajo)
+    if sede and propuesta_trabajo == "":
+        query = query.filter(Encuestre.sede_asignada == sede)
+
+    # Ejecutar la consulta
+    caballos = query.all()
+
+    # Serializar los caballos en formato JSON
+    caballos_data = [{"id": caballo.id, "nombre": caballo.nombre} for caballo in caballos]
+
+    return jsonify({"caballos": caballos_data})
+
+
+
 # Eliminar un Jinete o Amazona
 @jinete_amazonas_bp.route("/eliminar/<int:id>", methods=['POST'])
 @check("ja_destroy")
