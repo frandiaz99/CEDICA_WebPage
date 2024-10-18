@@ -4,29 +4,30 @@
 
 {% block content %}
 <div class="bg-white p-6 rounded-lg shadow-md">
-    
+
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        <div class="flex justify-center mt-4">
-            <div class="w-full max-w-2xl">
-                {% for category, message in messages %}
-                    <div class="bg-red-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
-                        <p class="text-lg font-semibold">{{ message }}</p>
-                    </div>
-                {% endfor %}
+    <div class="flex justify-center mt-4">
+        <div class="w-full max-w-2xl">
+            {% for category, message in messages %}
+            <div class="bg-red-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                <p class="text-lg font-semibold">{{ message }}</p>
             </div>
+            {% endfor %}
         </div>
+    </div>
     {% endif %}
     {% endwith %}
-    
-    <h1 class="text-2xl font-bold mb-6 text-gray-700">Lista de Jinetes y Amazonas</h1>
+
+    <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Lista de Jinetes y Amazonas</h1>
 
     <!-- Contenedor para el botón y filtros -->
     <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Botón de registro -->
         {% if check_permission(session, "ja_new") %}
         <div class="flex justify-start">
-            <a href="{{ url_for('jinetes_amazonas.registrar') }}" class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-all duration-200 ease-in-out transform hover:scale-105">
+            <a href="{{ url_for('jinetes_amazonas.registrar') }}"
+                class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-all duration-200 ease-in-out transform hover:scale-105">
                 Registrar Jinete/Amazona
             </a>
         </div>
@@ -34,16 +35,20 @@
 
         <!-- Formulario de búsqueda y filtros -->
         <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 w-full">
-            <input type="text" name="search" placeholder="Buscar..." value="{{ search }}" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+            <input type="text" name="search" placeholder="Buscar..." value="{{ search }}"
+                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
 
-            <select name="filter_by" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+            <select name="filter_by"
+                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
                 <option value="nombre" {% if filter_by=='nombre' %}selected{% endif %}>Nombre</option>
                 <option value="apellido" {% if filter_by=='apellido' %}selected{% endif %}>Apellido</option>
                 <option value="dni" {% if filter_by=='dni' %}selected{% endif %}>DNI</option>
-                <option value="profesionales_atienden" {% if filter_by=='profesionales_atienden' %}selected{% endif %}>Profesionales</option>
+                <option value="profesionales_atienden" {% if filter_by=='profesionales_atienden' %}selected{% endif %}>
+                    Profesionales</option>
             </select>
 
-            <select id="order_prop" name="order_prop" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+            <select id="order_prop" name="order_prop"
+                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
                 <option value="nombre" {% if order_prop=='nombre' %}selected{% endif %}>Nombre</option>
                 <option value="apellido" {% if order_prop=='apellido' %}selected{% endif %}>Apellido</option>
             </select>
@@ -53,27 +58,29 @@
                 <option value="desc" {% if order=='desc' %}selected{% endif %}>Descendente</option>
             </select>
 
-            <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
+            <button type="submit"
+                class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
         </form>
     </div>
 
     <!-- Tabla de resultados -->
     <div class="overflow-x-auto">
-        <table class="min-w-full bg-white shadow-md rounded-lg">
+        <table class="min-w-full bg-white shadow-md rounded-lg text-center">
             <thead class="bg-gray-100">
                 <tr>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Nombre</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Apellido</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">DNI</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Edad</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium">Profesionales</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Nombre</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Apellido</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">DNI</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Edad</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Profesionales</th>
                 </tr>
             </thead>
             <tbody>
                 {% for ja in jinetes %}
                 <tr class="hover:bg-gray-50">
                     {% if check_permission(session, "ja_show") %}
-                    <td class="px-4 py-2 border-b"><a href="{{ url_for('jinetes_amazonas.detalle', id=ja.id) }}" class="text-blue-600 hover:underline">{{ ja.nombre }}</a></td>
+                    <td class="px-4 py-2 border-b"><a href="{{ url_for('jinetes_amazonas.detalle', id=ja.id) }}"
+                            class="text-blue-600 hover:underline">{{ ja.nombre }}</a></td>
                     {% endif %}
                     <td class="px-4 py-2 border-b">{{ ja.apellido }}</td>
                     <td class="px-4 py-2 border-b">{{ ja.dni }}</td>
@@ -91,12 +98,14 @@
 
         <div class="flex space-x-2">
             {% if pagina > 1 %}
-                <a href="{{ url_for('jinetes_amazonas.index', pagina=pagina-1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Anterior</a>
+            <a href="{{ url_for('jinetes_amazonas.index', pagina=pagina-1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}"
+                class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Anterior</a>
             {% endif %}
-            
-            {% if pagina < total_paginas %}
-                <a href="{{ url_for('jinetes_amazonas.index', pagina=pagina+1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}" class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Siguiente</a>
-            {% endif %}
+
+            {% if pagina < total_paginas %} <a
+                href="{{ url_for('jinetes_amazonas.index', pagina=pagina+1, search=search, filter_by=filter_by, order_prop=order_prop, order=order) }}"
+                class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Siguiente</a>
+                {% endif %}
         </div>
     </div>
 

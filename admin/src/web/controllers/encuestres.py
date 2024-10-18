@@ -29,7 +29,7 @@ def index():
 
     :return: Renderiza la plantilla 'encuestre/encuestre.html' con los caballos y parámetros de búsqueda.
     """
-    registros_por_pagina = 1
+    registros_por_pagina = 10
     
     search = request.args.get('search', '')
     filter_by = request.args.get('filter_by', 'nombre')  

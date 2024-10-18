@@ -23,7 +23,7 @@
 {% endwith %}
 
 <div class="bg-white p-6 rounded-lg shadow-md">
-    <h1 class="text-2xl font-bold mb-6 text-gray-700">Lista de usuarios</h1>
+    <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Lista de usuarios</h1>
 
     <!-- Ver si conviene poner order_prop y order debajo de los otros 2, asi no confundimos los filtros para la busqueda y el resultado-->
 
@@ -32,14 +32,14 @@
         <!-- Botón de registro -->
         <div class="flex items-center justify-start text-center">
             <button type="button"
-                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 text-center md:w-auto md:h-auto w-auto transition-colors duration-200"
+                class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-all duration-200 ease-in-out transform hover:scale-105"
                 onclick="registrarUsuario()">
                 Registrar nuevo usuario
             </button>
         </div>
 
         <!-- Formulario de búsqueda y filtros -->
-        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 w-full">
+        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-2 w-full">
             <input type="text" name="search" placeholder="Buscar..." value="{{ search }}"
                 class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
 
@@ -171,13 +171,11 @@
     }
 
     function actualizarUsuario(id) {
-        const url = "{{ url_for('users.actualizar_usuario', id=0) }}".replace(/0/, id);
-        window.open(url, '_blank');
+        window.location.href = "{{ url_for('users.actualizar_usuario', id=0) }}".replace(/0/, id);
     }
 
     function registrarUsuario() {
-        const url = "{{ url_for('users.crear_usuario') }}";
-        window.open(url, '_blank');
+        window.location.href = "{{ url_for('users.crear_usuario') }}";
     }
 </script>
 

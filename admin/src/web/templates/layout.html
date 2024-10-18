@@ -80,7 +80,7 @@
                     </div>
                 </div>
                 <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                    <span class="text-gray-300 text-sm mr-2">Hola {{ session['user_alias'] }}</span>
+                    <span class="text-gray-300 text-sm mr-2">Bienvenido, {{ session['user_alias'] }}.</span>
                     <!-- Profile dropdown -->
                     <div class="relative ml-3">
                         <div>
@@ -100,7 +100,8 @@
                         <div id="user-dropdown"
                             class="hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                             role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
-                            <a href="{{url_for('perfil')}}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
+                            <a href="{{url_for('perfil')}}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
                                 tabindex="-1" id="user-menu-item-0">Perfil</a>
                             <a href="{{url_for('auth.logout')}}"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
