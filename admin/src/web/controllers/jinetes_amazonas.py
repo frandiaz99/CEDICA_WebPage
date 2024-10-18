@@ -196,9 +196,9 @@ def registrar():
         
 
         # Validar que los campos requeridos no estén vacíos
-        if not (nombre and apellido and dni and edad and fecha_nacimiento_str and lugar_nacimiento_localidad and lugar_nacimiento_provincia and domicilio_actual and telefono and contacto_emergencia and telefono_emergencia and becado and certificado_discapacidad and percibe_asignacion_familiar and asignacion_hijo and asignacion_hijo_discapacidad and asignacion_ayuda_escolar and curatela and propuesta_trabajo and sede and dia and caballo and auxiliar_pista and profesor_terapeuta and conductor and condicion):
-            flash('Faltan completar campos obligatorios', 'danger')
-            return redirect(url_for('jinetes_amazonas.registrar'))
+        #if not (nombre and apellido and dni and edad and fecha_nacimiento_str and lugar_nacimiento_localidad and lugar_nacimiento_provincia and domicilio_actual and telefono and contacto_emergencia and telefono_emergencia and becado and certificado_discapacidad and percibe_asignacion_familiar and asignacion_hijo and asignacion_hijo_discapacidad and asignacion_ayuda_escolar and curatela and propuesta_trabajo and sede and dia and caballo and auxiliar_pista and profesor_terapeuta and conductor and condicion):
+         #   flash('Faltan completar campos obligatorios', 'danger')
+          #  return redirect(url_for('jinetes_amazonas.registrar'))
         
          # Verificar si ya existe un jinete/amazona con el mismo DNI
         dni_aux = jinetes_amazonas.JineteAmazona.query.filter_by(dni=dni).first()
