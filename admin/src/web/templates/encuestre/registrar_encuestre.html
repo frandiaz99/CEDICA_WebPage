@@ -25,7 +25,7 @@
         <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('encuestre.registrar_encuestre') }}" method="POST">
             <div class="mb-4">
                 <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-                <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre del caballo">
+                <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre del caballo" value="{{ nombre if nombre else ''}}">
             </div>
 
             <div class="mb-4">
@@ -43,12 +43,12 @@
 
             <div class="mb-4">
                 <label for="raza" class="block text-sm font-medium text-gray-700">Raza</label>
-                <input type="text" id="raza" name="raza" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la raza">
+                <input type="text" id="raza" name="raza" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la raza" value="{{ raza if raza else ''}}">
             </div>
 
             <div class="mb-4">
                 <label for="pelaje" class="block text-sm font-medium text-gray-700">Pelaje</label>
-                <input type="text" id="pelaje" name="pelaje" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el color del pelaje">
+                <input type="text" id="pelaje" name="pelaje" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el color del pelaje" value="{{ pelaje if pelaje else ''}}">
             </div>
 
             <div class="mb-4">
@@ -66,7 +66,11 @@
 
             <div class="mb-4">
                 <label for="sede_asignada" class="block text-sm font-medium text-gray-700">Sede Asignada</label>
-                <input type="text" id="sede_asignada" name="sede_asignada" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la sede asignada">
+                <select id="sede_asignada" name="sede_asignada" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="" disabled selected>Seleccione una sede</option>
+                    <option value="CASJ">CASJ</option>
+                    <option value="HLP">HLP</option>
+                </select>
             </div>
 
             <div class="mb-4">

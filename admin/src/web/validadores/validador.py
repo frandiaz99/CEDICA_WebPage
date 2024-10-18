@@ -518,15 +518,16 @@ def validar_entrenadores_conductores(entrenadores_conductores_ids):
 
 # Validar sede asignada (si fuera necesario)
 def validar_sede_asignada(sede_asignada):
-    """Valida la sede asignada sea ingresada.
+    """Valida la sede asignada sea una de las permitidas.
     
     Args: 
         sede_asignada(str): tipo a validar
     
     Returns:
-        turple: (bool,str) Retorna un booleano indicando si es válida y un mensaje de error.
+        turple: (bool) Retorna un booleano indicando si es válida y un mensaje de error.
     
     """
-    if not sede_asignada:
-        return False, "La sede asignada es obligatoria."
+    sedes_permitidas = ['CASJ', 'HLP', ]
+    if sede_asignada not in sedes_permitidas:
+        return False, f"La sede asignada debe ser uno de los siguientes: {', '.join(sedes_permitidas)}."
     return True, ""
