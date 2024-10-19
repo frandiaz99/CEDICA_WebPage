@@ -1,0 +1,114 @@
+{% extends "layout.html" %}
+
+{% block title %}Registrar Encuestre{% endblock %}
+
+{% block content %}
+<body class="bg-gray-100">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flex justify-center mt-4">
+            <div class="w-full max-w-2xl">
+                {% for category, message in messages %}
+                    <div class="bg-red-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                        <p class="text-lg font-semibold">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    {% set messages = None %}
+    {% endwith %}
+
+
+    <div class="max-w-4xl mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Registro de Caballo</h1>
+        <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('encuestre.registrar_encuestre') }}" method="POST">
+            <div class="mb-4">
+                <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+                <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre del caballo" value="{{ nombre if nombre else ''}}">
+            </div>
+
+            <div class="mb-4">
+                <label for="fecha_nacimiento" class="block text-sm font-medium text-gray-700" >Fecha de Nacimiento</label>
+                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" max="{{ fecha_hoy }}">
+            </div>
+
+            <div class="mb-4">
+                <label for="sexo" class="block text-sm font-medium text-gray-700">Sexo</label>
+                <select id="sexo" name="sexo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" >
+                    <option value="Macho">Macho</option>
+                    <option value="Hembra">Hembra</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="raza" class="block text-sm font-medium text-gray-700">Raza</label>
+                <input type="text" id="raza" name="raza" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la raza" value="{{ raza if raza else ''}}">
+            </div>
+
+            <div class="mb-4">
+                <label for="pelaje" class="block text-sm font-medium text-gray-700">Pelaje</label>
+                <input type="text" id="pelaje" name="pelaje" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el color del pelaje" value="{{ pelaje if pelaje else ''}}">
+            </div>
+
+            <div class="mb-4">
+                <label for="tipo_ingreso" class="block text-sm font-medium text-gray-700">Compra/Donación</label>
+                <select id="tipo_ingreso" name="tipo_ingreso" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="Compra">Compra</option>
+                    <option value="Donación">Donación</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="fecha_ingreso" class="block text-sm font-medium text-gray-700">Fecha de Ingreso</label>
+                <input type="date" id="fecha_ingreso" name="fecha_ingreso" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" max="{{ fecha_hoy }}">
+            </div>
+
+            <div class="mb-4">
+                <label for="sede_asignada" class="block text-sm font-medium text-gray-700">Sede Asignada</label>
+                <select id="sede_asignada" name="sede_asignada" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="" disabled selected>Seleccione una sede</option>
+                    <option value="CASJ">CASJ</option>
+                    <option value="HLP">HLP</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="entrenadores_conductores" class="block text-sm font-medium text-gray-700">Asociar Entrenadores y Conductores</label>
+                <select id="entrenadores_conductores" name="entrenadores_conductores" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" multiple="multiple">
+                {% for empleado in empleados %}
+                    <option value="{{ empleado.id }}">{{ empleado.nombre }} - {{ empleado.puesto_laboral }}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <!--<div class="mb-4">
+                <label for="tipo_ja_asigado" class="block text-sm font-medium text-gray-700">Tipo de J&A Asignados</label>
+                <select id="tipo_ja" name="tipo_ja_asignado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                    <option value="Hipoterapia" selected>Hipoterapia</option>
+                    <option value="Monta Terapéutica">Monta Terapéutica</option>
+                    <option value="Deporte Ecuestre Adaptado">Deporte Ecuestre Adaptado</option>
+                    <option value="Actividades Recreativas">Actividades Recreativas</option>
+                    <option value="Equitación">Equitación</option>
+                </select>
+            </div>
+            -->
+            <div class="text-center">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Guardar</button>
+            </div>
+        </form>
+        
+
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#entrenadores_conductores').select2({
+                placeholder: "Escribe para buscar entrenadores/conductores",
+                allowClear: true
+            });
+        });
+    </script>
+
+</body>
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends "layout.html" %}
+
+{% block title %}Detalle_Empleado{% endblock %}
+
+{% block content %}
+
+<body class="bg-gray-100"></body>
+<div class="max-w-4xl mx-auto mt-10">
+    <h1 class="text-3xl font-bold text-center mb-6">Detalle de Empleado</h1>
+    
+    <!-- Sección de pestañas -->
+    <div class="flex justify-center mb-6">
+        <button id="infoBtn"
+            class="tab-button bg-blue-500 text-white px-4 py-2 rounded-l-md focus:outline-none">Información
+            General</button>
+        <button id="docsBtn"
+            class="tab-button bg-gray-200 text-gray-700 px-4 py-2 rounded-r-md focus:outline-none">Documentos</button>
+    </div>
+
+    <!-- Sección de Información General -->
+    <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-semibold mb-4">Información General</h2>
+        <p><strong>Nombre:</strong> {{ empleado.nombre }}</p>
+        <p><strong>Apellido:</strong> {{ empleado.apellido }}</p>
+        <p><strong>DNI:</strong> {{ empleado.dni }}</p>
+        <p><strong>Domicilio:</strong> {{ empleado.domicilio }}</p>
+        <p><strong>Email:</strong> {{ empleado.email }}</p>
+        <p><strong>Localidad:</strong> {{ empleado.localidad }}</p>
+        <p><strong>Teléfono:</strong> {{ empleado.telefono }}</p>
+        <p><strong>Profesión:</strong> {{ empleado.profesion }}</p>
+        <p><strong>Puesto Laboral:</strong> {{ empleado.puesto_laboral }}</p>
+        <p><strong>Fecha de Inicio:</strong> {{ empleado.fecha_inicio.strftime('%Y-%m-%d') }}</p>
+        <p><strong>Fecha de Cese:</strong> {% if empleado.fecha_cese %}{{ empleado.fecha_cese.strftime('%Y-%m-%d') }}{%
+            else %}N/A{% endif %}</p>
+        <p><strong>Contacto de Emergencia:</strong> {{ empleado.contacto_emergencia }}</p>
+        <p><strong>Obra Social:</strong> {{ empleado.obra_social }}</p>
+        <p><strong>Número de Afiliado:</strong> {{ empleado.numero_afiliado }}</p>
+        <p><strong>Condición:</strong> {{ empleado.condicion }}</p>
+        <p><strong>Activo:</strong> {{ "Sí" if empleado.activo else "No" }}</p>
+    </div>
+    <div class="flex justify-end mt-6 space-x-4">
+        <a href="{{ url_for('equipo.editar_empleado', id=empleado.id) }}" 
+           class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+           Editar
+        </a>
+        <form action="{{ url_for('equipo.eliminar_empleado', id=empleado.id) }}" method="POST">
+            
+            <button type="submit" 
+                    class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600" 
+                    onclick="return confirm('¿Estás seguro de que deseas eliminar este empleado? Esta acción no se puede deshacer.');">
+                Eliminar
+            </button>
+        </form>
+    </div>
+    <div id="docsSection" class="p-6 bg-white rounded-lg shadow-md">
+        <!-- Tabla de Documentos -->
+        <table class="min-w-full table-auto border-collapse">
+            <thead>
+                <tr class="border-b">
+                    <th class="px-4 py-2 text-left">Nombre</th>
+                    <th class="px-4 py-2 text-left">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="documentTable">
+                {% for documento in documentos %}
+                <tr class="border-b">
+                    <td class="px-4 py-2">{{ documento.titulo }}</td>
+                    <td class="px-4 py-2">
+                        <!-- Selector de acciones -->
+                        <select class="actions-select" data-document-id="{{ documento.id }}">
+                            <option value="" selected disabled>Seleccionar acción</option>
+                            {% if check_permission(session, "equipo_show") %}
+                            <option value="eliminar" data-url="{{ url_for('equipo.eliminar_documento', document_id=documento.id) }}">Eliminar</option>
+                            {% endif %}
+                            {% if check_permission(session, "equipo_destroy") %}
+                            <option value="descargar" data-url="{{ url_for('equipo.descargar_documento', document_id=documento.id) }}">Descargar</option>
+                            {% endif %}
+                        </select>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center px-4 py-2">No hay documentos disponibles.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <!-- Botones para agregar documentos -->
+        <div class="flex items-center space-x-4 mt-4">
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('equipo.subir_documento') }}"
+                style="display: flex; align-items: center; gap: 10px;">
+
+                <button type="submit"
+                    class="bg-blue-100 text-blue-700 px-4 py-2 rounded-md hover:bg-blue-200 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Subir
+                </button>
+                <input type="hidden" name="empleado_id" value="{{ empleado.id }}">
+                <input type="file" name="file" accept=".pdf,.doc,.docx,.jpg,.png" required>
+
+            </form>
+        </div>
+       
+    </div>
+</div>
+
+</div>
+<script src="{{ url_for('static', filename='funcionalidad/script_informacion_general.js') }}"></script>
+<script>
+    $(document).ready(function() {
+    $('.actions-select').on('change', function() {
+    var action = $(this).val();
+    var documentId = $(this).data('document-id');
+    var url = $(this).find('option:selected').data('url');
+
+    if (action === 'eliminar') {
+        // Mostrar el mensaje de confirmación
+        var confirmacion = confirm("¿Estás seguro de que deseas eliminar este documento?");
+        
+        if (confirmacion) {
+            // Si el usuario confirma, se ejecuta la solicitud POST para eliminar
+            $.ajax({ //permite hacer un post sin necesidad de recargar la pagina, apenas se clickea el select se envia los datos al back
+                url: url, //al ser ejecutadas en segundo plano, el flash ni redirect funcionan 
+                type: 'POST', 
+                success: function(response) {
+                    // Recargar la página para reflejar los cambios
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    alert('Ocurrió un error al eliminar el documento.');
+                }
+            });
+        } else {
+            // Si el usuario cancela, reseteamos el selector
+            $(this).val('');
+        }
+    }
+
+    else if(action =="descargar"){
+        window.location.href = url;
+    }
+});
+});
+
+</script>
+</body>
+{% endblock %}

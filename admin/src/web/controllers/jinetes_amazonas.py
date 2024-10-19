@@ -1,0 +1,641 @@
+from flask import Blueprint, render_template, jsonify, request, abort, flash, url_for, redirect, current_app
+from src.core.database import db
+from datetime import datetime
+from sqlalchemy import asc, desc
+from src.core import jinetes_amazonas
+from src.core.equipo import Empleado
+from src.core.encuestre import Encuestre
+from src.core.jinetes_amazonas import documento_jinete
+from src.web.handlers.auth import check
+import os
+
+jinete_amazonas_bp = Blueprint('jinetes_amazonas', __name__, url_prefix='/jinetes-amazonas')
+
+# Listar todos los Jinetes y Amazonas
+@jinete_amazonas_bp.get("/")
+@check("ja_index")
+def index():
+    registros_por_pagina = 5
+
+    # Parámetros de búsqueda y orden desde la URL
+    search = request.args.get('search', '')
+    filter_by = request.args.get('filter_by', 'nombre')
+    order = request.args.get('order', 'asc')
+    order_prop = request.args.get('order_prop', 'nombre')
+    pagina = request.args.get('pagina', 1, type=int)
+    
+    # Construcción de la query
+    query = jinetes_amazonas.JineteAmazona.query
+
+    if search:
+        if filter_by == 'nombre':
+            query = query.filter(jinetes_amazonas.JineteAmazona.nombre.ilike(f'%{search}%'))
+        elif filter_by == 'apellido':
+            query = query.filter(jinetes_amazonas.JineteAmazona.apellido.ilike(f'%{search}%'))
+        elif filter_by == 'dni':
+            query = query.filter(jinetes_amazonas.JineteAmazona.dni.ilike(f'%{search}%'))
+        elif filter_by == 'profesionales_atienden':
+            query = query.filter(jinetes_amazonas.JineteAmazona.profesionales_atienden.ilike(f'%{search}%'))
+    
+    if order_prop != filter_by:
+        if order == 'asc':
+            query = query.order_by(asc(getattr(jinetes_amazonas.JineteAmazona, order_prop)))
+        else:
+            query = query.order_by(desc(getattr(jinetes_amazonas.JineteAmazona, order_prop)))
+
+    # Si se quiere ordenar por nombre o apellido adicionalmente
+    if order_prop == 'nombre':
+        query = query.order_by(asc(jinetes_amazonas.JineteAmazona.nombre)) if order == 'asc' else query.order_by(desc(jinetes_amazonas.JineteAmazona.nombre))
+    elif order_prop == 'apellido':
+        query = query.order_by(asc(jinetes_amazonas.JineteAmazona.apellido)) if order == 'asc' else query.order_by(desc(jinetes_amazonas.JineteAmazona.apellido))
+    
+    pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
+    jinetes = pagination.items
+    total_paginas = pagination.pages
+
+    return render_template(
+        "jinetes_amazonas/jinetes_amazonas.html", 
+        jinetes=jinetes, 
+        search=search, 
+        filter_by=filter_by, 
+        order=order,
+        order_prop=order_prop,
+        pagina=pagina,
+        total_paginas=total_paginas
+    )
+
+# Ver detalles de un Jinete o Amazona
+@jinete_amazonas_bp.get("/detalle/<int:id>")
+@check("ja_show")
+def detalle(id):
+    jinete_amazonas_aux = jinetes_amazonas.JineteAmazona.query.get(id)
+    if not jinete_amazonas_aux:
+        abort(404)
+    query = documento_jinete.DocumentoJinete.query.filter_by(jinete_amazonas_id=id)
+
+    registros_por_pagina = 2
+
+    # Obtener parámetros de búsqueda y orden desde la URL
+    search = request.args.get('search', '')
+    tipo = request.args.get('tipo', '')  # Filtro por tipo de documento
+    filter_by = request.args.get('filter_by', 'titulo')  # Por defecto 'nombre'
+    order = request.args.get('order', 'asc')  # Por defecto ascendente
+    order_prop = request.args.get('order_prop', 'titulo')
+    pagina = request.args.get('pagina', 1, type=int)
+    
+    if search:
+        if filter_by == 'titulo':
+            query = query.filter(documento_jinete.DocumentoJinete.titulo.ilike(f'%{search}%'))
+    
+    if tipo:
+        query = query.filter(documento_jinete.DocumentoJinete.tipo == tipo)
+    
+    if order_prop != filter_by:
+        if order == 'asc':
+            query = query.order_by(asc(getattr(documento_jinete.DocumentoJinete, order_prop)))
+        else:
+            query = query.order_by(desc(getattr(documento_jinete.DocumentoJinete, order_prop)))
+
+    # Si se quiere ordenar por nombre, apellido o fecha de creación adicionalmente
+    if order_prop == 'titulo':
+        query = query.order_by(asc(documento_jinete.DocumentoJinete.titulo)) if order == 'asc' else query.order_by(desc(documento_jinete.DocumentoJinete.titulo))
+    elif order_prop == 'fecha_subida':
+        query = query.order_by(asc(documento_jinete.DocumentoJinete.inserted_at)) if order == 'asc' else query.order_by(desc(documento_jinete.DocumentoJinete.inserted_at))
+
+    pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
+    
+    documentos_filtrados = pagination.items
+    total_paginas = pagination.pages
+
+    caballo= Encuestre.query.get(jinete_amazonas_aux.caballo)
+    auxiliar_pista = Empleado.query.get(jinete_amazonas_aux.auxiliar_pista)
+    profesor_terapeuta = Empleado.query.get(jinete_amazonas_aux.profesor_terapeuta)
+    conductor = Empleado.query.get(jinete_amazonas_aux.conductor)
+    
+    return render_template(
+        'jinetes_amazonas/detalle.html', 
+        jinete=jinete_amazonas_aux,
+        caballo= caballo,
+        auxiliar_pista= auxiliar_pista,
+        profesor_terapeuta= profesor_terapeuta,
+        conductor= conductor,
+        documentos=documentos_filtrados,
+        search=search, 
+        tipo=tipo,
+        filter_by=filter_by, 
+        order=order,
+        order_prop=order_prop,
+        pagina=pagina,
+        total_paginas=total_paginas
+
+    )
+
+# Registrar un nuevo Jinete o Amazona
+@jinete_amazonas_bp.route("/registrar", methods=['GET', 'POST'])
+@check("ja_new")
+def registrar():
+    if request.method == 'POST':
+        # Recoger los datos del formulario
+        nombre = request.form.get('nombre')
+        apellido = request.form.get('apellido')
+        dni = request.form.get('dni')
+        edad = request.form.get('edad')
+        fecha_nacimiento_str = request.form.get('fecha_nacimiento')
+        lugar_nacimiento_localidad = request.form.get('lugar_nacimiento_localidad')
+        lugar_nacimiento_provincia = request.form.get('lugar_nacimiento_provincia')
+        domicilio_actual = request.form.get('domicilio_actual')
+        telefono = request.form.get('telefono')
+        contacto_emergencia = request.form.get('contacto_emergencia')
+        telefono_emergencia = request.form.get('telefono_emergencia')
+        becado = True if request.form.get('becado') == 'True' else False
+        beca_observaciones = request.form.get('beca_observaciones')
+        certificado_discapacidad = True if request.form.get('certificado_discapacidad') == 'True' else False
+        diagnostico_discapacidad = request.form.get('diagnostico_discapacidad')
+        tipo_discapacidad = request.form.get('tipo_discapacidad')
+        percibe_asignacion_familiar = True if request.form.get('percibe_asignacion_familiar') == 'True' else False
+        asignacion_hijo = True if request.form.get('asignacion_hijo') == 'True' else False
+        asignacion_hijo_discapacidad = True if request.form.get('asignacion_hijo_discapacidad') == 'True' else False
+        asignacion_ayuda_escolar = True if request.form.get('asignacion_ayuda_escolar') == 'True' else False
+        pension = request.form.get('pension')
+        obra_social = request.form.get('obra_social')
+        numero_afiliado = request.form.get('numero_afiliado')
+        curatela = True if request.form.get('curatela') == 'True' else False
+        observaciones_previsionales = request.form.get('observaciones_previsionales')
+        institucion_escolar = request.form.get('institucion_escolar')
+        direccion_institucion = request.form.get('direccion_institucion')
+        telefono_institucion = request.form.get('telefono_institucion')
+        grado_anio_actual = request.form.get('grado_anio_actual')
+        observaciones_institucion = request.form.get('observaciones_institucion')
+        profesionales_atienden = request.form.get('profesionales_atienden')
+        parentesco_familiar_1 = request.form.get('parentesco_familiar_1')
+        nombre_familiar_1 = request.form.get('nombre_familiar_1')
+        apellido_familiar_1 = request.form.get('apellido_familiar_1')
+        dni_familiar_1 = request.form.get('dni_familiar_1')
+        domicilio_familiar_1 = request.form.get('domicilio_familiar_1')
+        celular_familiar_1 = request.form.get('celular_familiar_1')
+        email_familiar_1 = request.form.get('email_familiar_1')
+        escolaridad_familiar_1 = request.form.get('escolaridad_familiar_1')
+        ocupacion_familiar_1 = request.form.get('ocupacion_familiar_1')
+        parentesco_familiar_2 = request.form.get('parentesco_familiar_2')
+        nombre_familiar_2 = request.form.get('nombre_familiar_2')
+        apellido_familiar_2 = request.form.get('apellido_familiar_2')
+        dni_familiar_2 = request.form.get('dni_familiar_2')
+        domicilio_familiar_2 = request.form.get('domicilio_familiar_2')
+        celular_familiar_2 = request.form.get('celular_familiar_2')
+        email_familiar_2 = request.form.get('email_familiar_2')
+        escolaridad_familiar_2 = request.form.get('escolaridad_familiar_2')
+        ocupacion_familiar_2 = request.form.get('ocupacion_familiar_2')
+        propuesta_trabajo = request.form.get('propuesta_trabajo')
+        condicion= request.form.get('condicion')
+        sede= request.form.get('sede')
+        dia= request.form.getlist('dia')
+        profesor_terapeuta = request.form.get('profesor_terapeuta')
+        conductor = request.form.get('conductor')
+        auxiliar_pista = request.form.get('auxiliar_pista')
+        caballo = request.form.get('caballo')
+        
+
+        # Validar que los campos requeridos no estén vacíos
+        #if not (nombre and apellido and dni and edad and fecha_nacimiento_str and lugar_nacimiento_localidad and lugar_nacimiento_provincia and domicilio_actual and telefono and contacto_emergencia and telefono_emergencia and becado and certificado_discapacidad and percibe_asignacion_familiar and asignacion_hijo and asignacion_hijo_discapacidad and asignacion_ayuda_escolar and curatela and propuesta_trabajo and sede and dia and caballo and auxiliar_pista and profesor_terapeuta and conductor and condicion):
+         #   flash('Faltan completar campos obligatorios', 'danger')
+          #  return redirect(url_for('jinetes_amazonas.registrar'))
+        
+         # Verificar si ya existe un jinete/amazona con el mismo DNI
+        dni_aux = jinetes_amazonas.JineteAmazona.query.filter_by(dni=dni).first()
+        if dni_aux:
+            flash('El DNI ingresado ya se encuentra registrado.', 'danger')
+            return redirect(url_for('jinetes_amazonas.registrar'))
+        
+        try:
+            fecha_nacimiento = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d')
+            if fecha_nacimiento > datetime.today():
+                flash('La fecha de nacimiento no puede ser futura', 'danger')
+                return redirect(url_for('jinetes_amazonas.registrar'))
+        except ValueError or UnboundLocalError:
+            flash('Formato de fecha de nacimiento inválido', 'danger')
+            return redirect(url_for('jinetes_amazonas.registrar'))
+        
+        # Crear el objeto JineteAmazona
+        nuevo_jinete_amazona = jinetes_amazonas.JineteAmazona(
+            nombre=nombre,
+            apellido=apellido,
+            dni=dni,
+            edad=edad,
+            fecha_nacimiento=fecha_nacimiento,
+            lugar_nacimiento_localidad=lugar_nacimiento_localidad,
+            lugar_nacimiento_provincia=lugar_nacimiento_provincia,
+            domicilio_actual=domicilio_actual,
+            telefono=telefono,
+            contacto_emergencia=contacto_emergencia,
+            telefono_emergencia=telefono_emergencia,
+            becado=(becado == 'Sí'),
+            beca_observaciones=beca_observaciones,
+            certificado_discapacidad=(certificado_discapacidad == 'Sí'),
+            diagnostico_discapacidad=diagnostico_discapacidad,
+            tipo_discapacidad=tipo_discapacidad,
+            percibe_asignacion_familiar=(percibe_asignacion_familiar == 'Sí'),
+            asignacion_hijo=(asignacion_hijo == 'Sí'),
+            asignacion_hijo_discapacidad=(asignacion_hijo_discapacidad == 'Sí'),
+            asignacion_ayuda_escolar=(asignacion_ayuda_escolar == 'Sí'),
+            pension=pension,
+            obra_social=obra_social,
+            numero_afiliado=numero_afiliado,
+            curatela=(curatela == 'Sí'),
+            observaciones_previsionales=observaciones_previsionales,
+            institucion_escolar=institucion_escolar,
+            direccion_institucion=direccion_institucion,
+            telefono_institucion=telefono_institucion,
+            grado_anio_actual=grado_anio_actual,
+            observaciones_institucion=observaciones_institucion,
+            profesionales_atienden=profesionales_atienden,
+            parentesco_familiar_1=parentesco_familiar_1,
+            nombre_familiar_1=nombre_familiar_1,
+            apellido_familiar_1=apellido_familiar_1,
+            dni_familiar_1=dni_familiar_1,
+            domicilio_familiar_1=domicilio_familiar_1,
+            celular_familiar_1=celular_familiar_1,
+            email_familiar_1=email_familiar_1,
+            escolaridad_familiar_1=escolaridad_familiar_1,
+            ocupacion_familiar_1=ocupacion_familiar_1,
+            parentesco_familiar_2=parentesco_familiar_2,
+            nombre_familiar_2=nombre_familiar_2,
+            apellido_familiar_2=apellido_familiar_2,
+            dni_familiar_2=dni_familiar_2,
+            domicilio_familiar_2=domicilio_familiar_2,
+            celular_familiar_2=celular_familiar_2,
+            email_familiar_2=email_familiar_2,
+            escolaridad_familiar_2=escolaridad_familiar_2,
+            ocupacion_familiar_2=ocupacion_familiar_2,
+            propuesta_trabajo = propuesta_trabajo,
+            condicion= condicion,
+            sede= sede,
+            dia= dia,
+            profesor_terapeuta = profesor_terapeuta,
+            conductor = conductor,
+            auxiliar_pista = auxiliar_pista,
+            caballo = caballo
+        )
+
+        try:
+            # Subir a la base de datos
+            db.session.add(nuevo_jinete_amazona)
+            db.session.commit()
+            flash('Jinete/Amazona registrado exitosamente', 'success')
+            return redirect(url_for('jinetes_amazonas.detalle', id=nuevo_jinete_amazona.id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al registrar el jinete/amazona: {str(e)}', 'danger')
+            return redirect(url_for('jinetes_amazonas.registrar'))
+    
+    terapeutas= Empleado.query.filter(Empleado.puesto_laboral.in_(['Terapeuta', 'Profesor de Equitación', 'Docente de Capacitación'])).all()
+    auxiliares= Empleado.query.filter_by(puesto_laboral='Auxiliar de pista').all()
+    caballos= Encuestre.query.all()
+    conductores= Empleado.query.filter_by(puesto_laboral='Conductor').all()
+    fecha_hoy = datetime.now().strftime('%Y-%m-%d')
+    return render_template('jinetes_amazonas/registrar.html', fecha_hoy=fecha_hoy, terapeutas=terapeutas, auxiliares=auxiliares, caballos=caballos, conductores=conductores)
+
+# Editar un Jinete o Amazona existente
+@jinete_amazonas_bp.route("/editar/<int:id>", methods=['GET', 'POST'])
+@check("ja_update")
+def editar(id):
+    jinete_amazonas_aux = jinetes_amazonas.JineteAmazona.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        apellido = request.form.get('apellido')
+        dni = request.form.get('dni')
+        edad = request.form.get('edad')
+        fecha_nacimiento_str = request.form.get('fecha_nacimiento')
+        lugar_nacimiento_localidad = request.form.get('lugar_nacimiento_localidad')
+        lugar_nacimiento_provincia = request.form.get('lugar_nacimiento_provincia')
+        domicilio_actual = request.form.get('domicilio_actual')
+        telefono = request.form.get('telefono')
+        contacto_emergencia = request.form.get('contacto_emergencia')
+        telefono_emergencia = request.form.get('telefono_emergencia')
+        becado = True if request.form.get('becado') == 'True' else False
+        beca_observaciones = request.form.get('beca_observaciones')
+        certificado_discapacidad = True if request.form.get('certificado_discapacidad') == 'True' else False
+        diagnostico_discapacidad = request.form.get('diagnostico_discapacidad')
+        tipo_discapacidad = request.form.get('tipo_discapacidad')
+        percibe_asignacion_familiar = True if request.form.get('percibe_asignacion_familiar') == 'True' else False
+        asignacion_hijo = True if request.form.get('asignacion_hijo') == 'True' else False
+        asignacion_hijo_discapacidad = True if request.form.get('asignacion_hijo_discapacidad') == 'True' else False
+        asignacion_ayuda_escolar = True if request.form.get('asignacion_ayuda_escolar') == 'True' else False
+        pension = request.form.get('pension')
+        obra_social = request.form.get('obra_social')
+        numero_afiliado = request.form.get('numero_afiliado')
+        curatela = True if request.form.get('curatela') == 'True' else False
+        observaciones_previsionales = request.form.get('observaciones_previsionales')
+        institucion_escolar = request.form.get('institucion_escolar')
+        direccion_institucion = request.form.get('direccion_institucion')
+        telefono_institucion = request.form.get('telefono_institucion')
+        grado_anio_actual = request.form.get('grado_anio_actual')
+        observaciones_institucion = request.form.get('observaciones_institucion')
+        profesionales_atienden = request.form.get('profesionales_atienden')
+        parentesco_familiar_1 = request.form.get('parentesco_familiar_1')
+        nombre_familiar_1 = request.form.get('nombre_familiar_1')
+        apellido_familiar_1 = request.form.get('apellido_familiar_1')
+        dni_familiar_1 = request.form.get('dni_familiar_1')
+        domicilio_familiar_1 = request.form.get('domicilio_familiar_1')
+        celular_familiar_1 = request.form.get('celular_familiar_1')
+        email_familiar_1 = request.form.get('email_familiar_1')
+        escolaridad_familiar_1 = request.form.get('escolaridad_familiar_1')
+        ocupacion_familiar_1 = request.form.get('ocupacion_familiar_1')
+        parentesco_familiar_2 = request.form.get('parentesco_familiar_2')
+        nombre_familiar_2 = request.form.get('nombre_familiar_2')
+        apellido_familiar_2 = request.form.get('apellido_familiar_2')
+        dni_familiar_2 = request.form.get('dni_familiar_2')
+        domicilio_familiar_2 = request.form.get('domicilio_familiar_2')
+        celular_familiar_2 = request.form.get('celular_familiar_2')
+        email_familiar_2 = request.form.get('email_familiar_2')
+        escolaridad_familiar_2 = request.form.get('escolaridad_familiar_2')
+        ocupacion_familiar_2 = request.form.get('ocupacion_familiar_2')
+        propuesta_trabajo = request.form.get('propuesta_trabajo')
+        condicion= request.form.get('condicion')
+        sede= request.form.get('sede')
+        dia= request.form.getlist('dia')
+        profesor_terapeuta = request.form.get('profesor_terapeuta')
+        conductor = request.form.get('conductor')
+        auxiliar_pista = request.form.get('auxiliar_pista')
+        caballo = request.form.get('caballo')
+
+
+        # Validar que los campos requeridos no estén vacíos
+        #if not (nombre and apellido and dni and edad and fecha_nacimiento_str and lugar_nacimiento_localidad and lugar_nacimiento_provincia and domicilio_actual and telefono and contacto_emergencia and telefono_emergencia and becado and certificado_discapacidad and percibe_asignacion_familiar and asignacion_hijo and asignacion_hijo_discapacidad and asignacion_ayuda_escolar and curatela and propuesta_trabajo and sede and dia and caballo and auxiliar_pista and profesor_terapeuta and conductor and condicion):
+         #   flash('Faltan completar campos obligatorios', 'danger')
+          #  return redirect(url_for('jinetes_amazonas.editar', id=id))
+        
+        try:
+            fecha_nacimiento = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d')
+            if fecha_nacimiento > datetime.today():
+                flash('La fecha de nacimiento no puede ser futura', 'danger')
+                return redirect(url_for('jinetes_amazonas.editar', id=id))
+        except ValueError or UnboundLocalError:
+            flash('Formato de fecha de nacimiento inválido', 'danger')
+            return redirect(url_for('jinetes_amazonas.editar', id=id))
+
+
+        jinete_amazonas_aux.nombre = nombre
+        jinete_amazonas_aux.apellido = apellido
+        jinete_amazonas_aux.dni = dni
+        jinete_amazonas_aux.edad = edad
+        jinete_amazonas_aux.fecha_nacimiento = fecha_nacimiento
+        jinete_amazonas_aux.lugar_nacimiento_localidad = lugar_nacimiento_localidad
+        jinete_amazonas_aux.lugar_nacimiento_provincia = lugar_nacimiento_provincia
+        jinete_amazonas_aux.domicilio_actual = domicilio_actual
+        jinete_amazonas_aux.telefono = telefono
+        jinete_amazonas_aux.contacto_emergencia = contacto_emergencia
+        jinete_amazonas_aux.telefono_emergencia = telefono_emergencia
+        jinete_amazonas_aux.becado = becado
+        jinete_amazonas_aux.beca_observaciones = beca_observaciones
+        jinete_amazonas_aux.certificado_discapacidad = certificado_discapacidad
+        jinete_amazonas_aux.diagnostico_discapacidad = diagnostico_discapacidad
+        jinete_amazonas_aux.tipo_discapacidad = tipo_discapacidad
+        jinete_amazonas_aux.percibe_asignacion_familiar = percibe_asignacion_familiar
+        jinete_amazonas_aux.asignacion_hijo = asignacion_hijo
+        jinete_amazonas_aux.asignacion_hijo_discapacidad = asignacion_hijo_discapacidad
+        jinete_amazonas_aux.asignacion_ayuda_escolar = asignacion_ayuda_escolar
+        jinete_amazonas_aux.pension = pension
+        jinete_amazonas_aux.obra_social = obra_social
+        jinete_amazonas_aux.numero_afiliado = numero_afiliado
+        jinete_amazonas_aux.curatela = curatela
+        jinete_amazonas_aux.observaciones_previsionales = observaciones_previsionales
+        jinete_amazonas_aux.institucion_escolar = institucion_escolar
+        jinete_amazonas_aux.direccion_institucion = direccion_institucion
+        jinete_amazonas_aux.telefono_institucion = telefono_institucion
+        jinete_amazonas_aux.grado_anio_actual = grado_anio_actual
+        jinete_amazonas_aux.observaciones_institucion = observaciones_institucion
+        jinete_amazonas_aux.profesionales_atienden = profesionales_atienden
+        jinete_amazonas_aux.parentesco_familiar_1 = parentesco_familiar_1
+        jinete_amazonas_aux.nombre_familiar_1 = nombre_familiar_1
+        jinete_amazonas_aux.apellido_familiar_1 = apellido_familiar_1
+        jinete_amazonas_aux.dni_familiar_1 = dni_familiar_1
+        jinete_amazonas_aux.domicilio_familiar_1 = domicilio_familiar_1
+        jinete_amazonas_aux.celular_familiar_1 = celular_familiar_1
+        jinete_amazonas_aux.email_familiar_1 = email_familiar_1
+        jinete_amazonas_aux.escolaridad_familiar_1 = escolaridad_familiar_1
+        jinete_amazonas_aux.ocupacion_familiar_1 = ocupacion_familiar_1
+        jinete_amazonas_aux.parentesco_familiar_2 = parentesco_familiar_2
+        jinete_amazonas_aux.nombre_familiar_2 = nombre_familiar_2
+        jinete_amazonas_aux.apellido_familiar_2 = apellido_familiar_2
+        jinete_amazonas_aux.dni_familiar_2 = dni_familiar_2
+        jinete_amazonas_aux.domicilio_familiar_2 = domicilio_familiar_2
+        jinete_amazonas_aux.celular_familiar_2 = celular_familiar_2
+        jinete_amazonas_aux.email_familiar_2 = email_familiar_2
+        jinete_amazonas_aux.escolaridad_familiar_2 = escolaridad_familiar_2
+        jinete_amazonas_aux.ocupacion_familiar_2 = ocupacion_familiar_2
+        jinete_amazonas_aux.propuesta_trabajo = propuesta_trabajo
+        jinete_amazonas_aux.condicion= condicion
+        jinete_amazonas_aux.sede= sede
+        jinete_amazonas_aux.dia= dia
+        jinete_amazonas_aux.profesor_terapeuta = profesor_terapeuta
+        jinete_amazonas_aux.conductor = conductor
+        jinete_amazonas_aux.auxiliar_pista = auxiliar_pista
+        jinete_amazonas_aux.caballo = caballo
+
+
+        try:
+            db.session.commit()
+            flash('Cambios guardados exitosamente', 'success')
+            return redirect(url_for('jinetes_amazonas.detalle', id=id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al guardar los cambios: {str(e)}', 'danger')
+            return redirect(url_for('jinetes_amazonas.editar', id=id))
+        
+    terapeutas= Empleado.query.filter(Empleado.puesto_laboral.in_(['Terapeuta', 'Profesor de Equitación', 'Docente de Capacitación'])).all()
+    auxiliares= Empleado.query.filter_by(puesto_laboral='Auxiliar de pista').all()
+    caballos= Encuestre.query.all()
+    conductores= Empleado.query.filter_by(puesto_laboral='Conductor').all()
+    fecha_hoy = datetime.now().strftime('%Y-%m-%d')
+    return render_template("jinetes_amazonas/editar_jinete.html", jinete=jinete_amazonas_aux, fecha_hoy=fecha_hoy, terapeutas=terapeutas, auxiliares=auxiliares, caballos=caballos, conductores=conductores)
+
+@jinete_amazonas_bp.route('/filtrar_caballos', methods=['GET'])
+def filtrar_caballos():
+    propuesta_trabajo = request.args.get('propuesta_trabajo')
+    sede = request.args.get('sede')     
+
+    print("sedeeeeeeeeeeee--------------------------> ", sede)
+
+    # Crear una consulta base
+    query = Encuestre.query
+
+    # Añadir filtros opcionales basados en los parámetros presentes
+    if propuesta_trabajo and sede == "":
+        query = query.filter(Encuestre.tipo_ja_asignado == propuesta_trabajo)
+    if sede and propuesta_trabajo == "":
+        query = query.filter(Encuestre.sede_asignada == sede)
+
+    # Ejecutar la consulta
+    caballos = query.all()
+
+    # Serializar los caballos en formato JSON
+    caballos_data = [{"id": caballo.id, "nombre": caballo.nombre} for caballo in caballos]
+
+    return jsonify({"caballos": caballos_data})
+
+
+
+# Eliminar un Jinete o Amazona
+@jinete_amazonas_bp.route("/eliminar/<int:id>", methods=['POST'])
+@check("ja_destroy")
+def eliminar(id):
+    jinete_amazonas_aux = jinetes_amazonas.JineteAmazona.query.get_or_404(id)
+    
+    try:
+        db.session.delete(jinete_amazonas_aux)
+        db.session.commit()
+        flash('Jinete o Amazona eliminado correctamente', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar: {str(e)}', 'danger')
+    
+    return redirect(url_for('jinetes_amazonas.index'))
+
+
+@jinete_amazonas_bp.route('/subir_documento', methods=['POST'])
+@check("ja_new")
+def subir_documento():
+
+    MAX_FILE_SIZE = 16 * 1024 * 1024
+
+    if 'file' not in request.files:
+        flash('No se seleccionó ningún archivo', 'error')
+        return redirect(url_for('jinetes_amazonas.detalle', id=request.form.get('jinete_amazonas_id')))
+    
+    file = request.files['file']
+    tipo_documento = request.form.get('tipo_documento')
+
+    client = current_app.storage.client
+
+    file_size = os.fstat(file.fileno()).st_size
+    
+    if file_size > MAX_FILE_SIZE:
+        flash('El archivo excede el tamaño máximo permitido (16MB)', 'error')
+        return redirect(url_for('jinetes_amazonas.detalle', id=request.form.get('jinete_amazonas_id')))
+    
+    if file.filename == '':
+        flash('Nombre de archivo vacío', 'error')
+        return redirect(url_for('jinetes_amazonas.detalle', id=request.form.get('jinete_amazonas_id')))
+
+    try:
+        client.put_object(
+            'grupo49',
+            f'documentos_jinetes_amazonas/{file.filename}',
+            file,
+            file_size,
+            content_type=file.content_type
+        )
+        
+        # Obtener el jinete o amazona asociado
+        jinete_amazonas_id = request.form.get('jinete_amazonas_id')
+        jinete_amazonas_aux = jinetes_amazonas.JineteAmazona.query.get(jinete_amazonas_id)
+        
+        # Crear el documento y asociarlo al jinete o amazona
+        nuevo_documento = documento_jinete.DocumentoJinete(
+            titulo=file.filename,
+            tipo=tipo_documento,
+            url=f"{current_app.config['MINIO_SERVER']}/grupo49/{file.filename}",
+            jinete_amazona=jinete_amazonas_aux
+        )
+        
+        db.session.add(nuevo_documento)
+        db.session.commit()
+        
+        flash('Documento subido exitosamente', 'success')
+    except Exception as e:
+        flash(f'Error al subir el documento: {str(e)}', 'error')
+
+    return redirect(url_for('jinetes_amazonas.detalle', id=jinete_amazonas_id))
+
+
+@jinete_amazonas_bp.route('/descargar_documento/<int:document_id>')
+@check("ja_show")
+def descargar_documento(document_id):
+    documento = documento_jinete.DocumentoJinete.query.get_or_404(document_id)
+    
+    if documento.is_document:
+        url_descarga = f"https://{documento.url}"
+    else:
+        url_descarga = documento.url
+
+    return redirect(url_descarga)
+
+@jinete_amazonas_bp.route('/eliminar_documento/<int:document_id>', methods=['POST'])
+@check("ja_destroy")
+def eliminar_documento(document_id):
+
+    documento = documento_jinete.DocumentoJinete.query.get_or_404(document_id)
+
+    if documento.is_document:
+        eliminar_de_minio(documento.titulo)
+
+    try:
+        db.session.delete(documento)
+        db.session.commit()
+
+        flash('Documento eliminado correctamente.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar el documento: {str(e)}', 'danger')
+
+    return redirect(url_for('jinetes_amazonas.detalle', id=documento.jinete_amazonas_id))
+
+
+def eliminar_de_minio(file):
+    client = current_app.storage.client
+    object_name = f'documentos_jinetes_amazonas/{file}'
+    client.remove_object('grupo49', object_name)
+
+
+@jinete_amazonas_bp.route('/editar_documento/<int:document_id>', methods=['POST', 'GET'])
+@check("ja_update")
+def editar_documento(document_id):
+    documento = documento_jinete.DocumentoJinete.query.get_or_404(document_id)
+    jinete_amazonas = documento_jinete.DocumentoJinete.get_jinete_by_document_id(document_id)
+    tipo = documento.tipo
+    if documento is None:
+        abort(404)
+
+    if request.method == 'POST':
+        # Obtener datos del formulario
+        documento.titulo = request.form['nombre']
+        documento.tipo = request.form['tipo_documento']
+
+        # Guardar cambios en la base de datos
+        db.session.commit()
+        flash('Los cambios se han guardado exitosamente.', 'success')
+        return redirect(url_for('jinetes_amazonas.detalle', id=jinete_amazonas.id))
+
+    return render_template('jinetes_amazonas/editar_documento.html', documento=documento, jinete_amazonas=jinete_amazonas, tipo=tipo)
+
+
+@jinete_amazonas_bp.route('/subir_enlace', methods=['POST'])
+@check("ja_new")
+def subir_enlace():
+    jinete_amazonas_id = request.form.get('jinete_amazonas_id')
+    jinete_amazonas_aux = jinetes_amazonas.JineteAmazona.query.get(jinete_amazonas_id)
+    tipo_enlace = request.form.get('tipo_documento')
+
+    titulo = request.form.get('titulo')
+    url_enlace = request.form.get('enlace')
+
+    # Valida que no se suban enlaces vacíos
+    if not url_enlace:
+        flash('El enlace no puede estar vacío', 'error')
+        return redirect(url_for('jinetes_amazonas.detalle', id=jinete_amazonas_id))
+
+    # Agregar el enlace como un objeto separado de documentos
+    nuevo_enlace = documento_jinete.DocumentoJinete(
+        titulo=url_enlace,
+        tipo=tipo_enlace,
+        url=url_enlace,
+        jinete_amazona=jinete_amazonas_aux,
+        is_document=False
+    )
+    
+    db.session.add(nuevo_enlace)
+    db.session.commit()
+
+    flash('Enlace subido exitosamente', 'success')
+    return redirect(url_for('jinetes_amazonas.detalle', id=jinete_amazonas_id))

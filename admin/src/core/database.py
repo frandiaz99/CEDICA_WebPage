@@ -7,6 +7,7 @@ def init_app(app):
     
     """
     INicializa la base de datos con la aplicacion Flask
+    
     """
     
     db.init_app(app)

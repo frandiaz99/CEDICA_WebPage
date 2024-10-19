@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+
+{% block title %}Actualizar Usuario{% endblock %}
+
+{% block content %}
+
+<!--
+    Falta:
+        - Mostrar msj exitoso con fondo verde
+-->
+
+<body class="bg-gray-100">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flex justify-center mt-4">
+        <div class="w-full max-w-2xl">
+            {% for category, message in messages %}
+            <div
+                class="bg-{{category == 'success' and 'green' or 'red'}}-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                <p class="text-lg font-semibold">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="max-w-4xl mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Actualizar información del usuario</h1>
+        <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('users.actualizar_usuario', id=user.id) }}"
+            method="POST" enctype="multipart/form-data">
+
+            <!-- Alias -->
+            <div class="mb-4">
+                <label for="alias" class="block text-sm font-medium text-gray-700">Alias</label>
+                <input type="text" id="alias" name="alias" value="{{user.alias}}"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="{{user.alias}}">
+            </div>
+
+            <!-- Email -->
+            <div class="mb-4">
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="email" name="email" value="{{user.email}}"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="{{user.email}}">
+            </div>
+
+            <!-- Activo -->
+            <div class="mb-4">
+                <label for="activo" class="block text-sm font-medium text-gray-700">Activo</label>
+                <select id="activo" name="activo"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required>
+                    <option value="si" {% if user.activo %}selected{% endif %}>Sí</option>
+                    <option value="no" {% if not user.activo %}selected{% endif %}>No</option>
+                </select>
+            </div>
+
+            <!-- Rol -->
+            <div class="mb-4">
+                <label for="rol" class="block text-sm font-medium text-gray-700">Rol</label>
+                <select id="rol" name="rol"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required>
+                    <option value="1" {% if roles[user.rol_id].nombre=="tecnica" %}selected{% endif %}>Técnica
+                    </option>
+                    <option value="2" {% if roles[user.rol_id].nombre=="encuestre" %}selected{% endif %}>
+                        Encuestre
+                    </option>
+                    <option value="3" {% if roles[user.rol_id].nombre=="voluntariado" %}selected{% endif %}>
+                        Voluntariado
+                    </option>
+                    <option value="4" {% if roles[user.rol_id].nombre=="administracion" %}selected{% endif %}>
+                        Administración
+                    </option>
+                </select>
+            </div>
+
+            <!-- Botón de Enviar -->
+            <div class="text-center">
+                <button type="submit"
+                    class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Guardar</button>
+            </div>
+        </form>
+    </div>
+</body>
+{% endblock %}

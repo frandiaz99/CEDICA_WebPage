@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+
+{% block title %}Registrar cobro{% endblock %}
+
+{% block content %}
+
+<body class="bg-gray-100">
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div class="flex justify-center mt-4">
+        <div class="w-full max-w-2xl">
+            {% for category, message in messages %}
+            <div
+                class="bg-{{category == 'success' and 'green' or 'red'}}-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                <p class="text-lg font-semibold">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="max-w-4xl mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Registrar un nuevo cobro</h1>
+        <form class="bg-white p-6 rounded-lg shadow-lg" method="POST" action="{{ url_for('cobros.registrar_cobro') }}">
+            <!-- Jinete asociado -->
+            <div class="mb-4">
+                <label for="jinete" class="block text-sm font-medium text-gray-700">J&A</label>
+                <select
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="jinete" name="jinete" required>
+                    {% for jinete in jinetes %}
+                    <option value="{{ jinete.id }}">{{ jinete.nombre }} {{ jinete.apellido }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Tipo de Pago -->
+            <div class="mb-4">
+                <label for="tipo_pago" class="block text-sm font-medium text-gray-700">Medio de pago</label>
+                <select
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="tipo_pago" name="tipo_pago" required>
+                    <option value="efectivo">Efectivo</option>
+                    <option value="debito">Tarjeta de débito</option>
+                    <option value="credito">Tarjeta de crédito</option>
+                </select>
+            </div>
+            <!-- Beneficiario -->
+            <div id="beneficiario_container" class="mb-4">
+                <label for="beneficiario" class="block text-sm font-medium text-gray-700">Beneficiario</label>
+                <select
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="beneficiario" name="beneficiario" required>
+                    {% for empleado in empleados %}
+                    <option value="{{ empleado.id }}">{{ empleado.nombre }} {{ empleado.apellido }} - {{
+                        empleado.puesto_laboral }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Monto -->
+            <div class="mb-4">
+                <label for="monto" class="block text-sm font-medium text-gray-700">Monto</label>
+                <input type="number"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="monto" name="monto" min="0" title="Ingrese un monto válido" required>
+            </div>
+            <!-- Fecha de Pago -->
+            <div class="mb-4">
+                <label for="fecha_pago" class="block text-sm font-medium text-gray-700">Fecha de Pago</label>
+                <input type="date"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="fecha_pago" name="fecha_pago" max="{{ fecha_hoy }}" required>
+            </div>
+            <!-- Deuda -->
+            <div id="deuda_container" class="mb-4">
+                <label for="deuda" class="block text-sm font-medium text-gray-700">En deuda</label>
+                <select
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="deuda" name="deuda" required>
+                    <option value="si">Sí</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <!-- Observaciones -->
+            <div class="mb-4">
+                <label for="observaciones" class="block text-sm font-medium text-gray-700">Observaciones</label>
+                <textarea
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="observaciones" name="observaciones" rows="3" required></textarea>
+            </div>
+            <div class="flex justify-between">
+                <button type="submit"
+                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Registrar
+                    Pago</button>
+                <a href="{{ url_for('cobros.index') }}"
+                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</body>
+{% endblock %}
