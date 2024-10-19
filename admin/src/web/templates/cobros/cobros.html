@@ -70,10 +70,10 @@
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Monto</th>
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">
                         <a href="{{ url_for('cobros.index', fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin'), tipo_pago=request.args.get('tipo_pago'), orden='asc') }}"
-                            class="text-gray-600 hover:underline text-center">Fecha de Pago &#8595;</a>
+                            class="text-gray-600 hover:underline text-center">Fecha de Pago &#8593;</a>
                         |
                         <a href="{{ url_for('cobros.index', fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin'), tipo_pago=request.args.get('tipo_pago'), orden='desc') }}"
-                            class="text-gray-600 hover:underline text-center">Fecha de Pago &#8593;</a>
+                            class="text-gray-600 hover:underline text-center">Fecha de Pago &#8595;</a>
                     </th>
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Medio de Pago</th>
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Beneficiario</th>
