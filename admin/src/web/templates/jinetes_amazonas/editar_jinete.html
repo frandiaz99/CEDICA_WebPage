@@ -24,82 +24,88 @@
             <!-- Nombre -->
             <div class="mb-4">
                 <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-                <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre" value="{{ jinete.nombre }}">
+                <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre" value="{{ jinete.nombre }}" required>
             </div>
 
             <!-- Apellido -->
             <div class="mb-4">
                 <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
-                <input type="text" id="apellido" name="apellido" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el apellido" value="{{ jinete.apellido }}">
+                <input type="text" id="apellido" name="apellido" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el apellido" value="{{ jinete.apellido }}" required>
             </div>
 
             <!-- DNI -->
             <div class="mb-4">
                 <label for="dni" class="block text-sm font-medium text-gray-700">DNI</label>
-                <input type="text" id="dni" name="dni" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el DNI" value="{{ jinete.dni }}">
+                <input type="text" id="dni" name="dni" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el DNI" value="{{ jinete.dni }}" required>
             </div>
 
             <!-- Edad -->
             <div class="mb-4">
                 <label for="edad" class="block text-sm font-medium text-gray-700">Edad</label>
-                <input type="text" id="edad" name="edad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la edad" value="{{ jinete.edad }}">
+                <input type="text" id="edad" name="edad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la edad" value="{{ jinete.edad }}" required>
             </div>
 
             <!-- Fecha de nacimiento -->
             <div class="mb-4">
                 <label for="fecha_nacimiento" class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
-                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" max="{{ fecha_hoy }}" value="{{ jinete.fecha_nacimiento.strftime('%Y-%m-%d') }}">
+                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" max="{{ fecha_hoy }}" value="{{ jinete.fecha_nacimiento.strftime('%Y-%m-%d') }}" required>
             </div>
 
             <!-- Lugar de nacimiento (localidad) -->
             <div class="mb-4">
                 <label for="lugar_nacimiento_localidad" class="block text-sm font-medium text-gray-700">Lugar de Nacimiento (Localidad)</label>
-                <input type="text" id="lugar_nacimiento_localidad" name="lugar_nacimiento_localidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la localidad" value="{{ jinete.lugar_nacimiento_localidad }}">
+                <input type="text" id="lugar_nacimiento_localidad" name="lugar_nacimiento_localidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la localidad" value="{{ jinete.lugar_nacimiento_localidad }}" required>
             </div>
 
             <!-- Lugar de nacimiento (provincia) -->
             <div class="mb-4">
                 <label for="lugar_nacimiento_provincia" class="block text-sm font-medium text-gray-700">Lugar de Nacimiento (Provincia)</label>
-                <input type="text" id="lugar_nacimiento_provincia" name="lugar_nacimiento_provincia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la provincia" value="{{ jinete.lugar_nacimiento_provincia }}">
+                <input type="text" id="lugar_nacimiento_provincia" name="lugar_nacimiento_provincia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la provincia" value="{{ jinete.lugar_nacimiento_provincia }}" required>
             </div>
 
             <!-- Domicilio actual -->
             <div class="mb-4">
                 <label for="domicilio_actual" class="block text-sm font-medium text-gray-700">Domicilio Actual</label>
-                <input type="text" id="domicilio_actual" name="domicilio_actual" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el domicilio actual" value="{{ jinete.domicilio_actual }}">
+                <input type="text" id="domicilio_actual" name="domicilio_actual" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el domicilio actual" value="{{ jinete.domicilio_actual }}" required>
             </div>
 
             <!-- Teléfono -->
             <div class="mb-4">
                 <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
-                <input type="text" id="telefono" name="telefono" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono" value="{{ jinete.telefono }}">
+                <input type="text" id="telefono" name="telefono" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono" value="{{ jinete.telefono }}" required>
             </div>
 
             <!-- Contacto de emergencia -->
             <div class="mb-4">
                 <label for="contacto_emergencia" class="block text-sm font-medium text-gray-700">Contacto de Emergencia</label>
-                <input type="text" id="contacto_emergencia" name="contacto_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el contacto de emergencia" value="{{ jinete.contacto_emergencia }}">
+                <input type="text" id="contacto_emergencia" name="contacto_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el contacto de emergencia" value="{{ jinete.contacto_emergencia }}" required>
             </div>
 
             <!-- Teléfono de emergencia -->
             <div class="mb-4">
                 <label for="telefono_emergencia" class="block text-sm font-medium text-gray-700">Teléfono de Emergencia</label>
-                <input type="text" id="telefono_emergencia" name="telefono_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono de emergencia" value="{{ jinete.telefono_emergencia }}">
+                <input type="text" id="telefono_emergencia" name="telefono_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono de emergencia" value="{{ jinete.telefono_emergencia }}" required>
             </div>
 
             <!-- Becado -->
             <div class="mb-4">
                 <label for="becado" class="block text-sm font-medium text-gray-700">¿Es Becado?</label>
-                <select id="becado" name="becado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="becado" name="becado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="True" {% if jinete.becado%}selected{% endif %}>Sí</option>
                     <option value="False" {% if not jinete.becado %}selected{% endif %}>No</option>
                 </select>
             </div>
 
+            <!-- Observaciones sobre la beca -->
+            <div class="mb-4">
+                <label for="beca_observaciones" class="block text-sm font-medium text-gray-700">Observaciones sobre la Beca</label>
+                <input type="text" id="beca_observaciones" name="beca_observaciones" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese observaciones sobre la beca" value="{{ jinete.beca_observaciones }}">
+            </div>
+
             <!-- Certificado de discapacidad -->
             <div class="mb-4">
                 <label for="certificado_discapacidad" class="block text-sm font-medium text-gray-700">Certificado de Discapacidad</label>
-                <select id="certificado_discapacidad" name="certificado_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="certificado_discapacidad" name="certificado_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="True" {% if jinete.certificado_discapacidad%}selected{% endif %}>Sí</option>
                     <option value="False" {% if not jinete.certificado_discapacidad%}selected{% endif %}>No</option>
                 </select>
@@ -108,7 +114,7 @@
             <!-- Diagnóstico de discapacidad -->
             <div class="mb-4">
                 <label for="diagnostico_discapacidad" class="block text-sm font-medium text-gray-700">Diagnóstico de Discapacidad</label>
-                <select id="diagnostico_discapacidad" name="diagnostico_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.diagnostico_discapacidad }}">
+                <select id="diagnostico_discapacidad" name="diagnostico_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.diagnostico_discapacidad }}" required>
                     <option value="">Seleccione una opción</option>
                     <option value="ECNE" {% if jinete.diagnostico_discapacidad == 'ECNNE'%}selected{% endif %}>ECNE</option>
                     <option value="Lesión post-traumática" {% if jinete.diagnostico_discapacidad == 'Lesión post-traumática' %}selected{% endif %}>Lesión post-traumática</option>
@@ -135,7 +141,7 @@
             <!-- Tipo de discapacidad -->
             <div class="mb-4">
                 <label for="tipo_discapacidad" class="block text-sm font-medium text-gray-700">Tipo de Discapacidad</label>
-                <select id="tipo_discapacidad" name="tipo_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.tipo_discapacidad }}">
+                <select id="tipo_discapacidad" name="tipo_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.tipo_discapacidad }}" required>
                     <option value="">Seleccione una opción</option>
                     <option value="Mental" {% if jinete.tipo_discapacidad == 'Mental' %}selected{% endif %}>Mental</option>
                     <option value="Motora" {% if jinete.tipo_discapacidad == 'Motora' %}selected{% endif %}>Motora</option>
@@ -147,7 +153,7 @@
             <!-- Percibe asignación familiar -->
             <div class="mb-4">
                 <label for="percibe_asignacion_familiar" class="block text-sm font-medium text-gray-700">¿Percibe Asignación Familiar?</label>
-                <select id="percibe_asignacion_familiar" name="percibe_asignacion_familiar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.percibe_asignacion_familiar }}">
+                <select id="percibe_asignacion_familiar" name="percibe_asignacion_familiar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.percibe_asignacion_familiar }}" required>
                     <option value="True" {% if jinete.percibe_asignacion_familiar %}selected{% endif %}>Sí</option>
                     <option value="False" {% if not jinete.percibe_asignacion_familiar %}selected{% endif %}>No</option>
                 </select>
@@ -156,7 +162,7 @@
             <!-- Asignación por hijo -->
             <div class="mb-4">
                 <label for="asignacion_hijo" class="block text-sm font-medium text-gray-700">Asignación por Hijo</label>
-                <select id="asignacion_hijo" name="asignacion_hijo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.asignacion_hijo }}">
+                <select id="asignacion_hijo" name="asignacion_hijo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.asignacion_hijo }}" required>
                     <option value="True" {% if jinete.asignacion_hijo %}selected{% endif %}>Sí</option>
                     <option value="False" {% if not jinete.asignacion_hijo %}selected{% endif %}>No</option>
                 </select>
@@ -165,7 +171,7 @@
             <!-- Asignación por hijo con discapacidad -->
             <div class="mb-4">
                 <label for="asignacion_hijo_discapacidad" class="block text-sm font-medium text-gray-700">Asignación por Hijo con Discapacidad</label>
-                <select id="asignacion_hijo_discapacidad" name="asignacion_hijo_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.asignacion_hijo_discapacidad }}">
+                <select id="asignacion_hijo_discapacidad" name="asignacion_hijo_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.asignacion_hijo_discapacidad }}" required>
                     <option value="True" {% if jinete.asignacion_hijo_discapacidad %}selected{% endif %}>Sí</option>
                     <option value="False" {% if not jinete.asignacion_hijo_discapacidad %}selected{% endif %}>No</option>
                 </select>
@@ -174,7 +180,7 @@
             <!-- Asignación de ayuda escolar -->
             <div class="mb-4">
                 <label for="asignacion_ayuda_escolar" class="block text-sm font-medium text-gray-700">Asignación de Ayuda Escolar</label>
-                <select id="asignacion_ayuda_escolar" name="asignacion_ayuda_escolar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.asignacion_ayuda_escolar }}">
+                <select id="asignacion_ayuda_escolar" name="asignacion_ayuda_escolar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.asignacion_ayuda_escolar }}" required>
                     <option value="True" {% if jinete.asignacion_ayuda_escolar %}selected{% endif %}>Sí</option>
                     <option value="False" {% if not jinete.asignacion_ayuda_escolar %}selected{% endif %}>No</option>
                 </select>
@@ -183,7 +189,7 @@
             <!-- Pensión -->
             <div class="mb-4">
                 <label for="pension" class="block text-sm font-medium text-gray-700">Pensión</label>
-                <select id="pension" name="pension" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.pension }}">
+                <select id="pension" name="pension" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.pension }}" required>
                     <option value="Si" {% if jinete.pension == 'Si' %}selected{% endif %}>Sí</option>
                     <option value="No" {% if jinete.pension == 'No' %}selected{% endif %}>No</option>
                 </select>
@@ -204,7 +210,7 @@
             <!-- Curatela -->
             <div class="mb-4">
                 <label for="curatela" class="block text-sm font-medium text-gray-700">Curatela</label>
-                <select id="curatela" name="curatela" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.curatela }}">
+                <select id="curatela" name="curatela" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ jinete.curatela }}" required>
                     <option value="True" {% if jinete.curatela %}selected{% endif %}>Sí</option>
                     <option value="False" {% if not jinete.curatela %}selected{% endif %}>No</option>
                 </select>
@@ -252,6 +258,8 @@
                 <input type="text" id="profesionales_atienden" name="profesionales_atienden" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese los profesionales que atienden" value="{{jinete.profesionales_atienden}}">
             </div>
 
+            <h2 class="text-2xl font-semibold mb-4">Familiares/Tutores a cargo</h2>
+
             <!-- Parentesco Familiar 1 -->
             <div class="mb-4">
                 <label for="parentesco_familiar_1" class="block text-sm font-medium text-gray-700">Parentesco Familiar 1</label>
@@ -298,6 +306,7 @@
             <div class="mb-4">
                 <label for="escolaridad_familiar_1" class="block text-sm font-medium text-gray-700">Escolaridad Familiar 1</label>
                 <select id="escolaridad_familiar_1" name="escolaridad_familiar_1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
                     <option value="Primario" {% if jinete.escolaridad_familiar_1 == 'Primario' %}selected{% endif %}>Primario</option>
                     <option value="Secundario" {% if jinete.escolaridad_familiar_1 == 'Secundario' %}selected{% endif %}>Secundario</option>
                     <option value="Terciario" {% if jinete.escolaridad_familiar_1 == 'Terciario' %}selected{% endif %}>Terciario</option>
@@ -357,6 +366,7 @@
             <div class="mb-4">
                 <label for="escolaridad_familiar_2" class="block text-sm font-medium text-gray-700">Escolaridad Familiar 2</label>
                 <select id="escolaridad_familiar_2" name="escolaridad_familiar_2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">Seleccione una opción</option>
                     <option value="Primario" {% if jinete.escolaridad_familiar_2 == 'Primario' %}selected{% endif %}>Primario</option>
                     <option value="Secundario" {% if jinete.escolaridad_familiar_2 == 'Secundario' %}selected{% endif %}>Secundario</option>
                     <option value="Terciario" {% if jinete.escolaridad_familiar_2 == 'Terciario' %}selected{% endif %}>Terciario</option>
@@ -375,7 +385,7 @@
             <!-- Propuesta de trabajo institucional -->
             <div class="mb-4">
                 <label for="propuesta_trabajo" class="block text-sm font-medium text-gray-700">Propuesta de trabajo institucional</label>
-                <select id="propuesta_trabajo" name="propuesta_trabajo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="propuesta_trabajo" name="propuesta_trabajo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="Hipoterapia" {% if jinete.propuesta_trabajo == 'Hipoterapia' %}selected{% endif %}>Hipoterapia</option>
                     <option value="Monta Terapéutica" {% if jinete.propuesta_trabajo == 'Monta Terapéutica' %}selected{% endif %}>Monta Terapéutica</option>
@@ -388,7 +398,7 @@
             <!-- Condición -->
             <div class="mb-4">
                 <label for="condicion" class="block text-sm font-medium text-gray-700">Condición</label>
-                <select id="condicion" name="condicion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="condicion" name="condicion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="REGULAR" {% if jinete.condicion == 'REGULAR' %}selected{% endif %}>REGULAR</option>
                     <option value="DE BAJA" {% if jinete.condicion == 'DE BAJA' %}selected{% endif %}>DE BAJA</option>
@@ -398,7 +408,7 @@
             <!-- Sede -->
             <div class="mb-4">
                 <label for="sede" class="block text-sm font-medium text-gray-700">Sede</label>
-                <select id="sede" name="sede" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="sede" name="sede" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="CASJ" {% if jinete.sede == 'CASJ' %}selected{% endif %}>CASJ</option>
                     <option value="HLP" {% if jinete.sede == 'HLP' %}selected{% endif %}>HLP</option>
@@ -444,7 +454,7 @@
             <!-- Asociar profesor o terapeuta -->
             <div class="mb-4">
                 <label for="profesor_terapeuta" class="block text-sm font-medium text-gray-700">Asociar Profesor o Terapeuta</label>
-                <select id="profesor_terapeuta" name="profesor_terapeuta" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="profesor_terapeuta" name="profesor_terapeuta" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                 {% for terapeuta in terapeutas %}
                     <option value="{{ terapeuta.id }}" {% if terapeuta.id == jinete.profesor_terapeuta %}selected{% endif %}>{{ terapeuta.nombre }} {{terapeuta.apellido}} - {{ terapeuta.puesto_laboral }}</option>
                 {% endfor %}
@@ -454,7 +464,7 @@
             <!-- Asociar Conductor -->
             <div class="mb-4">
                 <label for="conductor" class="block text-sm font-medium text-gray-700">Asociar Conductor</label>
-                <select id="conductor" name="conductor" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" >
+                <select id="conductor" name="conductor" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required >
                 {% for conductor in conductores %}
                     <option value="{{ conductor.id }}" {% if conductor.id == jinete.conductor %}selected{% endif %}>{{ conductor.nombre }} {{ conductor.apellido }}</option>
                 {% endfor %}
@@ -464,7 +474,7 @@
             <!-- Asociar caballo -->
             <div class="mb-4">
                 <label for="caballo" class="block text-sm font-medium text-gray-700">Asociar Caballo</label>
-                <select id="caballo" name="caballo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" >
+                <select id="caballo" name="caballo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required >
                 {% for caballo in caballos %}
                     <option value="{{ caballo.id }}" {% if caballo.id == jinete.caballo %}selected{% endif %}>{{ caballo.nombre }}</option>
                 {% endfor %}
@@ -474,7 +484,7 @@
             <!-- Asociar auxiliar de pista -->
             <div class="mb-4">
                 <label for="auxiliar_pista" class="block text-sm font-medium text-gray-700">Asociar Auxiliar de Pista</label>
-                <select id="auxiliar_pista" name="auxiliar_pista" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" >
+                <select id="auxiliar_pista" name="auxiliar_pista" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                 {% for auxiliar in auxiliares %}
                     <option value="{{ auxiliar.id }}" {% if auxiliar.id == jinete.auxiliar_pista %}selected{% endif %}>{{ auxiliar.nombre }} {{ auxiliar.apellido }}</option>
                 {% endfor %}

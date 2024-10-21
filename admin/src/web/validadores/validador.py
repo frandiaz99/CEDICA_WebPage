@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 from src.core.equipo import Empleado
+from src.core.encuestre import Encuestre
 
 def validar_string(string):
     """
@@ -13,6 +14,42 @@ def validar_string(string):
         bool: True si el string es válido, False en caso contrario.
     """
     return bool(re.match(r'^[A-Za-zÀ-ÿ\s]+$', string))
+
+def validar_string_o_vacio(string):
+    """
+    Verifica si el string contiene solo letras (incluyendo acentos) y espacios o está vacío.
+
+    Args:
+        string (str): El string a validar.
+
+    Returns:
+        bool: True si el string es válido, False en caso contrario.
+    """
+    return bool(re.match(r'^[A-Za-zÀ-ÿ\s]*$', string))
+
+def validar_string_numeros_o_vacio(string):
+    """
+    Verifica si el string contiene solo letras (incluyendo acentos), números y espacios o está vacío.
+
+    Args:
+        string (str): El string a validar.
+
+    Returns:
+        bool: True si el string es válido, False en caso contrario.
+    """
+    return bool(re.match(r'^[A-Za-zÀ-ÿ0-9\s]*$', string))
+
+def validar_numeros_o_vacio(string):
+    """
+    Verifica si el string contiene solo números o está vacío.
+
+    Args:
+        string (str): El string a validar.
+
+    Returns:
+        bool: True si el string es válido, False en caso contrario.
+    """
+    return bool(re.match(r'^[0-9]*$', string))
 
 
 def validar_vacio(string):
@@ -527,7 +564,244 @@ def validar_sede_asignada(sede_asignada):
         turple: (bool) Retorna un booleano indicando si es válida y un mensaje de error.
     
     """
-    sedes_permitidas = ['CASJ', 'HLP', ]
+    sedes_permitidas = ['CASJ', 'HLP', 'OTRO' ]
     if sede_asignada not in sedes_permitidas:
         return False, f"La sede asignada debe ser uno de los siguientes: {', '.join(sedes_permitidas)}."
+    return True, ""
+
+def validar_campo_texto(campo):
+    """
+    Valida si el campo solo contiene letras y es válido.
+
+    Args:
+        campo (str): El campo a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if not validar_string_o_vacio(campo):
+        return False, "Error en uno de los campos que solo debe contener letras y espacios."
+    return True, ""
+
+def validar_campo_texto_numeros(campo):
+    """
+    Valida si el campo solo contiene letras y números y es válido.
+
+    Args:
+        campo (str): El campo a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if not validar_string_numeros_o_vacio(campo):
+        return False, "Error en uno de los campos que solo debe contener letras, números y espacios."
+    return True, ""
+
+def validar_campo_booleano(campo):
+    """
+    Valida si el campo tiene el valor true o false.
+
+    Args:
+        campo (str): El campo a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if not (campo == 'True' or campo == 'False'):
+        return False, "Error en uno de los campos booleanos no tiene el valor true o false."
+    return True, ""
+
+def validar_campo_numeros(campo):
+    """
+    Valida si el campo solo contiene números y es válido.
+
+    Args:
+        campo (str): El campo a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if not validar_numeros_o_vacio(campo):
+        return False, "Error en uno de los campos que solo debe contener números."
+    return True, ""
+
+
+def validar_email_o_vacio(email):
+    """
+    Valida el formato de un correo electrónico si es que hay uno ingresado.
+
+    Args:
+        email (str): El correo a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if not email:
+        return True, ""
+    if not re.match(r'^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$', email):
+        return False, "El correo electrónico no es válido."
+    return True, ""
+
+
+def validar_diagnostico_discapacidad(diagnostico_discapacidad):
+    """Valida que el diagnostico de discapacidad sea uno de los valores permitidos.
+    
+    Args: 
+        diagnostico_discapacidad(str): tipo a validar
+    
+    Returns:
+        turple: (bool,str) Retorna un booleano indicando si es válida y un mensaje de error.
+    
+    """
+    tipos_permitidos = ['ECNE', 'Lesión post-traumática', 'Mielomeningocele', 'Esclerosis Múltiple', 'Escoliosis Leve', 'Secuelas de ACV', 'Discapacidad Intelectual', 'Trastorno del Espectro Autista','Trastorno del Aprendizaje','Trastorno por Déficit de Atención/Hiperactividad','Trastorno de la Comunicación','Trastorno de Ansiedad','Síndrome de Down','Retraso Madurativo','Psicosis','Trastorno de Conducta','Trastornos del ánimo y afectivos','Trastorno Alimentario','OTRO']
+    if diagnostico_discapacidad not in tipos_permitidos:
+        return False, f"El diagnóstico de discapacidad debe ser uno de los siguientes: {', '.join(tipos_permitidos)}."
+    return True, ""
+
+def validar_tipo_discapacidad(tipo_discapacidad):
+    """Valida que el tipo de discapacidad sea uno de los valores permitidos.
+    
+    Args:
+        tipo_discapacidad (str): Tipo de discapacidad a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válida y un mensaje de error.
+    """
+    tipos_permitidos = ['Mental', 'Motora', 'Sensorial', 'Visceral']
+    if tipo_discapacidad not in tipos_permitidos:
+        return False, f"El tipo de discapacidad debe ser uno de los siguientes: {', '.join(tipos_permitidos)}."
+    return True, ""
+
+
+def validar_escolaridad_familiar(escolaridad_familiar):
+    """Valida que la escolaridad familiar sea uno de los valores permitidos o esté sin completar.
+    
+    Args:
+        escolaridad_familiar (str): Escolaridad a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válida y un mensaje de error.
+    """
+    opciones_permitidas = ['Primario', 'Secundario', 'Terciario', 'Universitario', '']
+    
+    if escolaridad_familiar not in opciones_permitidas:
+        return False, f"La escolaridad familiar debe ser una de las siguientes: {', '.join(opciones_permitidas[:-1])} o estar sin completar."
+    
+    return True, ""
+
+def validar_propuesta_trabajo(propuesta_trabajo):
+    """Valida que la propuesta de trabajo sea una de las opciones permitidas.
+    
+    Args:
+        propuesta_trabajo (str): Propuesta de trabajo a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válida y un mensaje de error.
+    """
+    opciones_permitidas = ['Hipoterapia', 'Monta Terapéutica', 'Deporte Ecuestre Adaptado', 'Actividades Recreativas', 'Equitación']
+    
+    if propuesta_trabajo not in opciones_permitidas:
+        return False, f"La propuesta de trabajo debe ser una de las siguientes: {', '.join(opciones_permitidas)}."
+    
+    return True, ""
+
+def validar_condicion_jinete(condicion_jinete):
+    """Valida que la condición del jinete sea una de las opciones permitidas.
+    
+    Args:
+        condicion_jinete (str): Condición del jinete a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válida y un mensaje de error.
+    """
+    opciones_permitidas = ['REGULAR', 'DE BAJA']
+    
+    if condicion_jinete not in opciones_permitidas:
+        return False, f"La condición del jinete debe ser una de las siguientes: {', '.join(opciones_permitidas)}."
+    
+    return True, ""
+
+def validar_dia(dias_seleccionados):
+    """Valida que los días seleccionados sean parte de los valores permitidos.
+    
+    Args:
+        dias_seleccionados (list): Lista de días seleccionados.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válida y un mensaje de error.
+    """
+    dias_permitidos = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+    
+    dias_invalidos = [dia for dia in dias_seleccionados if dia not in dias_permitidos]
+    
+    if dias_invalidos:
+        return False, f"Los siguientes días no son válidos: {', '.join(dias_invalidos)}. Los días válidos son: {', '.join(dias_permitidos)}."
+    
+    return True, ""
+
+def validar_profesor_terapeuta(profesor_terapeuta_id):
+    """Valida que el profesor o terapeuta con el ID dado forme parte del equipo.
+    
+    Args:
+        profesor_terapeuta_id (int): ID del profesor o terapeuta a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    profesor_terapeuta = Empleado.query.filter(Empleado.id==profesor_terapeuta_id, Empleado.puesto_laboral.in_(['Terapeuta', 'Profesor de Equitación', 'Docente de Capacitación'])).first()
+    
+    if not profesor_terapeuta:
+        return False, "Debe seleccionar un profesor o terapeuta válido."
+    
+    return True, ""
+
+
+def validar_auxiliar(auxiliar_id):
+    """Valida que el auxiliar con el ID dado forme parte del equipo.
+    
+    Args:
+        auxiliar_id (int): ID del auxiliar a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    auxiliar = Empleado.query.filter_by(id=auxiliar_id, puesto_laboral='Auxiliar de pista').first()
+    
+    if not auxiliar:
+        return False, "Debe seleccionar un auxiliar válido."
+    
+    return True, ""
+
+
+def validar_caballo(caballo_id):
+    """Valida que el caballo con el ID dado forme parte del equipo.
+    
+    Args:
+        caballo_id (int): ID del caballo a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    caballo = Encuestre.query.filter_by(id=caballo_id).first()
+    
+    if not caballo:
+        return False, "Debe seleccionar un caballo válido."
+    
+    return True, ""
+
+
+def validar_conductor(conductor_id):
+    """Valida que el conductor con el ID dado forme parte del equipo.
+    
+    Args:
+        conductor_id (int): ID del conductor a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    conductor = Empleado.query.filter_by(id=conductor_id, puesto_laboral='Conductor').first()
+    
+    if not conductor:
+        return False, "Debe seleccionar un conductor válido."
+    
     return True, ""
