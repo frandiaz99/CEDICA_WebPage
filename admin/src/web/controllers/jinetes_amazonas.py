@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, jsonify, request, abort, flash, url_for, redirect, current_app
+import io
+from flask import Blueprint, render_template, jsonify, request, abort, flash, send_file, url_for, redirect, current_app
 from src.core.database import db
 from datetime import datetime
 from sqlalchemy import asc, desc
@@ -6,6 +7,17 @@ from src.core import jinetes_amazonas
 from src.core.equipo import Empleado
 from src.core.encuestre import Encuestre
 from src.core.jinetes_amazonas import documento_jinete
+from src.web.validadores.validador import (
+    validar_campo_texto, validar_campo_booleano,
+    validar_fecha_nacimiento, validar_sede_asignada,
+    validar_dni, validar_campo_texto_numeros, 
+    validar_telefono, validar_email_o_vacio, validar_campo_numeros,
+    validar_diagnostico_discapacidad, validar_tipo_discapacidad,
+    validar_escolaridad_familiar, validar_propuesta_trabajo, validar_condicion_jinete,
+    validar_dia, validar_profesor_terapeuta, validar_conductor, validar_auxiliar, validar_caballo
+
+)
+
 from src.web.handlers.auth import check
 import os
 
@@ -147,19 +159,19 @@ def registrar():
         telefono = request.form.get('telefono')
         contacto_emergencia = request.form.get('contacto_emergencia')
         telefono_emergencia = request.form.get('telefono_emergencia')
-        becado = True if request.form.get('becado') == 'True' else False
+        becado = request.form.get('becado') 
         beca_observaciones = request.form.get('beca_observaciones')
-        certificado_discapacidad = True if request.form.get('certificado_discapacidad') == 'True' else False
+        certificado_discapacidad =  request.form.get('certificado_discapacidad')
         diagnostico_discapacidad = request.form.get('diagnostico_discapacidad')
         tipo_discapacidad = request.form.get('tipo_discapacidad')
-        percibe_asignacion_familiar = True if request.form.get('percibe_asignacion_familiar') == 'True' else False
-        asignacion_hijo = True if request.form.get('asignacion_hijo') == 'True' else False
-        asignacion_hijo_discapacidad = True if request.form.get('asignacion_hijo_discapacidad') == 'True' else False
-        asignacion_ayuda_escolar = True if request.form.get('asignacion_ayuda_escolar') == 'True' else False
+        percibe_asignacion_familiar = request.form.get('percibe_asignacion_familiar')
+        asignacion_hijo = request.form.get('asignacion_hijo')
+        asignacion_hijo_discapacidad = request.form.get('asignacion_hijo_discapacidad')
+        asignacion_ayuda_escolar =request.form.get('asignacion_ayuda_escolar') 
         pension = request.form.get('pension')
         obra_social = request.form.get('obra_social')
         numero_afiliado = request.form.get('numero_afiliado')
-        curatela = True if request.form.get('curatela') == 'True' else False
+        curatela =  request.form.get('curatela')
         observaciones_previsionales = request.form.get('observaciones_previsionales')
         institucion_escolar = request.form.get('institucion_escolar')
         direccion_institucion = request.form.get('direccion_institucion')
@@ -196,9 +208,10 @@ def registrar():
         
 
         # Validar que los campos requeridos no estén vacíos
-        #if not (nombre and apellido and dni and edad and fecha_nacimiento_str and lugar_nacimiento_localidad and lugar_nacimiento_provincia and domicilio_actual and telefono and contacto_emergencia and telefono_emergencia and becado and certificado_discapacidad and percibe_asignacion_familiar and asignacion_hijo and asignacion_hijo_discapacidad and asignacion_ayuda_escolar and curatela and propuesta_trabajo and sede and dia and caballo and auxiliar_pista and profesor_terapeuta and conductor and condicion):
-         #   flash('Faltan completar campos obligatorios', 'danger')
-          #  return redirect(url_for('jinetes_amazonas.registrar'))
+        if not (nombre and apellido and dni and edad and fecha_nacimiento_str and lugar_nacimiento_localidad  and pension and lugar_nacimiento_provincia and domicilio_actual and telefono and contacto_emergencia and telefono_emergencia and becado and certificado_discapacidad and diagnostico_discapacidad  and tipo_discapacidad and percibe_asignacion_familiar and asignacion_hijo and asignacion_hijo_discapacidad and asignacion_ayuda_escolar and curatela and propuesta_trabajo and sede and dia and caballo and auxiliar_pista and profesor_terapeuta and conductor and condicion):
+            flash('Faltan completar campos obligatorios', 'danger')
+            return redirect(url_for('jinetes_amazonas.registrar'))
+        
         
          # Verificar si ya existe un jinete/amazona con el mismo DNI
         dni_aux = jinetes_amazonas.JineteAmazona.query.filter_by(dni=dni).first()
@@ -206,14 +219,73 @@ def registrar():
             flash('El DNI ingresado ya se encuentra registrado.', 'danger')
             return redirect(url_for('jinetes_amazonas.registrar'))
         
-        try:
-            fecha_nacimiento = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d')
-            if fecha_nacimiento > datetime.today():
-                flash('La fecha de nacimiento no puede ser futura', 'danger')
+        validadores= [
+            (validar_campo_texto, [nombre]),
+            (validar_campo_texto, [apellido]),
+            (validar_dni, [dni]),
+            (validar_campo_numeros, [edad]),
+            (validar_fecha_nacimiento, [fecha_nacimiento_str]),
+            (validar_campo_texto_numeros, [lugar_nacimiento_localidad]),
+            (validar_campo_texto, [lugar_nacimiento_provincia]),
+            (validar_campo_texto_numeros, [domicilio_actual]),
+            (validar_telefono, [telefono]),
+            (validar_campo_texto, [contacto_emergencia]),
+            (validar_telefono, [telefono_emergencia]),
+            (validar_campo_booleano, [becado]),
+            (validar_campo_texto, [beca_observaciones]),
+            (validar_campo_booleano, [certificado_discapacidad]),
+            (validar_diagnostico_discapacidad,[diagnostico_discapacidad]),
+            (validar_tipo_discapacidad,[tipo_discapacidad]),
+            (validar_campo_booleano, [percibe_asignacion_familiar]),
+            (validar_campo_booleano, [asignacion_hijo]),
+            (validar_campo_booleano, [asignacion_hijo_discapacidad]),
+            (validar_campo_booleano, [asignacion_ayuda_escolar]),
+            (validar_campo_texto, [pension]),
+            (validar_campo_texto, [obra_social]),
+            (validar_campo_numeros, [numero_afiliado]),
+            (validar_campo_booleano, [curatela]),
+            (validar_campo_texto, [observaciones_previsionales]),
+            (validar_campo_texto, [institucion_escolar]),
+            (validar_campo_texto_numeros, [direccion_institucion]),
+            (validar_campo_numeros, [telefono_institucion]),
+            (validar_campo_texto_numeros, [grado_anio_actual]),
+            (validar_campo_texto, [observaciones_institucion]),
+            (validar_campo_texto, [profesionales_atienden]),
+            (validar_campo_texto, [parentesco_familiar_1]),
+            (validar_campo_texto, [nombre_familiar_1]),
+            (validar_campo_texto, [apellido_familiar_1]),
+            (validar_campo_numeros, [dni_familiar_1]),
+            (validar_campo_texto_numeros, [domicilio_familiar_1]),
+            (validar_campo_numeros, [celular_familiar_1]),
+            (validar_email_o_vacio, [email_familiar_1]),
+            (validar_escolaridad_familiar,[escolaridad_familiar_1]),
+            (validar_campo_texto, [ocupacion_familiar_1]),
+            (validar_campo_texto, [parentesco_familiar_2]),
+            (validar_campo_texto, [nombre_familiar_2]),
+            (validar_campo_texto, [apellido_familiar_2]),
+            (validar_campo_numeros, [dni_familiar_2]),
+            (validar_campo_texto_numeros, [domicilio_familiar_2]),
+            (validar_campo_numeros, [celular_familiar_2]),
+            (validar_email_o_vacio, [email_familiar_2]),
+            (validar_escolaridad_familiar,[escolaridad_familiar_2]),
+            (validar_campo_texto, [ocupacion_familiar_2]),
+            (validar_propuesta_trabajo,[propuesta_trabajo]),
+            (validar_condicion_jinete, [condicion]),
+            (validar_sede_asignada, [sede]),
+            (validar_dia,[dia]),
+            (validar_profesor_terapeuta, [profesor_terapeuta]),
+            (validar_conductor,[conductor]),
+            (validar_auxiliar,[auxiliar_pista]),
+            (validar_caballo, [caballo])
+
+        ]
+
+        # Ejecuta todos los validadores
+        for validar_funcion, args in validadores:
+            es_valido, mensaje_error = validar_funcion(*args)
+            if not es_valido:
+                flash(mensaje_error, 'danger')
                 return redirect(url_for('jinetes_amazonas.registrar'))
-        except ValueError or UnboundLocalError:
-            flash('Formato de fecha de nacimiento inválido', 'danger')
-            return redirect(url_for('jinetes_amazonas.registrar'))
         
         # Crear el objeto JineteAmazona
         nuevo_jinete_amazona = jinetes_amazonas.JineteAmazona(
@@ -221,26 +293,26 @@ def registrar():
             apellido=apellido,
             dni=dni,
             edad=edad,
-            fecha_nacimiento=fecha_nacimiento,
+            fecha_nacimiento=datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d'),
             lugar_nacimiento_localidad=lugar_nacimiento_localidad,
             lugar_nacimiento_provincia=lugar_nacimiento_provincia,
             domicilio_actual=domicilio_actual,
             telefono=telefono,
             contacto_emergencia=contacto_emergencia,
             telefono_emergencia=telefono_emergencia,
-            becado=(becado == 'Sí'),
+            becado=(becado == 'True'),
             beca_observaciones=beca_observaciones,
-            certificado_discapacidad=(certificado_discapacidad == 'Sí'),
+            certificado_discapacidad=(certificado_discapacidad == 'True'),
             diagnostico_discapacidad=diagnostico_discapacidad,
             tipo_discapacidad=tipo_discapacidad,
-            percibe_asignacion_familiar=(percibe_asignacion_familiar == 'Sí'),
-            asignacion_hijo=(asignacion_hijo == 'Sí'),
-            asignacion_hijo_discapacidad=(asignacion_hijo_discapacidad == 'Sí'),
-            asignacion_ayuda_escolar=(asignacion_ayuda_escolar == 'Sí'),
+            percibe_asignacion_familiar=(percibe_asignacion_familiar == 'True'),
+            asignacion_hijo=(asignacion_hijo == 'True'),
+            asignacion_hijo_discapacidad=(asignacion_hijo_discapacidad == 'True'),
+            asignacion_ayuda_escolar=(asignacion_ayuda_escolar == 'True'),
             pension=pension,
             obra_social=obra_social,
             numero_afiliado=numero_afiliado,
-            curatela=(curatela == 'Sí'),
+            curatela=(curatela == 'True'),
             observaciones_previsionales=observaciones_previsionales,
             institucion_escolar=institucion_escolar,
             direccion_institucion=direccion_institucion,
@@ -312,19 +384,19 @@ def editar(id):
         telefono = request.form.get('telefono')
         contacto_emergencia = request.form.get('contacto_emergencia')
         telefono_emergencia = request.form.get('telefono_emergencia')
-        becado = True if request.form.get('becado') == 'True' else False
+        becado = request.form.get('becado')
         beca_observaciones = request.form.get('beca_observaciones')
-        certificado_discapacidad = True if request.form.get('certificado_discapacidad') == 'True' else False
+        certificado_discapacidad = request.form.get('certificado_discapacidad') 
         diagnostico_discapacidad = request.form.get('diagnostico_discapacidad')
         tipo_discapacidad = request.form.get('tipo_discapacidad')
-        percibe_asignacion_familiar = True if request.form.get('percibe_asignacion_familiar') == 'True' else False
-        asignacion_hijo = True if request.form.get('asignacion_hijo') == 'True' else False
-        asignacion_hijo_discapacidad = True if request.form.get('asignacion_hijo_discapacidad') == 'True' else False
-        asignacion_ayuda_escolar = True if request.form.get('asignacion_ayuda_escolar') == 'True' else False
+        percibe_asignacion_familiar = request.form.get('percibe_asignacion_familiar')
+        asignacion_hijo = request.form.get('asignacion_hijo')
+        asignacion_hijo_discapacidad =  request.form.get('asignacion_hijo_discapacidad')
+        asignacion_ayuda_escolar = request.form.get('asignacion_ayuda_escolar')
         pension = request.form.get('pension')
         obra_social = request.form.get('obra_social')
         numero_afiliado = request.form.get('numero_afiliado')
-        curatela = True if request.form.get('curatela') == 'True' else False
+        curatela = request.form.get('curatela')
         observaciones_previsionales = request.form.get('observaciones_previsionales')
         institucion_escolar = request.form.get('institucion_escolar')
         direccion_institucion = request.form.get('direccion_institucion')
@@ -361,44 +433,104 @@ def editar(id):
 
 
         # Validar que los campos requeridos no estén vacíos
-        #if not (nombre and apellido and dni and edad and fecha_nacimiento_str and lugar_nacimiento_localidad and lugar_nacimiento_provincia and domicilio_actual and telefono and contacto_emergencia and telefono_emergencia and becado and certificado_discapacidad and percibe_asignacion_familiar and asignacion_hijo and asignacion_hijo_discapacidad and asignacion_ayuda_escolar and curatela and propuesta_trabajo and sede and dia and caballo and auxiliar_pista and profesor_terapeuta and conductor and condicion):
-         #   flash('Faltan completar campos obligatorios', 'danger')
-          #  return redirect(url_for('jinetes_amazonas.editar', id=id))
-        
-        try:
-            fecha_nacimiento = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d')
-            if fecha_nacimiento > datetime.today():
-                flash('La fecha de nacimiento no puede ser futura', 'danger')
-                return redirect(url_for('jinetes_amazonas.editar', id=id))
-        except ValueError or UnboundLocalError:
-            flash('Formato de fecha de nacimiento inválido', 'danger')
+        if not (nombre and apellido and dni and edad and fecha_nacimiento_str and lugar_nacimiento_localidad  and pension and lugar_nacimiento_provincia and domicilio_actual and telefono and contacto_emergencia and telefono_emergencia and becado and certificado_discapacidad and diagnostico_discapacidad  and tipo_discapacidad and percibe_asignacion_familiar and asignacion_hijo and asignacion_hijo_discapacidad and asignacion_ayuda_escolar and curatela and propuesta_trabajo and sede and dia and caballo and auxiliar_pista and profesor_terapeuta and conductor and condicion):
+            flash('Faltan completar campos obligatorios', 'danger')
             return redirect(url_for('jinetes_amazonas.editar', id=id))
+        
+
+        validadores= [
+            (validar_campo_texto, [nombre]),
+            (validar_campo_texto, [apellido]),
+            (validar_dni, [dni]),
+            (validar_campo_numeros, [edad]),
+            (validar_fecha_nacimiento, [fecha_nacimiento_str]),
+            (validar_campo_texto_numeros, [lugar_nacimiento_localidad]),
+            (validar_campo_texto, [lugar_nacimiento_provincia]),
+            (validar_campo_texto_numeros, [domicilio_actual]),
+            (validar_telefono, [telefono]),
+            (validar_campo_texto, [contacto_emergencia]),
+            (validar_telefono, [telefono_emergencia]),
+            (validar_campo_booleano, [becado]),
+            (validar_campo_texto, [beca_observaciones]),
+            (validar_campo_booleano, [certificado_discapacidad]),
+            (validar_diagnostico_discapacidad,[diagnostico_discapacidad]),
+            (validar_tipo_discapacidad,[tipo_discapacidad]),
+            (validar_campo_booleano, [percibe_asignacion_familiar]),
+            (validar_campo_booleano, [asignacion_hijo]),
+            (validar_campo_booleano, [asignacion_hijo_discapacidad]),
+            (validar_campo_booleano, [asignacion_ayuda_escolar]),
+            (validar_campo_texto, [pension]),
+            (validar_campo_texto, [obra_social]),
+            (validar_campo_numeros, [numero_afiliado]),
+            (validar_campo_booleano, [curatela]),
+            (validar_campo_texto, [observaciones_previsionales]),
+            (validar_campo_texto, [institucion_escolar]),
+            (validar_campo_texto_numeros, [direccion_institucion]),
+            (validar_campo_numeros, [telefono_institucion]),
+            (validar_campo_texto_numeros, [grado_anio_actual]),
+            (validar_campo_texto, [observaciones_institucion]),
+            (validar_campo_texto, [profesionales_atienden]),
+            (validar_campo_texto, [parentesco_familiar_1]),
+            (validar_campo_texto, [nombre_familiar_1]),
+            (validar_campo_texto, [apellido_familiar_1]),
+            (validar_campo_numeros, [dni_familiar_1]),
+            (validar_campo_texto_numeros, [domicilio_familiar_1]),
+            (validar_campo_numeros, [celular_familiar_1]),
+            (validar_email_o_vacio, [email_familiar_1]),
+            (validar_escolaridad_familiar,[escolaridad_familiar_1]),
+            (validar_campo_texto, [ocupacion_familiar_1]),
+            (validar_campo_texto, [parentesco_familiar_2]),
+            (validar_campo_texto, [nombre_familiar_2]),
+            (validar_campo_texto, [apellido_familiar_2]),
+            (validar_campo_numeros, [dni_familiar_2]),
+            (validar_campo_texto_numeros, [domicilio_familiar_2]),
+            (validar_campo_numeros, [celular_familiar_2]),
+            (validar_email_o_vacio, [email_familiar_2]),
+            (validar_escolaridad_familiar,[escolaridad_familiar_2]),
+            (validar_campo_texto, [ocupacion_familiar_2]),
+            (validar_propuesta_trabajo,[propuesta_trabajo]),
+            (validar_condicion_jinete, [condicion]),
+            (validar_sede_asignada, [sede]),
+            (validar_dia,[dia]),
+            (validar_profesor_terapeuta, [profesor_terapeuta]),
+            (validar_conductor,[conductor]),
+            (validar_auxiliar,[auxiliar_pista]),
+            (validar_caballo, [caballo])
+
+        ]
+
+        # Ejecuta todos los validadores
+        for validar_funcion, args in validadores:
+            es_valido, mensaje_error = validar_funcion(*args)
+            if not es_valido:
+                flash(mensaje_error, 'danger')
+                return redirect(url_for('jinetes_amazonas.editar', id=id))
 
 
         jinete_amazonas_aux.nombre = nombre
         jinete_amazonas_aux.apellido = apellido
         jinete_amazonas_aux.dni = dni
         jinete_amazonas_aux.edad = edad
-        jinete_amazonas_aux.fecha_nacimiento = fecha_nacimiento
+        jinete_amazonas_aux.fecha_nacimiento = datetime.strptime(fecha_nacimiento_str, '%Y-%m-%d')
         jinete_amazonas_aux.lugar_nacimiento_localidad = lugar_nacimiento_localidad
         jinete_amazonas_aux.lugar_nacimiento_provincia = lugar_nacimiento_provincia
         jinete_amazonas_aux.domicilio_actual = domicilio_actual
         jinete_amazonas_aux.telefono = telefono
         jinete_amazonas_aux.contacto_emergencia = contacto_emergencia
         jinete_amazonas_aux.telefono_emergencia = telefono_emergencia
-        jinete_amazonas_aux.becado = becado
+        jinete_amazonas_aux.becado = (becado == 'True')
         jinete_amazonas_aux.beca_observaciones = beca_observaciones
-        jinete_amazonas_aux.certificado_discapacidad = certificado_discapacidad
+        jinete_amazonas_aux.certificado_discapacidad = (certificado_discapacidad == 'True')
         jinete_amazonas_aux.diagnostico_discapacidad = diagnostico_discapacidad
         jinete_amazonas_aux.tipo_discapacidad = tipo_discapacidad
-        jinete_amazonas_aux.percibe_asignacion_familiar = percibe_asignacion_familiar
-        jinete_amazonas_aux.asignacion_hijo = asignacion_hijo
-        jinete_amazonas_aux.asignacion_hijo_discapacidad = asignacion_hijo_discapacidad
-        jinete_amazonas_aux.asignacion_ayuda_escolar = asignacion_ayuda_escolar
+        jinete_amazonas_aux.percibe_asignacion_familiar = (percibe_asignacion_familiar == 'True')
+        jinete_amazonas_aux.asignacion_hijo = (asignacion_hijo == 'True')
+        jinete_amazonas_aux.asignacion_hijo_discapacidad = (asignacion_hijo_discapacidad == 'True')
+        jinete_amazonas_aux.asignacion_ayuda_escolar = (asignacion_ayuda_escolar == 'True')
         jinete_amazonas_aux.pension = pension
         jinete_amazonas_aux.obra_social = obra_social
         jinete_amazonas_aux.numero_afiliado = numero_afiliado
-        jinete_amazonas_aux.curatela = curatela
+        jinete_amazonas_aux.curatela = (curatela == 'True')
         jinete_amazonas_aux.observaciones_previsionales = observaciones_previsionales
         jinete_amazonas_aux.institucion_escolar = institucion_escolar
         jinete_amazonas_aux.direccion_institucion = direccion_institucion
@@ -552,12 +684,36 @@ def subir_documento():
 @jinete_amazonas_bp.route('/descargar_documento/<int:document_id>')
 @check("ja_show")
 def descargar_documento(document_id):
-    documento = documento_jinete.DocumentoJinete.query.get_or_404(document_id)
+    """
+    Descargar documento existente o redirige al enlace.
     
-    if documento.is_document:
-        url_descarga = f"https://{documento.url}"
-    else:
-        url_descarga = documento.url
+    :param documento_id: ID del documento/enlace a descargar.
+    :return: Redirige al enlace del documento o al detalle del ecuestre, dependiendo si es un enlace o un documento o retorna error. 
+    """
+    documento = documento_jinete.DocumentoJinete.query.get_or_404(document_id)
+
+    if documento is None:
+        flash('No se encontro el documento/enlace.', 'danger')
+        return redirect(url_for('jinetes_amazonas.index'))
+    
+    jinete = documento_jinete.DocumentoJinete.get_jinete_by_document_id(document_id)
+    client = current_app.storage.client
+    object_name = f'documentos_jinetes_amazonas/{documento.titulo}'
+    
+    try: 
+        if(documento.is_document):
+            url_descarga = url_for('jinetes_amazonas.detalle', id=jinete.id)
+            response = client.get_object("grupo49", object_name)
+            doc = io.BytesIO(response.read())
+            flash('El documento se ha descargado con éxito.', 'success')
+            return send_file(doc, as_attachment=True, download_name=documento.titulo)
+            
+        else: 
+            url_descarga = documento.url
+    except Exception as e: 
+        flash(f'Error en la descarga: {str(e)}', 'danger')
+
+
 
     return redirect(url_descarga)
 

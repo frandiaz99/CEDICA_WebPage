@@ -26,73 +26,73 @@
             <!-- Nombre -->
             <div class="mb-4">
                 <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
-                <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre">
+                <input type="text" id="nombre" name="nombre" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el nombre" required>
             </div>
 
             <!-- Apellido -->
             <div class="mb-4">
                 <label for="apellido" class="block text-sm font-medium text-gray-700">Apellido</label>
-                <input type="text" id="apellido" name="apellido" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el apellido">
+                <input type="text" id="apellido" name="apellido" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el apellido" required>
             </div>
 
             <!-- DNI -->
             <div class="mb-4">
                 <label for="dni" class="block text-sm font-medium text-gray-700">DNI</label>
-                <input type="text" id="dni" name="dni" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el DNI">
+                <input type="text" id="dni" name="dni" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el DNI" required>
             </div>
 
             <!-- Edad -->
             <div class="mb-4">
                 <label for="edad" class="block text-sm font-medium text-gray-700">Edad</label>
-                <input type="text" id="edad" name="edad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la edad">
+                <input type="text" id="edad" name="edad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la edad" required>
             </div>
 
             <!-- Fecha de nacimiento -->
             <div class="mb-4">
                 <label for="fecha_nacimiento" class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
-                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" max="{{ fecha_hoy }}">
+                <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" max="{{ fecha_hoy }}" required>
             </div>
 
             <!-- Lugar de nacimiento (localidad) -->
             <div class="mb-4">
                 <label for="lugar_nacimiento_localidad" class="block text-sm font-medium text-gray-700">Lugar de Nacimiento (Localidad)</label>
-                <input type="text" id="lugar_nacimiento_localidad" name="lugar_nacimiento_localidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la localidad">
+                <input type="text" id="lugar_nacimiento_localidad" name="lugar_nacimiento_localidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la localidad" required>
             </div>
 
             <!-- Lugar de nacimiento (provincia) -->
             <div class="mb-4">
                 <label for="lugar_nacimiento_provincia" class="block text-sm font-medium text-gray-700">Lugar de Nacimiento (Provincia)</label>
-                <input type="text" id="lugar_nacimiento_provincia" name="lugar_nacimiento_provincia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la provincia">
+                <input type="text" id="lugar_nacimiento_provincia" name="lugar_nacimiento_provincia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese la provincia" required>
             </div>
 
             <!-- Domicilio actual -->
             <div class="mb-4">
                 <label for="domicilio_actual" class="block text-sm font-medium text-gray-700">Domicilio Actual</label>
-                <input type="text" id="domicilio_actual" name="domicilio_actual" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el domicilio actual">
+                <input type="text" id="domicilio_actual" name="domicilio_actual" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el domicilio actual" required>
             </div>
 
             <!-- Teléfono -->
             <div class="mb-4">
                 <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
-                <input type="text" id="telefono" name="telefono" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono">
+                <input type="text" id="telefono" name="telefono" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono" required>
             </div>
 
             <!-- Contacto de emergencia -->
             <div class="mb-4">
                 <label for="contacto_emergencia" class="block text-sm font-medium text-gray-700">Contacto de Emergencia</label>
-                <input type="text" id="contacto_emergencia" name="contacto_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el contacto de emergencia">
+                <input type="text" id="contacto_emergencia" name="contacto_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el contacto de emergencia" required>
             </div>
 
             <!-- Teléfono de emergencia -->
             <div class="mb-4">
                 <label for="telefono_emergencia" class="block text-sm font-medium text-gray-700">Teléfono de Emergencia</label>
-                <input type="text" id="telefono_emergencia" name="telefono_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono de emergencia">
+                <input type="text" id="telefono_emergencia" name="telefono_emergencia" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese el teléfono de emergencia" required>
             </div>
 
             <!-- Becado -->
             <div class="mb-4">
                 <label for="becado" class="block text-sm font-medium text-gray-700">¿Es Becado?</label>
-                <select id="becado" name="becado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="becado" name="becado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="True">Sí</option>
                     <option value="False">No</option>
@@ -108,7 +108,7 @@
             <!-- Certificado de discapacidad -->
             <div class="mb-4">
                 <label for="certificado_discapacidad" class="block text-sm font-medium text-gray-700">Certificado de Discapacidad</label>
-                <select id="certificado_discapacidad" name="certificado_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="certificado_discapacidad" name="certificado_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="True">Sí</option>
                     <option value="False">No</option>
@@ -118,7 +118,7 @@
             <!-- Diagnóstico de discapacidad -->
             <div class="mb-4">
                 <label for="diagnostico_discapacidad" class="block text-sm font-medium text-gray-700">Diagnóstico de Discapacidad</label>
-                <select id="diagnostico_discapacidad" name="diagnostico_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="diagnostico_discapacidad" name="diagnostico_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="ECNE">ECNE</option>
                     <option value="Lesión post-traumática">Lesión post-traumática</option>
@@ -146,7 +146,7 @@
             <!-- Tipo de discapacidad -->
             <div class="mb-4">
                 <label for="tipo_discapacidad" class="block text-sm font-medium text-gray-700">Tipo de Discapacidad</label>
-                <select id="tipo_discapacidad" name="tipo_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="tipo_discapacidad" name="tipo_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="Mental">Mental</option>
                     <option value="Motora">Motora</option>
@@ -158,7 +158,7 @@
             <!-- Percibe asignación familiar -->
             <div class="mb-4">
                 <label for="percibe_asignacion_familiar" class="block text-sm font-medium text-gray-700">¿Percibe Asignación Familiar?</label>
-                <select id="percibe_asignacion_familiar" name="percibe_asignacion_familiar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="percibe_asignacion_familiar" name="percibe_asignacion_familiar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="True">Sí</option>
                     <option value="False">No</option>
@@ -168,7 +168,7 @@
             <!-- Asignación por hijo -->
             <div class="mb-4">
                 <label for="asignacion_hijo" class="block text-sm font-medium text-gray-700">Asignación por Hijo</label>
-                <select id="asignacion_hijo" name="asignacion_hijo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="asignacion_hijo" name="asignacion_hijo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="True">Sí</option>
                     <option value="False">No</option>
@@ -178,7 +178,7 @@
             <!-- Asignación por hijo con discapacidad -->
             <div class="mb-4">
                 <label for="asignacion_hijo_discapacidad" class="block text-sm font-medium text-gray-700">Asignación por Hijo con Discapacidad</label>
-                <select id="asignacion_hijo_discapacidad" name="asignacion_hijo_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="asignacion_hijo_discapacidad" name="asignacion_hijo_discapacidad" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="True">Sí</option>
                     <option value="False">No</option>
@@ -188,7 +188,7 @@
             <!-- Asignación de ayuda escolar -->
             <div class="mb-4">
                 <label for="asignacion_ayuda_escolar" class="block text-sm font-medium text-gray-700">Asignación de Ayuda Escolar</label>
-                <select id="asignacion_ayuda_escolar" name="asignacion_ayuda_escolar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="asignacion_ayuda_escolar" name="asignacion_ayuda_escolar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="True">Sí</option>
                     <option value="False">No</option>
@@ -198,7 +198,7 @@
             <!-- Pensión -->
             <div class="mb-4">
                 <label for="pension" class="block text-sm font-medium text-gray-700">Pensión</label>
-                <select id="pension" name="pension" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="pension" name="pension" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="Si">Sí</option>
                     <option value="No">No</option>
@@ -220,7 +220,7 @@
             <!-- Curatela -->
             <div class="mb-4">
                 <label for="curatela" class="block text-sm font-medium text-gray-700">Curatela</label>
-                <select id="curatela" name="curatela" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="curatela" name="curatela" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="True">Sí</option>
                     <option value="False">No</option>
@@ -268,6 +268,8 @@
                 <label for="profesionales_atienden" class="block text-sm font-medium text-gray-700">Profesionales que Atienden</label>
                 <input type="text" id="profesionales_atienden" name="profesionales_atienden" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese los profesionales que atienden">
             </div>
+
+            <h2 class="text-2xl font-semibold mb-4">Familiares/Tutores a cargo</h2>
 
             <!-- Parentesco Familiar 1 -->
             <div class="mb-4">
@@ -394,7 +396,7 @@
             <!-- Propuesta de trabajo institucional -->
             <div class="mb-4">
                 <label for="propuesta_trabajo" class="block text-sm font-medium text-gray-700">Propuesta de trabajo institucional</label>
-                <select id="propuesta_trabajo" name="propuesta_trabajo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="propuesta_trabajo" name="propuesta_trabajo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="Hipoterapia">Hipoterapia</option>
                     <option value="Monta Terapéutica" >Monta Terapéutica</option>
@@ -407,7 +409,7 @@
             <!-- Condición -->
             <div class="mb-4">
                 <label for="condicion" class="block text-sm font-medium text-gray-700">Condición</label>
-                <select id="condicion" name="condicion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="condicion" name="condicion" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="REGULAR">REGULAR</option>
                     <option value="DE BAJA">DE BAJA</option>
@@ -417,7 +419,7 @@
             <!-- Sede -->
             <div class="mb-4">
                 <label for="sede" class="block text-sm font-medium text-gray-700">Sede</label>
-                <select id="sede" name="sede" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="sede" name="sede" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                     <option value="CASJ">CASJ</option>
                     <option value="HLP">HLP</option>
@@ -463,7 +465,7 @@
             <!-- Asociar profesor o terapeuta -->
             <div class="mb-4">
                 <label for="profesor_terapeuta" class="block text-sm font-medium text-gray-700">Asociar Profesor o Terapeuta</label>
-                <select id="profesor_terapeuta" name="profesor_terapeuta" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <select id="profesor_terapeuta" name="profesor_terapeuta" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                 {% for terapeuta in terapeutas %}
                     <option value="{{ terapeuta.id }}">{{ terapeuta.nombre }} {{terapeuta.apellido}} - {{ terapeuta.puesto_laboral }}</option>
@@ -474,7 +476,7 @@
             <!-- Asociar Conductor -->
             <div class="mb-4">
                 <label for="conductor" class="block text-sm font-medium text-gray-700">Asociar Conductor</label>
-                <select id="conductor" name="conductor" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" >
+                <select id="conductor" name="conductor" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                 {% for conductor in conductores %}
                     <option value="{{ conductor.id }}">{{ conductor.nombre }} {{ conductor.apellido }}</option>
@@ -485,7 +487,7 @@
             <!-- Asociar caballo -->
             <div class="mb-4">
                 <label for="caballo" class="block text-sm font-medium text-gray-700">Asociar Caballo</label>
-                <select id="caballo" name="caballo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" >
+                <select id="caballo" name="caballo" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                 {% for caballo in caballos %}
                     <option value="{{ caballo.id }}">{{ caballo.nombre }}</option>
@@ -496,7 +498,7 @@
             <!-- Asociar auxiliar de pista -->
             <div class="mb-4">
                 <label for="auxiliar_pista" class="block text-sm font-medium text-gray-700">Asociar Auxiliar de Pista</label>
-                <select id="auxiliar_pista" name="auxiliar_pista" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" >
+                <select id="auxiliar_pista" name="auxiliar_pista" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                     <option value="">Seleccione una opción</option>
                 {% for auxiliar in auxiliares %}
                     <option value="{{ auxiliar.id }}">{{ auxiliar.nombre }} {{ auxiliar.apellido }}</option>
