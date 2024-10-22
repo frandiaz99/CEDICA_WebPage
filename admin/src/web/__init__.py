@@ -21,7 +21,7 @@ from src.web import helpers
 
 session = Session()
 
-def create_app(env="development", static_folder="../../static"):
+def create_app(env="production", static_folder="../../static"):
     app = Flask(__name__, static_folder=static_folder)
 
     app.config['SECRET_KEY'] = '1234'
