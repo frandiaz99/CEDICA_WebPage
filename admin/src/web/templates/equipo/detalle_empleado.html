@@ -5,9 +5,24 @@
 {% block content %}
 
 <body class="bg-gray-100"></body>
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flex justify-center mt-4">
+    <div class="w-full max-w-2xl">
+        {% for category, message in messages %}
+        <div
+            class="{% if category == 'success' %}bg-green-500{% else %}bg-red-500{% endif %} bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+            <p class="text-lg font-semibold">{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+
 <div class="max-w-4xl mx-auto mt-10">
     <h1 class="text-3xl font-bold text-center mb-6">Detalle de Empleado</h1>
-    
+
     <!-- Sección de pestañas -->
     <div class="flex justify-center mb-6">
         <button id="infoBtn"
@@ -37,20 +52,19 @@
         <p><strong>Número de Afiliado:</strong> {{ empleado.numero_afiliado }}</p>
         <p><strong>Condición:</strong> {{ empleado.condicion }}</p>
         <p><strong>Activo:</strong> {{ "Sí" if empleado.activo else "No" }}</p>
-    </div>
-    <div class="flex justify-end mt-6 space-x-4">
-        <a href="{{ url_for('equipo.editar_empleado', id=empleado.id) }}" 
-           class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-           Editar
-        </a>
-        <form action="{{ url_for('equipo.eliminar_empleado', id=empleado.id) }}" method="POST">
-            
-            <button type="submit" 
-                    class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600" 
+        <div class="flex justify-end mt-6 space-x-4">
+            <a href="{{ url_for('equipo.editar_empleado', id=empleado.id) }}"
+                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                Editar
+            </a>
+            <form action="{{ url_for('equipo.eliminar_empleado', id=empleado.id) }}" method="POST">
+
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
                     onclick="return confirm('¿Estás seguro de que deseas eliminar este empleado? Esta acción no se puede deshacer.');">
-                Eliminar
-            </button>
-        </form>
+                    Eliminar
+                </button>
+            </form>
+        </div>
     </div>
     <div id="docsSection" class="p-6 bg-white rounded-lg shadow-md">
         <!-- Tabla de Documentos -->
@@ -70,10 +84,14 @@
                         <select class="actions-select" data-document-id="{{ documento.id }}">
                             <option value="" selected disabled>Seleccionar acción</option>
                             {% if check_permission(session, "equipo_show") %}
-                            <option value="eliminar" data-url="{{ url_for('equipo.eliminar_documento', document_id=documento.id) }}">Eliminar</option>
+                            <option value="eliminar"
+                                data-url="{{ url_for('equipo.eliminar_documento', document_id=documento.id) }}">Eliminar
+                            </option>
                             {% endif %}
                             {% if check_permission(session, "equipo_destroy") %}
-                            <option value="descargar" data-url="{{ url_for('equipo.descargar_documento', document_id=documento.id) }}">Descargar</option>
+                            <option value="descargar"
+                                data-url="{{ url_for('equipo.descargar_documento', document_id=documento.id) }}">
+                                Descargar</option>
                             {% endif %}
                         </select>
                     </td>
@@ -103,47 +121,43 @@
 
             </form>
         </div>
-       
+
     </div>
 </div>
 
 </div>
 <script src="{{ url_for('static', filename='funcionalidad/script_informacion_general.js') }}"></script>
 <script>
-    $(document).ready(function() {
-    $('.actions-select').on('change', function() {
-    var action = $(this).val();
-    var documentId = $(this).data('document-id');
-    var url = $(this).find('option:selected').data('url');
+    $(document).ready(function () {
+        $('.actions-select').on('change', function () {
+            var action = $(this).val();
+            var documentId = $(this).data('document-id');
+            var url = $(this).find('option:selected').data('url');
 
-    if (action === 'eliminar') {
-        // Mostrar el mensaje de confirmación
-        var confirmacion = confirm("¿Estás seguro de que deseas eliminar este documento?");
-        
-        if (confirmacion) {
-            // Si el usuario confirma, se ejecuta la solicitud POST para eliminar
-            $.ajax({ //permite hacer un post sin necesidad de recargar la pagina, apenas se clickea el select se envia los datos al back
-                url: url, //al ser ejecutadas en segundo plano, el flash ni redirect funcionan 
-                type: 'POST', 
-                success: function(response) {
-                    // Recargar la página para reflejar los cambios
-                    location.reload();
-                },
-                error: function(xhr, status, error) {
-                    alert('Ocurrió un error al eliminar el documento.');
+            if (action === 'eliminar') {
+                var confirmacion = confirm("¿Estás seguro de que deseas eliminar este documento?");
+
+                if (confirmacion) {
+                    $.ajax({ 
+                        url: url, 
+                        type: 'POST',
+                        success: function (response) {
+                            location.reload();
+                        },
+                        error: function (xhr, status, error) {
+                            alert('Ocurrió un error al eliminar el documento.');
+                        }
+                    });
+                } else {
+                    $(this).val('');
                 }
-            });
-        } else {
-            // Si el usuario cancela, reseteamos el selector
-            $(this).val('');
-        }
-    }
+            }
 
-    else if(action =="descargar"){
-        window.location.href = url;
-    }
-});
-});
+            else if (action == "descargar") {
+                window.location.href = url;
+            }
+        });
+    });
 
 </script>
 </body>
