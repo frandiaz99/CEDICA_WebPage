@@ -55,6 +55,8 @@ class Storage:
         :param value: Nueva instancia de MinIO.
         """
         self._client = value
+
+
     
 storage = Storage()
 

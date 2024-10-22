@@ -19,6 +19,7 @@ from flask_session import Session
 from src.web.storage import storage
 from src.web import helpers
 
+
 session = Session()
 
 def create_app(env="production", static_folder="../../static"):
@@ -69,6 +70,15 @@ def create_app(env="production", static_folder="../../static"):
     app.jinja_env.globals.update(check_permission=check_permission)
 
     app.jinja_env.globals.update(documento_url=helpers.documento_url)
+
+    @app.context_processor
+    def inject_minio_url():
+        image_names = [
+            'img_layout/icono_cedica.jpg',
+            'img_layout/icono_usuario.png'
+        ]
+
+        return helpers.inject_minio_image_url(storage, image_names)
 
     @app.cli.command(name="reset-db")
     def reset_db():
