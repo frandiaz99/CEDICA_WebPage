@@ -3,19 +3,21 @@
 {% block title %}Registrar Pago{% endblock %}
 
 {% block content %}
+
 <body class="bg-gray-100">
-    {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-            <div class="flex justify-center mt-4">
-                <div class="w-full max-w-2xl">
-                    {% for category, message in messages %}
-                        <div class="bg-red-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
-                            <p class="text-lg font-semibold">{{ message }}</p>
-                        </div>
-                    {% endfor %}
-                </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flex justify-center mt-4">
+        <div class="w-full max-w-2xl">
+            {% for category, message in messages %}
+            <div
+                class="{% if category == 'success' %}bg-green-500{% else %}bg-red-500{% endif %} bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                <p class="text-lg font-semibold">{{ message }}</p>
             </div>
-        {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
     {% endwith %}
 
     <div class="max-w-4xl mx-auto mt-10">
@@ -24,7 +26,9 @@
             <!-- Tipo de Pago -->
             <div class="mb-4">
                 <label for="tipo_pago" class="block text-sm font-medium text-gray-700">Tipo de Pago</label>
-                <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" id="tipo_pago" name="tipo_pago" required>
+                <select
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="tipo_pago" name="tipo_pago" required>
                     <option value="proveedor">Proveedor</option>
                     <option value="honorarios">Honorarios</option>
                     <option value="gastos_varios">Gastos Varios</option>
@@ -33,7 +37,9 @@
             <!-- Beneficiario -->
             <div id="beneficiario_container" class="mb-4 hidden">
                 <label for="beneficiario" class="block text-sm font-medium text-gray-700">Beneficiario</label>
-                <select class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" id="beneficiario" name="beneficiario" required>
+                <select
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="beneficiario" name="beneficiario" required>
                     {% for empleado in empleados %}
                     <option value="{{ empleado.id }}">{{ empleado.nombre }} - {{ empleado.puesto_laboral }}</option>
                     {% endfor %}
@@ -42,32 +48,41 @@
             <!-- Monto -->
             <div class="mb-4">
                 <label for="monto" class="block text-sm font-medium text-gray-700">Monto</label>
-                <input type="number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" id="monto" name="monto" min="0" title="Ingrese un monto válido"  required>
+                <input type="number"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="monto" name="monto" min="0" title="Ingrese un monto válido" required>
             </div>
             <!-- Fecha de Pago -->
             <div class="mb-4">
                 <label for="fecha_pago" class="block text-sm font-medium text-gray-700">Fecha de Pago</label>
-                <input type="date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" id="fecha_pago" name="fecha_pago" max="{{ fecha_hoy }}" required>
+                <input type="date"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="fecha_pago" name="fecha_pago" max="{{ fecha_hoy }}" required>
             </div>
-            
+
             <!-- Descripción -->
             <div class="mb-4">
                 <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
-                <textarea class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" id="descripcion" name="descripcion" rows="3" required></textarea>
+                <textarea
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="descripcion" name="descripcion" rows="3" required></textarea>
             </div>
             <div class="flex justify-between">
-                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Registrar Pago</button>
-                <a href="{{ url_for('pagos.index') }}" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancelar</a>
+                <button type="submit"
+                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Registrar
+                    Pago</button>
+                <a href="{{ url_for('pagos.index') }}"
+                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancelar</a>
             </div>
         </form>
     </div>
 </body>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const tipoPagoSelect = document.getElementById('tipo_pago');
         const beneficiarioContainer = document.getElementById('beneficiario_container');
 
-        tipoPagoSelect.addEventListener('change', function() {
+        tipoPagoSelect.addEventListener('change', function () {
             // Mostrar el contenedor de Beneficiario solo si se selecciona 'honorarios'
             if (tipoPagoSelect.value === 'honorarios') {
                 beneficiarioContainer.classList.remove('hidden');
