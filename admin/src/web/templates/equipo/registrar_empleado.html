@@ -193,4 +193,16 @@
     </form>
   </div>
 </body>
+<script>
+  document.querySelector('form').addEventListener('submit', function (e) {
+    const fechaInicio = document.getElementById('fecha_inicio').value;
+    const fechaCese = document.getElementById('fecha_cese').value;
+
+    if (fechaInicio && fechaCese && fechaInicio > fechaCese) {
+      e.preventDefault();
+      alert("La fecha de inicio no puede ser mayor que la fecha de cese.");
+    }
+  });
+</script>
+
 {% endblock %}
