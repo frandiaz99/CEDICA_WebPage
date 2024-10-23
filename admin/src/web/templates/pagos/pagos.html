@@ -4,6 +4,20 @@
 
 {% block content %}
 <div class="bg-white p-6 rounded-lg shadow-md">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flex justify-center mt-4">
+        <div class="w-full max-w-2xl">
+            {% for category, message in messages %}
+            <div
+                class="{% if category == 'success' %}bg-green-500{% else %}bg-red-500{% endif %} bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                <p class="text-lg font-semibold">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
     <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Registro de Pagos</h1>
 
     <!-- Contenedor para el botón y filtros -->
@@ -17,14 +31,13 @@
         </div>
 
         <!-- Formulario de búsqueda y filtros -->
-        <form method="GET" action="{{ url_for('pagos.index') }}"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full">
+        <form method="GET" action="{{ url_for('pagos.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full" onsubmit="return validarFechas()">
             <input type="date" name="fecha_inicio"
                 class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200"
-                placeholder="Fecha Inicio" value="{{ request.args.get('fecha_inicio') }}">
+                placeholder="Fecha Inicio" value="{{ request.args.get('fecha_inicio') }}" id="fecha_inicio">
             <input type="date" name="fecha_fin"
                 class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200"
-                placeholder="Fecha Fin" value="{{ request.args.get('fecha_fin') }}">
+                placeholder="Fecha Fin" value="{{ request.args.get('fecha_fin') }}" id="fecha_fin">
             <select name="tipo_pago"
                 class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
                 <option value="">Seleccione...</option>
@@ -77,4 +90,17 @@
         </table>
     </div>
 </div>
+
+<script>
+function validarFechas() {
+    const fechaInicio = document.getElementById("fecha_inicio").value;
+    const fechaFin = document.getElementById("fecha_fin").value;
+
+    if (fechaInicio && fechaFin && new Date(fechaInicio) > new Date(fechaFin)) {
+        alert('La fecha de inicio no puede ser mayor que la fecha de fin.');
+        return false;
+    }
+    return true;
+}
+</script>
 {% endblock %}
