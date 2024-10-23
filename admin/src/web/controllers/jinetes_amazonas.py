@@ -1,3 +1,4 @@
+from io import BytesIO
 import io
 from flask import Blueprint, render_template, jsonify, request, abort, flash, send_file, url_for, redirect, current_app
 from src.core.database import db
@@ -852,9 +853,38 @@ def editar_documento(document_id):
         abort(404)
 
     if request.method == 'POST':
-        # Obtener datos del formulario
-        documento.titulo = request.form['nombre']
-        documento.tipo = request.form['tipo_documento']
+        if(documento.is_document):
+
+            objeto_anterior =  f'documentos_jinetes_amazonas/{documento.titulo}'
+
+            documento.titulo = request.form['nombre']    
+            documento.tipo = request.form['tipo_documento']
+
+            objeto_nuevo =  f'documentos_jinetes_amazonas/{documento.titulo}'
+
+            try: 
+                client = current_app.storage.client
+
+                response = client.get_object('grupo49', objeto_anterior)
+                file_data = response.read() 
+                file_stream = BytesIO(file_data)
+                
+                client.put_object(
+                    'grupo49', 
+                    objeto_nuevo, 
+                    file_stream, 
+                    length=len(file_data), 
+                    content_type=response.headers.get('Content-Type')
+                )
+                
+            
+                client.remove_object('grupo49', objeto_anterior)
+            except Exception as e:
+                flash(f'Error al renombrar el archivo en MinIO: {str(e)}', 'error')
+                return redirect(url_for('jinetes_amazonas.editar_documento', document_id=document_id))
+        else:  
+            documento.titulo = request.form['nombre']
+            documento.tipo = request.form['tipo_documento']
 
         # Guardar cambios en la base de datos
         db.session.commit()
