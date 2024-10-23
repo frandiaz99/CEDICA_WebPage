@@ -26,7 +26,7 @@
             <div class="relative flex h-16 items-center justify-between">
                 <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
                     
-                    <button type="button"
+                    <button type="button" id="menu-toggle-button" onclick="toggleMenu()"
                         class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
                         aria-controls="mobile-menu" aria-expanded="false">
                         <span class="absolute -inset-0.5"></span>
@@ -54,7 +54,7 @@
                                 alt="CEDICA">
                         </a>
                     </div>
-                    <div class="hidden sm:ml-6 sm:block">
+                    <div class="hidden sm:ml-6 sm:block" >
                         <div class="flex space-x-4">
                             <a href="{{url_for('jinetes_amazonas.index')}}"
                                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">J&A</a>
@@ -82,7 +82,7 @@
                     </div>
                 </div>
                 <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                    <span class="text-gray-300 text-sm mr-2">Bienvenido, {{ session['user_alias'] }}.</span>
+                    <span class="hidden sm:block text-gray-300 text-sm mr-2">Bienvenido, {{ session['user_alias'] }}.</span>
                    
                     <div class="relative ml-3">
                         <div>
@@ -115,18 +115,45 @@
         </div>
 
         
-        <div class="sm:hidden" id="mobile-menu">
+        <div class="sm:hidden" id="menu-items" class="hidden">
             <div class="space-y-1 px-2 pb-3 pt-2">
                 <a href="{{url_for('jinetes_amazonas.index')}}"
-                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">J&A</a>
+                    class="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    J&A
+                </a>
+                {% if check_permission(session, "encuestre_index") %}
                 <a href="{{url_for('encuestre.index')}}"
-                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Encuestre</a>
+                    class="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    Encuestre
+                </a>
+                {% endif %}
+                {% if check_permission(session, "equipo_index") %}
                 <a href="{{url_for('equipo.index')}}"
-                    class="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Equipo</a>
+                    class="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    Equipo
+                </a>
+                {% endif %}
+                {% if check_permission(session, "user_index") %}
                 <a href="{{url_for('users.index')}}"
-                    class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Usuarios</a>
+                    class="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    Usuarios
+                </a>
+                {% endif %}
+                {% if check_permission(session, "registro_pagos_index") %}
+                <a href="{{url_for('pagos.index')}}"
+                    class="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    Pagos
+                </a>
+                {% endif %}
+                {% if check_permission(session, "registro_cobros_index") %}
+                <a href="{{url_for('cobros.index')}}"
+                    class="block rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                    Cobros
+                </a>
+                {% endif %}
             </div>
         </div>
+        
     </nav>
 
     {% endblock %}
@@ -156,6 +183,21 @@
                 if (!dropdown.classList.contains('hidden')) {
                     dropdown.classList.add('hidden');
                 }
+            }
+        }
+
+        function toggleMenu() {
+            var menuItems = document.getElementById('menu-items');
+            menuItems.classList.toggle('hidden');
+        }
+
+        // Función para cerrar el menú si se hace clic fuera de él
+        window.onclick = function (event) {
+            if (!event.target.matches('#menu-toggle-button') && !event.target.closest('#menu-toggle-button')) {
+                var menuItems = document.getElementById('menu-items');
+            if (!menuItems.classList.contains('hidden')) {
+                menuItems.classList.add('hidden');
+            }
             }
         }
     </script>
