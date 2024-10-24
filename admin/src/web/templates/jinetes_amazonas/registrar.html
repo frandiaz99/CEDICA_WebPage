@@ -100,7 +100,7 @@
             </div>
 
             <!-- Observaciones sobre la beca -->
-            <div class="mb-4">
+            <div class="mb-4" id="observaciones_container" style="display: none;">
                 <label for="beca_observaciones" class="block text-sm font-medium text-gray-700">Observaciones sobre la Beca</label>
                 <input type="text" id="beca_observaciones" name="beca_observaciones" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Ingrese observaciones sobre la beca">
             </div>
@@ -564,6 +564,15 @@
                     }
                 });
             }
+        });
+
+        document.getElementById('becado').addEventListener('change', function () {
+        var observacionesContainer = document.getElementById('observaciones_container');
+        if (this.value === 'True') {
+            observacionesContainer.style.display = 'block'; // Mostrar el campo de observaciones
+        } else {
+            observacionesContainer.style.display = 'none'; // Ocultar el campo de observaciones
+        }
         });
     </script>
     

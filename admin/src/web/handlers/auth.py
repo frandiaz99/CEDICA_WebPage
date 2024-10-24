@@ -52,7 +52,7 @@ def login_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if not is_authenticated(session):
-            return abort(401)  # Retorna un error 401 si el usuario no está autenticado
+            return abort(401)
 
         return func(*args, **kwargs)
 
@@ -75,7 +75,7 @@ def check(permission):
         @wraps(f)
         def wrapper(*args, **kwargs):
             if not check_permission(session, permission):
-                return abort(403)  # Retorna un error 403 si el usuario no tiene permiso
+                return abort(403)
 
             return f(*args, **kwargs)
 
