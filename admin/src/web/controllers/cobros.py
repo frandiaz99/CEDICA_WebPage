@@ -6,36 +6,37 @@ from src.core.equipo import Empleado
 from src.core.jinetes_amazonas import JineteAmazona
 from datetime import datetime
 from src.web.validadores.validador import (validar_tipo_pago, validar_monto, validar_fecha_pago, validar_descripcion, validar_beneficiario)
+
 cobros_bp = Blueprint('cobros', __name__, url_prefix='/cobros')
+
+
 
 @cobros_bp.get('/')
 @check("registro_cobros_index")
 def index():
-
-    #Para busqueda
+    """
+    Muestra la lista de cobros que hay en el sistema, permitiendo filtrar por las diferentes opciones disponibles.
+    """
     tipo_pago = request.args.get('tipo_pago')
     fecha_inicio = request.args.get('fecha_inicio')
     fecha_fin = request.args.get('fecha_fin')
     nombre = request.args.get('nombre')
     apellido = request.args.get('apellido')
-    orden = request.args.get('orden', 'asc')  # Obtener el parámetro de orden, por defecto es 'asc'
+    orden = request.args.get('orden', 'asc')
 
     query = Cobro.query
 
     if fecha_inicio and fecha_fin:
-        #Chequear que la fecha de inicio no sea mayor a la final y viceversa
         if fecha_inicio > fecha_fin:
             cobros = query.all()
             flash("El rango de fechas ingresado es inválido.", 'danger')
             return render_template('cobros/cobros.html', cobros=cobros)
-        # Filtrar por fechas y tipo de pago
         query = query.filter(Cobro.fecha_pago >= fecha_inicio)
         query = query.filter(Cobro.fecha_pago <= fecha_fin)
         
     if tipo_pago:
         query = query.filter(Cobro.tipo_pago == tipo_pago)
 
-    # Ordenar resultados
     if orden == 'desc':
         query = query.order_by(Cobro.fecha_pago.desc())
     else:
@@ -57,13 +58,18 @@ def index():
 
     return render_template('cobros/cobros.html', cobros=cobros, jinetes=jinetes)
 
+
+
 @cobros_bp.route('/registrar', methods=['GET', 'POST'])
 @check("registro_cobros_new")
 def registrar_cobro():
+    """
+    Si el método es get, carga el template registrar_cobro.html, es decir, la página de carga de usuarios.
+    Si el método es post, crea un nuevo cobro con los datos obtenidos del formulario.
+    """
     jinetes = JineteAmazona.query.all()
     print(jinetes)
     if request.method == 'POST':
-        # Obtener datos del formulario
         jinete_id = request.form['jinete']
         tipo_pago = request.form['tipo_pago']
         monto = request.form['monto']
@@ -72,7 +78,6 @@ def registrar_cobro():
         observaciones = request.form['observaciones']
         beneficiario = request.form['beneficiario']
 
-        # Validadores de los campos
         validadores = [
             (validar_tipo_pago, [tipo_pago]),
             (validar_monto, [monto]),
@@ -81,14 +86,12 @@ def registrar_cobro():
             (validar_beneficiario, [beneficiario])
         ]
 
-        # Validar cada campo
         for validar_funcion, args in validadores:
             es_valido, mensaje_error = validar_funcion(*args)
             if not es_valido:
                 flash(mensaje_error, 'danger')
                 return redirect(url_for('cobros.registrar_cobro', jinetes))
 
-        # Crear el nuevo cobro
         if deuda == 'si':
             deuda = True
         else:
@@ -103,7 +106,6 @@ def registrar_cobro():
             observaciones=observaciones
         )
 
-        # Guardar en la base de datos
         try:
             db.session.add(nuevo_cobro)
             db.session.commit()
@@ -117,9 +119,18 @@ def registrar_cobro():
     empleados = Empleado.query.all()
     return render_template('cobros/registrar_cobro.html', empleados=empleados, jinetes=jinetes, fecha_hoy=datetime.today().date())
 
+
+
 @cobros_bp.route('/detalle/<int:id>', methods=['GET'])
 @check("registro_cobros_show")
 def detalle_cobro(id):
+    """
+    Muestra más información sobre un cobro en concreto, si es que el id del mismo existe.
+
+    - param id: el id del cobro.
+
+    - return: carga la plantilla detalle_cobro.html con el cobro a mostrar.
+    """
     cobro = Cobro.query.get(id)
     if cobro is None:
         abort(404) 
@@ -129,9 +140,17 @@ def detalle_cobro(id):
     jinetes = JineteAmazona.query.all()
     return render_template('cobros/detalle_cobro.html', cobro=cobro, jinetes=jinetes)
 
+
+
 @cobros_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @check("registro_cobros_update")
 def editar_cobro(id):
+    """
+    Si el metodo es get, carga la plantilla editar_cobro.html, es decir, la página para actualizar la info de un cobro, si es que el mismo existe.
+    Si el método es post, carga la plantilla editar_cobro.html con los datos del cobro actualizados.
+
+    - param id: id del cobro a actualizar.
+    """
     cobro = Cobro.query.get(id)
     if cobro is None:
         abort(404) 
@@ -196,10 +215,16 @@ def editar_cobro(id):
         jinetes=jinetes
     )
 
+
+
 @cobros_bp.route('/eliminar/<int:id>', methods=['POST'])
 @check("registro_cobros_destroy")
 def eliminar_cobro(id):
+    """
+    Elimina al cobro pasado por parámetro, si es que existe.
 
+    - param id: id del cobro a eliminar.
+    """
     cobro = Cobro.query.get_or_404(id)
     
     try:
