@@ -349,7 +349,7 @@ def validar_tipo_pago(tipo_pago):
     Returns:
         tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
     """
-    tipos_validos = ['honorarios', 'proveedor', 'gastos varios', 'efectivo', 'debito', 'credito']
+    tipos_validos = ['honorarios', 'proveedor', 'gastos_varios']
     if tipo_pago in tipos_validos:
         return True, ""
     return False, "Tipo de pago no es válido."

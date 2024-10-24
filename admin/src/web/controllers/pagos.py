@@ -18,14 +18,15 @@ def index():
     Muestra la lista de pagos con posibilidad de filtrado por tipo de pago, 
     fecha de inicio, fecha de fin, y permite ordenar los resultados por fecha.
     """
+    registros_por_pagina = 5
     tipo_pago = request.args.get('tipo_pago')
     fecha_inicio = request.args.get('fecha_inicio')
     fecha_fin = request.args.get('fecha_fin')
-    orden = request.args.get('orden', 'asc')  # Ordenar por defecto en ascendente
+    orden = request.args.get('orden', 'asc')
+    pagina = int(request.args.get('pagina', 1))
 
     query = Pago.query
 
-    # Filtrar por fechas y tipo de pago
     if fecha_inicio:
         query = query.filter(Pago.fecha_pago >= fecha_inicio)
     if fecha_fin:
@@ -33,21 +34,31 @@ def index():
     if tipo_pago:
         query = query.filter(Pago.tipo_pago == tipo_pago)
 
-    # Ordenar resultados
     if orden == 'desc':
         query = query.order_by(Pago.fecha_pago.desc())
     else:
         query = query.order_by(Pago.fecha_pago.asc())
 
-    pagos = query.all()
+    # Paginación después de aplicar filtros y ordenación
+    pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
+    pagos = pagination.items
+    total_paginas = pagination.pages
 
-    # Agregar el nombre completo del beneficiario a cada pago
     for pago in pagos:
         beneficiario = Empleado.query.filter_by(id=pago.beneficiario).first()
         if beneficiario:
             pago.beneficiario = beneficiario.nombre + " " + beneficiario.apellido
 
-    return render_template('pagos/pagos.html', pagos=pagos)
+    return render_template(
+        "pagos/pagos.html",
+        pagos=pagos,
+        fecha_inicio=fecha_inicio,
+        fecha_fin=fecha_fin,
+        tipo_pago=tipo_pago,
+        pagina=pagina,
+        total_paginas=total_paginas
+    )
+
 
 
 @pagos_bp.route('/registrar', methods=['GET', 'POST'])

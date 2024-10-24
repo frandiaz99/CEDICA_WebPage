@@ -3,7 +3,6 @@
 {% block title %}Editar Pago{% endblock %}
 
 {% block content %}
-
 <body class="bg-gray-100">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -30,14 +29,14 @@
                 <label for="tipo_pago" class="block text-sm font-medium text-gray-700">Tipo de Pago</label>
                 <select id="tipo_pago" name="tipo_pago"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option value="honorarios" {% if pago.tipo_pago=='Honorarios' %}selected{% endif %}>Honorarios
-                    </option>
-                    <option value="gastos" {% if pago.tipo_pago=='Gastos' %}selected{% endif %}>Gastos</option>
-                    <option value="servicios" {% if pago.tipo_pago=='Servicios' %}selected{% endif %}>Servicios</option>
+                    <option value="proveedor" {% if pago.tipo_pago=='proveedor' %}selected{% endif %}>Proveedor</option>
+                    <option value="honorarios" {% if pago.tipo_pago=='honorarios' %}selected{% endif %}>Honorarios</option>
+                    <option value="gastos" {% if pago.tipo_pago=='gastos' %}selected{% endif %}>Gastos Varios</option>
                 </select>
             </div>
 
-            <div id="beneficiario_container" class="mb-4 hidden">
+            <!-- Beneficiario -->
+            <div id="beneficiario_container" class="mb-4 {% if pago.tipo_pago != 'honorarios' %}hidden{% endif %}">
                 <label for="beneficiario" class="block text-sm font-medium text-gray-700">Beneficiario</label>
                 <select
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -49,7 +48,6 @@
                     {% endfor %}
                 </select>
             </div>
-
 
             <!-- Monto -->
             <div class="mb-4">
@@ -83,22 +81,23 @@
         </form>
     </div>
 </body>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const tipoPagoSelect = document.getElementById('tipo_pago');
         const beneficiarioContainer = document.getElementById('beneficiario_container');
 
-        // Función para mostrar u ocultar el contenedor de Beneficiario
         function toggleBeneficiarioContainer() {
-            beneficiarioContainer.classList.toggle('hidden', tipoPagoSelect.value !== 'honorarios');
+            if (tipoPagoSelect.value === 'honorarios') {
+                beneficiarioContainer.classList.remove('hidden');
+            } else {
+                beneficiarioContainer.classList.add('hidden');
+            }
         }
 
-        // Ejecutar al cargar la página
         toggleBeneficiarioContainer();
 
-        // Escuchar el cambio en el select y ejecutar la función
         tipoPagoSelect.addEventListener('change', toggleBeneficiarioContainer);
     });
-
 </script>
 {% endblock %}
