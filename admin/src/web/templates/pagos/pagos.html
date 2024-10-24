@@ -75,7 +75,11 @@
             <tbody>
                 {% for pago in pagos %}
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-2 border-b">{{ pago.beneficiario }}</td>
+                    {% if pago.tipo_pago == "honorarios" %}
+                        <td class="px-4 py-2 border-b">{{ pago.beneficiario }}</td>
+                    {% else %}
+                        <td class="px-4 py-2 border-b">N/A</td>
+                    {% endif %}
                     <td class="px-4 py-2 border-b">{{ pago.monto }}</td>
                     <td class="px-4 py-2 border-b">{{ pago.fecha_pago.strftime('%Y-%m-%d') }}</td>
                     <td class="px-4 py-2 border-b">{{ pago.tipo_pago }}</td>
@@ -88,6 +92,21 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+</div>
+<div class="flex justify-between items-center mt-4">
+    <span class="text-gray-600">Página {{ pagina }} de {{ total_paginas }}</span>
+
+    <div class="flex space-x-2">
+        {% if pagina > 1 %}
+        <a href="{{ url_for('pagos.index', pagina=pagina-1, fecha_inicio=fecha_inicio, fecha_fin=fecha_fin, tipo_pago=tipo_pago, orden=orden) }}"
+            class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Anterior</a>
+        {% endif %}
+
+        {% if pagina < total_paginas %}
+        <a href="{{ url_for('pagos.index', pagina=pagina+1, fecha_inicio=fecha_inicio, fecha_fin=fecha_fin, tipo_pago=tipo_pago, orden=orden) }}"
+            class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Siguiente</a>
+        {% endif %}
     </div>
 </div>
 

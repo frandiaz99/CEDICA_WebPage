@@ -186,19 +186,19 @@ def registrar_encuestre():
         tipo_ja_asignado = request.form.get('tipo_ja_asignado')
         entrenadores_conductores_ids = request.form.getlist('entrenadores_conductores')
 
-        if not (nombre and sexo and raza and pelaje and compra_donacion and sede_asignada and entrenadores_conductores_ids and tipo_ja_asignado):
+        #if not (nombre and sexo and raza and pelaje and compra_donacion and sede_asignada and entrenadores_conductores_ids and tipo_ja_asignado):
             
-            flash(' Faltan completar campos', 'danger')
+            #flash(' Faltan completar campos', 'danger')
             
-            return render_template('encuestre/registrar_encuestre.html',
-                nombre=nombre,
-                sexo=sexo,
-                raza=raza,
-                pelaje=pelaje,
-                compra_donacion=compra_donacion,
-                sede_asignada=sede_asignada,
-                tipo_ja_asignado=tipo_ja_asignado
-            )
+            #return render_template('encuestre/registrar_encuestre.html',
+            #    nombre=nombre,
+            #    sexo=sexo,
+            #    raza=raza,
+            #    pelaje=pelaje,
+            #    compra_donacion=compra_donacion,
+            #    sede_asignada=sede_asignada,
+            #    tipo_ja_asignado=tipo_ja_asignado
+            #)
             #return redirect(url_for('encuestre.registrar_encuestre'))
 
         validadores = [
@@ -247,7 +247,7 @@ def registrar_encuestre():
             print(f'Error {str(e)}')
             return redirect(url_for('encuestre.registrar_encuestre'))
     
-    empleados = Empleado.query.filter(Empleado.puesto_laboral.in_(['Entrenador de caballos', 'Conductor'])).all()
+    empleados = Empleado.query.filter(Empleado.puesto_laboral.in_(['Entrenador de Caballos', 'Conductor'])).all()
     fecha_hoy = datetime.now().strftime('%Y-%m-%d')
 
     return render_template('encuestre/registrar_encuestre.html', empleados=empleados, fecha_hoy=fecha_hoy)
