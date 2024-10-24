@@ -470,7 +470,7 @@ def validar_sexo(sexo):
         turple: (bool,str) Retorna un booleano indicando si es válida y un mensaje de error.
     
     """
-    sexos_permitidos = ['masculino', 'femenino']
+    sexos_permitidos = ['Macho', 'Hembra']
     if sexo not in sexos_permitidos:
         return False, f"El sexo debe ser uno de los siguientes: {', '.join(sexos_permitidos)}."
     return True, ""
@@ -517,7 +517,7 @@ def validar_compra_donacion(compra_donacion):
         turple: (bool,str) Retorna un booleano indicando si es válida y un mensaje de error.
     
     """
-    tipos = ['compra', 'donacion']
+    tipos = ['Compra', 'Donacion']
     if compra_donacion not in tipos:
         return False, f"El tipo debe ser uno de los siguientes: {', '.join(tipos)}."
     return True, ""
@@ -538,7 +538,7 @@ def validar_tipo_ja_asignado(tipo_ja_asignado):
     return True, ""
 
 def validar_entrenadores_conductores(entrenadores_conductores_ids):
-    """Valida que los entrenadores/condcutores formen parte del equipo.
+    """Valida que los entrenadores/conductores formen parte del equipo.
     
     Args: 
         entrenadores_cnductores_ids(int): tipo a validar
