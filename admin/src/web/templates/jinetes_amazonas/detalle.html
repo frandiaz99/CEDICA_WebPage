@@ -100,10 +100,13 @@
 
                 <!-- Botones de Editar y Eliminar -->
                 <div class="flex justify-end mt-6 space-x-4">
+                    {% if check_permission(session, "ja_update") %}
                     <a href="{{ url_for('jinetes_amazonas.editar', id=jinete.id) }}" 
                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                        Editar
                     </a>
+                    {% endif %}
+                    {% if check_permission(session, "ja_destroy") %}
                     <form action="{{ url_for('jinetes_amazonas.eliminar', id=jinete.id) }}" method="POST">
                         
                         <button type="submit" 
@@ -112,6 +115,7 @@
                             Eliminar
                         </button>
                     </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
