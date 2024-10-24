@@ -247,7 +247,7 @@ def registrar_encuestre():
             print(f'Error {str(e)}')
             return redirect(url_for('encuestre.registrar_encuestre'))
     
-    empleados = Empleado.query.filter(Empleado.puesto_laboral.in_(['Entrenador de caballos', 'Conductor'])).all()
+    empleados = Empleado.query.filter(Empleado.puesto_laboral.in_(['Entrenador de Caballos', 'Conductor'])).all()
     fecha_hoy = datetime.now().strftime('%Y-%m-%d')
 
     return render_template('encuestre/registrar_encuestre.html', empleados=empleados, fecha_hoy=fecha_hoy)
