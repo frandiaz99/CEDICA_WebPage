@@ -6,24 +6,14 @@ from src.web.handlers.auth import login_required
 from math import ceil
 from src.core.database import db
 from datetime import datetime
+from src.web.validadores.validador import (
+    validar_email, chequear_email_repetido, validar_cont_coinciden,
+    validar_string_numeros_o_vacio, validar_rol
+
+)
+from src.web.handlers import error 
 
 users_bp = Blueprint("users", __name__, url_prefix="/users")
-
-
-def chequearMailRepetido (email):
-    """
-    Verifica si el mail está registrado en el sistema.
-
-    - param email: mail del usuario a chequear.
-    - return: si existe, devuelve False y crea un mensaje de error. Caso contrario, devuelve True.
-    """
-    query = User.query  
-    if (query.filter(User.email == email).all()):
-        flash('El mail ingresado ya tiene una cuenta asociada.', 'danger')
-        return False
-    return True
-
-
 
 @users_bp.get("/")
 @login_required
@@ -101,40 +91,47 @@ def crear_usuario():
     """
     if request.method == 'POST':
 
+        roles = auth.list_roles()
+
         alias = request.form.get('alias')
         email = request.form.get('email')
         activo = request.form.get('activo')
-        contraseña1 = request.form.get('contraseña1')
-        contraseña2 = request.form.get('contraseña2')
-
-        if not (alias and email and activo and contraseña1 and contraseña2):
+        cont1 = request.form.get('contraseña1')
+        cont2 = request.form.get('contraseña2')
+        
+        if not (alias and email and activo and cont1 and cont2):
             flash('Faltan completar campos.', 'danger')
             return redirect(url_for('users.crear_usuario'))
+
+        validadores = [
+            (validar_email, [email]),
+            (chequear_email_repetido, [email]),
+            (validar_cont_coinciden, [cont1,cont2])
+        ]
+
+        for validar_funcion, args in validadores:
+            es_valido, mensaje_error = validar_funcion(*args)
+            if not es_valido:
+                flash(mensaje_error, 'danger')
+                return redirect(url_for('users.crear_usuario')) 
         
-        query = User.query  
-        
-        if (chequearMailRepetido):
-            return redirect(url_for('users.crear_usuario'))
-        
-        if not (contraseña1 == contraseña2):
-            flash('Las contraseñas no coinciden.', 'danger')
-            return redirect(url_for('users.crear_usuario'))
+        if(not validar_string_numeros_o_vacio):
+            flash("Ingresar un Alias valido")
 
         if (activo == 'Sí'):
             activo = True
         else:
             activo = False
 
-        nuevo_usuario = User(
-            alias=alias,
-            email=email,
-            activo=activo,
-            password=contraseña1
-        )
-
         try:
-            db.session.add(nuevo_usuario)
-            db.session.commit()
+        
+            nuevo_usuario = auth.create_user(
+                alias=alias,
+                email=email,
+                activo=activo,
+                password=cont1,
+            )
+
             flash('Usuario registrado exitosamente', 'success')
             return redirect(url_for('users.crear_usuario', id=nuevo_usuario.id))
         except Exception as e:
@@ -176,7 +173,10 @@ def bloquear_usuario(id):
     user = auth.User.query.get(id)
     if user is None:
         abort(404)
-    user.activo = False
+    if user.rol == 1:
+        error.forbidden
+    else:
+        user.activo = False
     db.session.commit()
     flash('Usuario bloqueado.', 'success')
     return redirect(url_for('users.index'))

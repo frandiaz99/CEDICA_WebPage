@@ -63,15 +63,15 @@
                 <select id="rol" name="rol"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required>
-                    <option value="1" {% if roles[user.rol_id].nombre=="tecnica" %}selected{% endif %}>Técnica
+                    <option value="1" {% if user.rol_id is not none and roles[user.rol_id].nombre=="tecnica" %}selected{% endif %}>Técnica
                     </option>
-                    <option value="2" {% if roles[user.rol_id].nombre=="encuestre" %}selected{% endif %}>
+                    <option value="2" {% if user.rol_id is not none and roles[user.rol_id].nombre=="encuestre" %}selected{% endif %}>
                         Encuestre
                     </option>
-                    <option value="3" {% if roles[user.rol_id].nombre=="voluntariado" %}selected{% endif %}>
+                    <option value="3" {% if user.rol_id is not none and roles[user.rol_id].nombre=="voluntariado" %}selected{% endif %}>
                         Voluntariado
                     </option>
-                    <option value="4" {% if roles[user.rol_id].nombre=="administracion" %}selected{% endif %}>
+                    <option value="4" {% if user.rol_id is not none and roles[user.rol_id].nombre=="administracion" %}selected{% endif %}>
                         Administración
                     </option>
                 </select>

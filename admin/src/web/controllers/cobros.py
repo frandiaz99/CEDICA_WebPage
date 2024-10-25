@@ -5,7 +5,7 @@ from src.web.handlers.auth import check
 from src.core.equipo import Empleado
 from src.core.jinetes_amazonas import JineteAmazona
 from datetime import datetime
-from src.web.validadores.validador import (validar_tipo_pago, validar_monto, validar_fecha_pago, validar_descripcion, validar_beneficiario)
+from src.web.validadores.validador import (validar_tipo_cobro, validar_monto, validar_fecha_pago, validar_descripcion, validar_beneficiario)
 
 cobros_bp = Blueprint('cobros', __name__, url_prefix='/cobros')
 
@@ -71,7 +71,7 @@ def registrar_cobro():
     print(jinetes)
     if request.method == 'POST':
         jinete_id = request.form['jinete']
-        tipo_pago = request.form['tipo_pago']
+        tipo_cobro = request.form['tipo_pago']
         monto = request.form['monto']
         fecha_pago_str = request.form.get('fecha_pago')
         deuda = request.form.get('deuda')
@@ -79,7 +79,7 @@ def registrar_cobro():
         beneficiario = request.form['beneficiario']
 
         validadores = [
-            (validar_tipo_pago, [tipo_pago]),
+            (validar_tipo_cobro, [tipo_cobro]),
             (validar_monto, [monto]),
             (validar_fecha_pago, [fecha_pago_str]),
             (validar_descripcion, [observaciones]),
@@ -90,7 +90,7 @@ def registrar_cobro():
             es_valido, mensaje_error = validar_funcion(*args)
             if not es_valido:
                 flash(mensaje_error, 'danger')
-                return redirect(url_for('cobros.registrar_cobro', jinetes))
+                return redirect(url_for('cobros.registrar_cobro', jinetes=jinetes))
 
         if deuda == 'si':
             deuda = True
@@ -99,7 +99,7 @@ def registrar_cobro():
         nuevo_cobro = Cobro(
             id_ja = jinete_id,
             fecha_pago=datetime.strptime(fecha_pago_str, '%Y-%m-%d'),
-            tipo_pago=tipo_pago,
+            tipo_pago=tipo_cobro,
             monto=float(monto),
             beneficiario=beneficiario,
             en_deuda = deuda,
@@ -114,7 +114,7 @@ def registrar_cobro():
         except Exception as e:
             db.session.rollback()
             flash(f'Error al registrar el cobro: {str(e)}', 'danger')
-            return redirect(url_for('cobros.registrar_cobro', jinetes))
+            return redirect(url_for('cobros.registrar_cobro', jinetes=jinetes))
 
     empleados = Empleado.query.all()
     return render_template('cobros/registrar_cobro.html', empleados=empleados, jinetes=jinetes, fecha_hoy=datetime.today().date())
@@ -160,7 +160,7 @@ def editar_cobro(id):
     if request.method == 'POST':
         # Obtener datos del formulario
         jinete_id = request.form['jinete']
-        tipo_pago = request.form['tipo_pago']
+        tipo_cobro = request.form['tipo_pago']
         monto = request.form['monto']
         fecha_pago_str = request.form.get('fecha_pago')
         observaciones = request.form['observaciones']
@@ -169,7 +169,7 @@ def editar_cobro(id):
 
         # Validadores de los campos
         validadores = [
-            (validar_tipo_pago, [tipo_pago]),
+            (validar_tipo_cobro, [tipo_cobro]),
             (validar_monto, [monto]),
             (validar_fecha_pago, [fecha_pago_str]),
             (validar_descripcion, [observaciones]),
@@ -190,7 +190,7 @@ def editar_cobro(id):
 
         # Actualizar los campos del pago
         cobro.id_ja = jinete_id
-        cobro.tipo_pago = tipo_pago
+        cobro.tipo_cobro = tipo_cobro
         cobro.monto = float(monto)
         cobro.fecha_pago = datetime.strptime(fecha_pago_str, '%Y-%m-%d')
         cobro.observaciones = observaciones

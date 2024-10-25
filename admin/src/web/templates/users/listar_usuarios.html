@@ -104,7 +104,7 @@
                         rol'
                         }}
                     </td>
-                    <td class="text-center py-2 border-b">{{ user.inserted_at }}</td>
+                    <td class="text-center py-2 border-b">{{ user.inserted_at.strftime('%d/%m/%Y') }}</td>
                     <td class="text-center py-2 px-4 border-b">
                         {% if user.rol_id != 5 %}
                         {% if user.activo %}
