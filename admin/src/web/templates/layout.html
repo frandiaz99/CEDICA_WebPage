@@ -80,6 +80,10 @@
                             <a href="{{url_for('cobros.index')}}"
                                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Cobros</a>
                             {% endif %}
+                            {% if check_permission(session, "equipo_index") %}
+                            <a href="{{url_for('contacto.index')}}"
+                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Contacto</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

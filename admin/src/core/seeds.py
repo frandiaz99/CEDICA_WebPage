@@ -1,4 +1,4 @@
-from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso, cobros # Importa el módulo equipo
+from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso, cobros, contacto
 from datetime import datetime
 from itertools import chain 
 
@@ -251,3 +251,10 @@ def run():
     encuestre_empleado.assign_empleado_to_encuestre(caballo1, lista_empleados1)
     encuestre_empleado.assign_empleado_to_encuestre(caballo2, lista_empleados2)
     encuestre_empleado.assign_empleado_to_encuestre(caballo3, lista_empleados3)
+
+
+    contacto1 = contacto.create_contacto(
+        nombre_completo="Juan Perez",
+        correo_electronico="juanp@gmail.com",
+        mensaje="Holaa ajaja",
+    )
