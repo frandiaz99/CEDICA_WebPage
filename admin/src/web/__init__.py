@@ -9,6 +9,7 @@ from src.web.controllers.users import users_bp
 from src.web.controllers.pagos import pagos_bp
 from src.web.controllers.jinetes_amazonas import jinete_amazonas_bp
 from src.web.controllers.cobros import cobros_bp
+from src.web.controllers.contacto import contacto_bp
 from src.web.handlers.auth import is_authenticated
 from src.web.handlers.auth import check_permission
 from src.core import database
@@ -62,6 +63,8 @@ def create_app(env="development", static_folder="../../static"):
     app.register_blueprint(cobros_bp)
 
     app.register_blueprint(jinete_amazonas_bp)
+
+    app.register_blueprint(contacto_bp)
 
     app.jinja_env.globals.update(is_authenticated=is_authenticated)
 

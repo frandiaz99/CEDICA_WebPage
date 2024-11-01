@@ -860,3 +860,32 @@ def validar_rol(rol):
     if rol not in tipos_permitidos:
         return False, f"El tipo de rol debe ser uno de los siguientes: Tecnica, Encuestre, Voluntariado o Administracion."
     return True, ""
+
+def validar_estado(estado):
+    """
+    Valida que el estado sea 'pendiente' o 'leido'.
+    
+    Args:
+        estado (str): Estado a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error si no lo es.
+    """
+    estados_permitidos = ['pendiente', 'leido']
+    if estado not in estados_permitidos:
+        return False, "El estado debe ser 'pendiente' o 'leido'."
+    return True, ""
+
+def validar_comentario(comentario):
+    """
+    Valida que el comentario sea una cadena de texto no vacía.
+    
+    Args:
+        comentario (str): Comentario a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error si no lo es.
+    """
+    if not isinstance(comentario, str) or not comentario.strip():
+        return False, "El comentario no puede estar vacío."
+    return True, ""
