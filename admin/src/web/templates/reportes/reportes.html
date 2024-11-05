@@ -93,4 +93,192 @@
         <p class="text-gray-700 text-center mt-4">No se encontraron cobros para el Jinete seleccionado en el rango de fechas especificado.</p>
         {% endif %}
     </div>
+
+
+    <!-- Graficos  -->
+    <div class="bg-white p-6 rounded-lg shadow-md flex justify-center">
+        <div class="flex flex-col items-center w-1/2">  <!-- This makes the chart half the width of the container -->
+            <h1 class="text-2xl font-bold mb-4 text-gray-700 text-center">Cantidad de Jinetes y Amazonas Becados</h1>
+            
+            <!-- Smaller Canvas for the Chart -->
+            <canvas id="becadosChart" style="max-width: 250px; max-height: 250px;"></canvas>
+        </div>
+        
+        <!-- Custom Legend Next to Chart -->
+        <div class="flex flex-col justify-center items-start ml-8">
+            <div class="flex items-center mb-2">
+                <div class="w-4 h-4 bg-green-500 mr-2"></div>
+                <span>Becados</span>
+            </div>
+            <div class="flex items-center">
+                <div class="w-4 h-4 bg-red-500 mr-2"></div>
+                <span>No Becados</span>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <!-- Gráfico de Tipos de Discapacidad -->
+<div class="bg-white p-6 rounded-lg shadow-md flex justify-center mt-8">
+    <div class="flex flex-col items-center w-1/2">
+        <h1 class="text-2xl font-bold mb-4 text-gray-700 text-center">Distribución de Tipos de Discapacidad</h1>
+        
+        <!-- Canvas para el gráfico de discapacidad -->
+        <canvas id="discapacidadChart" style="max-width: 250px; max-height: 250px;"></canvas>
+    </div>
+    
+    <!-- Leyenda personalizada junto al gráfico -->
+    <div class="flex flex-col justify-center items-start ml-8">
+        <div class="flex items-center mb-2">
+            <div class="w-4 h-4 bg-blue-500 mr-2"></div>
+            <span>Mental</span>
+        </div>
+        <div class="flex items-center mb-2">
+            <div class="w-4 h-4 bg-purple-500 mr-2"></div>
+            <span>Motora</span>
+        </div>
+        <div class="flex items-center mb-2">
+            <div class="w-4 h-4 bg-orange-500 mr-2"></div>
+            <span>Sensorial</span>
+        </div>
+        <div class="flex items-center">
+            <div class="w-4 h-4 bg-teal-500 mr-2"></div>
+            <span>Visceral</span>
+        </div>
+    </div>
+</div>
+
+
+<!-- Ingreso Gráfico -->
+<form method="GET" action="{{ url_for('reportes.index') }}" class="mb-6">
+    <label for="criterio">Criterio:</label>
+    <select name="criterio" required>
+        <option value="anual" {% if criterio == 'anual' %}selected{% endif %}>Anual</option>
+        <option value="mensual" {% if criterio == 'mensual' %}selected{% endif %}>Mensual</option>
+    </select>
+
+    <!-- Campo de año visible solo si el criterio es mensual -->
+    <label for="anio">Año:</label>
+    <input type="number" name="anio" placeholder="Ej. 2024" value="{{ anio }}" min="2000" max="2100" {% if criterio != 'mensual' %}disabled{% endif %}>
+
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Consultar</button>
+</form>
+<div class="bg-white p-6 rounded-lg shadow-md flex justify-center mt-6">
+    <div class="flex flex-col items-center w-1/2">
+        <h1 class="text-2xl font-bold mb-4 text-gray-700 text-center">Ingresos Totales</h1>
+        <canvas id="ingresosChart" style="max-width: 250px; max-height: 250px;"></canvas>
+    </div>
+</div>
+
+    <!-- Include Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.querySelector('[name="criterio"]').addEventListener('change', function () {
+        const anioField = document.querySelector('[name="anio"]');
+        anioField.disabled = this.value !== 'mensual';
+    });
+
+const becadosData = JSON.parse('{{ becados_data | tojson}}');
+        const ctx = document.getElementById('becadosChart').getContext('2d');
+    
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Becados', 'No Becados'],
+                datasets: [{
+                    data: [becadosData.becados, becadosData.no_becados],
+                    backgroundColor: ['#4CAF50', '#FF5722'],  // Colors for each slice
+                    hoverBackgroundColor: ['#66BB6A', '#FF7043']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false  // Hide the default legend
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const total = tooltipItem.dataset.data.reduce((sum, value) => sum + value, 0);
+                                const currentValue = tooltipItem.raw;
+                                const percentage = ((currentValue / total) * 100).toFixed(1);
+                                return `${tooltipItem.label}: ${percentage}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    // Pasar datos de discapacidad al JavaScript
+    const discapacidadData = JSON.parse('{{ discapacidad_data | tojson }}');
+    const ctxDiscapacidad = document.getElementById('discapacidadChart').getContext('2d');
+
+    new Chart(ctxDiscapacidad, {
+        type: 'pie',
+        data: {
+            labels: ['Mental', 'Motora', 'Sensorial', 'Visceral'],
+            datasets: [{
+                data: [
+                    discapacidadData.Mental, 
+                    discapacidadData.Motora, 
+                    discapacidadData.Sensorial, 
+                    discapacidadData.Visceral
+                ],
+                backgroundColor: ['#42A5F5', '#AB47BC', '#FFA726', '#26A69A'],
+                hoverBackgroundColor: ['#64B5F6', '#BA68C8', '#FFB74D', '#4DB6AC']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false  // Ocultar la leyenda predeterminada
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            const total = tooltipItem.dataset.data.reduce((sum, value) => sum + value, 0);
+                            const currentValue = tooltipItem.raw;
+                            const percentage = ((currentValue / total) * 100).toFixed(1);
+                            return `${tooltipItem.label}: ${percentage}%`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Datos de Ingresos
+    const ingresosData = JSON.parse('{{ ingresos_data | tojson }}');
+    const ctxIngresos = document.getElementById('ingresosChart').getContext('2d');
+    new Chart(ctxIngresos, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(ingresosData),
+            datasets: [{
+                label: 'Ingresos',
+                data: Object.values(ingresosData),
+                backgroundColor: '#4CAF50',
+                hoverBackgroundColor: '#66BB6A'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: { 
+                    title: { display: true, text: 'Año/Mes' }
+                },
+                y: {
+                    title: { display: true, text: 'Monto (en $)' },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
 {% endblock %}
