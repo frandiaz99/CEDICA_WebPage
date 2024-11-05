@@ -1,4 +1,4 @@
-from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso, cobros, contacto
+from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso, cobros, contacto, jinetes_amazonas, cobros
 from datetime import datetime
 from itertools import chain 
 
@@ -63,6 +63,7 @@ def run():
     voluntariado_rol = auth.create_rol(nombre="voluntariado")
     administracion_rol = auth.create_rol(nombre="administracion")
     system_admin = auth.create_rol(nombre="system_admin")
+    editor_rol = auth.create_rol(nombre="editor")
 
     #Asigna roles
     auth.assign_rol(fede, system_admin)
@@ -141,8 +142,17 @@ def run():
 
     permisos_encuestre = [encuestre_index, encuestre_new, encuestre_destroy, encuestre_update, encuestre_show]
 
+    # Permisos Admin
+    reportes_index = permiso.create_permiso(nombre="reportes_index")
+    reportes_new = permiso.create_permiso(nombre="reportes_new")
+    reportes_destroy = permiso.create_permiso(nombre="reportes_destroy")
+    reportes_update = permiso.create_permiso(nombre="reportes_update")
+    reportes_show = permiso.create_permiso(nombre="reportes_show")
+
+    permisos_reportes = [reportes_index, reportes_new, reportes_destroy, reportes_update, reportes_show]
+
     # Asignar permisos a rol
-    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre))
+    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre, permisos_reportes))
     rol_permiso.assign_permisos_to_rol(system_admin, permisos_system_admin)
     
     permisos_administracion_rol = list(chain(permisos_equipo , permisos_ja , permisos_registro_cobros , permisos_registro_pagos , [encuestre_index] , [encuestre_show]))
@@ -243,7 +253,7 @@ def run():
     sede_asignada="AAAA",
     tipo_ja_asignado="Equitación",
     
-)
+    )
     lista_empleados1 = [empleado1, empleado2]
     lista_empleados2 = [empleado2, empleado3]
     lista_empleados3 = [empleado3]
@@ -257,4 +267,343 @@ def run():
         nombre_completo="Juan Perez",
         correo_electronico="juanp@gmail.com",
         mensaje="Holaa ajaja",
+    )
+
+#- ------------------
+    jinete1 = jinetes_amazonas.create_jinete_amazona(
+    nombre="Lucía",
+    apellido="Gómez",
+    dni="32456789",
+    edad=25,
+    fecha_nacimiento=datetime(1998, 4, 5),
+    lugar_nacimiento_localidad="Buenos Aires",
+    lugar_nacimiento_provincia="Buenos Aires",
+    domicilio_actual="Pasaje Los Pinos 101",
+    telefono="1122334455",
+    contacto_emergencia="Juan Gómez",
+    telefono_emergencia="1122334455",
+    becado=True,
+    beca_observaciones="Beca parcial",
+    certificado_discapacidad=True,
+    diagnostico_discapacidad="Trastorno de movilidad",
+    tipo_discapacidad="Motora",
+    percibe_asignacion_familiar=True,
+    asignacion_hijo=False,
+    asignacion_hijo_discapacidad=True,
+    asignacion_ayuda_escolar=False,
+    pension="Nacional",
+    obra_social="OSDE",
+    numero_afiliado="112233",
+    curatela=False,
+    observaciones_previsionales="Observaciones de previsión",
+    institucion_escolar="Escuela Especial ABC",
+    direccion_institucion="Calle Falsa 123",
+    telefono_institucion="1123456789",
+    grado_anio_actual="5to año",
+    observaciones_institucion="Recibe apoyo en clase",
+    profesionales_atienden="Kinesiólogo, Psicólogo",
+    parentesco_familiar_1="Madre",
+    nombre_familiar_1="Ana",
+    apellido_familiar_1="Gómez",
+    dni_familiar_1="12345678",
+    domicilio_familiar_1="Pasaje Los Pinos 101",
+    celular_familiar_1="1122334455",
+    email_familiar_1="ana.gomez@gmail.com",
+    escolaridad_familiar_1="Universitario",
+    ocupacion_familiar_1="Médica",
+    propuesta_trabajo="Hipoterapia",
+    condicion="Rentado",
+    sede="CASJ",
+    dia="Lunes y miércoles",
+    profesor_terapeuta=empleado1.id,
+    conductor=empleado2.id,
+    auxiliar_pista=empleado3.id,
+    caballo=caballo1.id,
+    )
+
+    jinete2 = jinetes_amazonas.create_jinete_amazona(
+        nombre="Martín",
+        apellido="López",
+        dni="33456789",
+        edad=22,
+        fecha_nacimiento=datetime(2001, 7, 22),
+        lugar_nacimiento_localidad="Córdoba",
+        lugar_nacimiento_provincia="Córdoba",
+        domicilio_actual="Av. de Mayo 200",
+        telefono="1234567890",
+        contacto_emergencia="Carlos López",
+        telefono_emergencia="1234567890",
+        becado=False,
+        beca_observaciones=None,
+        certificado_discapacidad=False,
+        diagnostico_discapacidad=None,
+        tipo_discapacidad=None,
+        percibe_asignacion_familiar=False,
+        asignacion_hijo=False,
+        asignacion_hijo_discapacidad=False,
+        asignacion_ayuda_escolar=False,
+        pension=None,
+        obra_social="Swiss Medical",
+        numero_afiliado="223344",
+        curatela=True,
+        observaciones_previsionales="Apoyo del estado",
+        institucion_escolar="Escuela Nacional Nro. 3",
+        direccion_institucion="Av. Siempreviva 742",
+        telefono_institucion="987654321",
+        grado_anio_actual="3er año",
+        observaciones_institucion="Regularidad académica",
+        profesionales_atienden="Fonoaudiólogo",
+        parentesco_familiar_1="Padre",
+        nombre_familiar_1="Carlos",
+        apellido_familiar_1="López",
+        dni_familiar_1="87654321",
+        domicilio_familiar_1="Av. de Mayo 200",
+        celular_familiar_1="1234567890",
+        email_familiar_1="carlos.lopez@gmail.com",
+        escolaridad_familiar_1="Secundario",
+        ocupacion_familiar_1="Electricista",
+        propuesta_trabajo="Monta Terapéutica",
+        condicion="Voluntario",
+        sede="HLP",
+        dia="Martes y jueves",
+        profesor_terapeuta=empleado2.id,
+        conductor=empleado3.id,
+        auxiliar_pista=empleado1.id,
+        caballo=caballo2.id,
+    )
+
+    jinete10 = jinetes_amazonas.create_jinete_amazona(
+        nombre="Florencia",
+        apellido="Navarro",
+        dni="41456789",
+        edad=20,
+        fecha_nacimiento=datetime(2003, 12, 12),
+        lugar_nacimiento_localidad="Santa Fe",
+        lugar_nacimiento_provincia="Santa Fe",
+        domicilio_actual="Calle Mitre 789",
+        telefono="1133557799",
+        contacto_emergencia="María Navarro",
+        telefono_emergencia="1133557798",
+        becado=True,
+        beca_observaciones="Beca completa",
+        certificado_discapacidad=True,
+        diagnostico_discapacidad="Trastorno sensorial",
+        tipo_discapacidad="Sensorial",
+        percibe_asignacion_familiar=True,
+        asignacion_hijo=True,
+        asignacion_hijo_discapacidad=False,
+        asignacion_ayuda_escolar=True,
+        pension="Provincial",
+        obra_social="Galeno",
+        numero_afiliado="556677",
+        curatela=False,
+        observaciones_previsionales="Pensión provincial",
+        institucion_escolar="Escuela Inclusiva Nro. 5",
+        direccion_institucion="Calle Principal 999",
+        telefono_institucion="1122345678",
+        grado_anio_actual="2do año",
+        observaciones_institucion="Recibe apoyo pedagógico",
+        profesionales_atienden="Psicólogo, Terapeuta ocupacional",
+        parentesco_familiar_1="Hermano",
+        nombre_familiar_1="Juan",
+        apellido_familiar_1="Navarro",
+        dni_familiar_1="45678901",
+        domicilio_familiar_1="Calle Mitre 789",
+        celular_familiar_1="1133557797",
+        email_familiar_1="juan.navarro@gmail.com",
+        escolaridad_familiar_1="Secundario",
+        ocupacion_familiar_1="Estudiante",
+        propuesta_trabajo="Equitación",
+        condicion="Rentado",
+        sede="AAAA",
+        dia="Viernes",
+        profesor_terapeuta=empleado1.id,
+        conductor=empleado2.id,
+        auxiliar_pista=empleado3.id,
+        caballo=caballo3.id,
+    )
+
+    jinete3 = jinetes_amazonas.create_jinete_amazona(
+        nombre="Sofía",
+        apellido="Pérez",
+        dni="34456789",
+        edad=30,
+        fecha_nacimiento=datetime(1993, 10, 12),
+        lugar_nacimiento_localidad="Rosario",
+        lugar_nacimiento_provincia="Santa Fe",
+        domicilio_actual="Calle Central 456",
+        telefono="123321123",
+        contacto_emergencia="Laura Pérez",
+        telefono_emergencia="987123456",
+        becado=True,
+        beca_observaciones="Beca completa",
+        certificado_discapacidad=True,
+        diagnostico_discapacidad="Pérdida auditiva parcial",
+        tipo_discapacidad="Sensorial",
+        percibe_asignacion_familiar=True,
+        asignacion_hijo=True,
+        asignacion_hijo_discapacidad=False,
+        asignacion_ayuda_escolar=True,
+        pension="Provincial",
+        obra_social="IOMA",
+        numero_afiliado="334455",
+        curatela=False,
+        observaciones_previsionales="Sin observaciones",
+        institucion_escolar="Instituto de Rehabilitación Rosario",
+        direccion_institucion="Calle Principal 456",
+        telefono_institucion="123123123",
+        grado_anio_actual="4to año",
+        observaciones_institucion="Regular apoyo académico",
+        profesionales_atienden="Psicólogo, Kinesiólogo",
+        parentesco_familiar_1="Padre",
+        nombre_familiar_1="Jorge",
+        apellido_familiar_1="Pérez",
+        dni_familiar_1="23456789",
+        domicilio_familiar_1="Calle Central 456",
+        celular_familiar_1="123321123",
+        email_familiar_1="jorge.perez@gmail.com",
+        escolaridad_familiar_1="Secundario",
+        ocupacion_familiar_1="Agrónomo",
+        propuesta_trabajo="Equinoterapia",
+        condicion="Rentado",
+        sede="CASJ",
+        dia="Viernes",
+        profesor_terapeuta=empleado1.id,
+        conductor=empleado2.id,
+        auxiliar_pista=empleado3.id,
+        caballo=caballo1.id,
+    )
+
+    # Continúa de manera similar para los siguientes jinetes, variando los datos opcionales
+
+    jinete4 = jinetes_amazonas.create_jinete_amazona(
+        nombre="Ana",
+        apellido="Martínez",
+        dni="35456789",
+        edad=27,
+        fecha_nacimiento=datetime(1996, 5, 18),
+        lugar_nacimiento_localidad="Mendoza",
+        lugar_nacimiento_provincia="Mendoza",
+        domicilio_actual="Calle 1234",
+        telefono="1165781234",
+        contacto_emergencia="Miguel Martínez",
+        telefono_emergencia="1145678900",
+        becado=False,
+        beca_observaciones=None,
+        certificado_discapacidad=False,
+        diagnostico_discapacidad=None,
+        tipo_discapacidad=None,
+        percibe_asignacion_familiar=False,
+        asignacion_hijo=False,
+        asignacion_hijo_discapacidad=False,
+        asignacion_ayuda_escolar=False,
+        pension=None,
+        obra_social="OSDE",
+        numero_afiliado="121234",
+        curatela=True,
+        observaciones_previsionales="Requiere apoyo",
+        institucion_escolar="Escuela Inclusiva M",
+        direccion_institucion="Av. Independencia 500",
+        telefono_institucion="1122334455",
+        grado_anio_actual="6to año",
+        observaciones_institucion="Soporte en matemáticas",
+        profesionales_atienden="Fonoaudiólogo",
+        parentesco_familiar_1="Hermano",
+        nombre_familiar_1="Juan",
+        apellido_familiar_1="Martínez",
+        dni_familiar_1="45678901",
+        domicilio_familiar_1="Calle 1234",
+        celular_familiar_1="1165781234",
+        email_familiar_1="juan.martinez@gmail.com",
+        escolaridad_familiar_1="Primario",
+        ocupacion_familiar_1="Desocupado",
+        propuesta_trabajo="Hipoterapia",
+        condicion="Voluntario",
+        sede="AAAA",
+        dia="Sábado",
+        profesor_terapeuta=empleado2.id,
+        conductor=empleado3.id,
+        auxiliar_pista=empleado1.id,
+        caballo=caballo3.id,
+    )
+
+ 
+    cobro1 = cobros.create_cobro(
+        id_ja=jinete1.id,
+        fecha_pago=datetime(2023, 1, 15),
+        tipo_pago="Efectivo",
+        monto=200.0,
+        beneficiario=empleado1.id,
+        en_deuda=True,
+        observaciones="Pago parcial de hipoterapia."
+    )
+
+    cobro2 = cobros.create_cobro(
+        id_ja=jinete2.id,
+        fecha_pago=datetime(2023, 2, 20),
+        tipo_pago="Transferencia",
+        monto=150.0,
+        beneficiario=empleado2.id,
+        en_deuda=False,
+        observaciones="Pago completo de monta terapéutica."
+    )
+
+    cobro3 = cobros.create_cobro(
+        id_ja=jinete3.id,
+        fecha_pago=datetime(2023, 3, 5),
+        tipo_pago="Tarjeta de Crédito",
+        monto=300.0,
+        beneficiario=empleado3.id,
+        en_deuda=True,
+        observaciones="Deuda pendiente de equinoterapia."
+    )
+
+    cobro4 = cobros.create_cobro(
+        id_ja=jinete4.id,
+        fecha_pago=datetime(2023, 4, 10),
+        tipo_pago="Cheque",
+        monto=250.0,
+        beneficiario=empleado1.id,
+        en_deuda=False,
+        observaciones="Pago realizado para hipoterapia."
+    )
+
+    cobro5 = cobros.create_cobro(
+        id_ja=jinete1.id,
+        fecha_pago=datetime(2023, 5, 15),
+        tipo_pago="Efectivo",
+        monto=180.0,
+        beneficiario=empleado2.id,
+        en_deuda=False,
+        observaciones="Pago completo de servicios."
+    )
+
+    cobro6 = cobros.create_cobro(
+        id_ja=jinete2.id,
+        fecha_pago=datetime(2023, 6, 20),
+        tipo_pago="Transferencia",
+        monto=220.0,
+        beneficiario=empleado3.id,
+        en_deuda=True,
+        observaciones="Deuda de servicio de equinoterapia."
+    )
+
+    cobro7 = cobros.create_cobro(
+        id_ja=jinete3.id,
+        fecha_pago=datetime(2023, 7, 25),
+        tipo_pago="Tarjeta de Crédito",
+        monto=350.0,
+        beneficiario=empleado1.id,
+        en_deuda=False,
+        observaciones="Pago completo de equinoterapia."
+    )
+
+    cobro8 = cobros.create_cobro(
+        id_ja=jinete4.id,
+        fecha_pago=datetime(2023, 8, 30),
+        tipo_pago="Cheque",
+        monto=290.0,
+        beneficiario=empleado2.id,
+        en_deuda=True,
+        observaciones="Deuda pendiente de monta terapéutica."
     )

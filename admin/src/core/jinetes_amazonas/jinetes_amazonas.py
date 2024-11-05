@@ -97,6 +97,9 @@ class JineteAmazona(db.Model):
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
+    # Relacion con cobros
+    cobros = db.relationship("Cobro", backref="jinete_amazona", lazy="dynamic")
+
     # Función para obtener el jinete/amazona por ID
     @staticmethod
     def obtener_jinete_por_id(jinete_id):

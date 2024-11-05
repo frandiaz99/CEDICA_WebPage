@@ -7,7 +7,7 @@ class Cobro(db.Model):
     __tablename__ = 'cobros'
 
     id = db.Column(db.Integer, primary_key=True)
-    id_ja = db.Column(db.Integer, nullable=False)
+    id_ja = db.Column(db.Integer, db.ForeignKey('jinetes_amazonas.id'), nullable=False)
     fecha_pago = db.Column(db.Date, nullable=False, default=datetime.now)
     tipo_pago = db.Column(db.String(50), nullable=False)
     monto = db.Column(db.Float, nullable=False)

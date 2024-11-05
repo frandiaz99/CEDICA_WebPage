@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block title %}Reportes{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Módulo de Reportes</h1>
+
+    <!-- Ranking -->
+    <div class="bg-white p-4 rounded-lg shadow-lg mb-6">
+        <h2 class="text-xl font-semibold text-center mb-4">Ranking de Propuestas de Trabajo Más Solicitadas</h2>
+        
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Propuesta</th>
+                    <th class="py-3 px-6 text-left">Solicitudes</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm font-light">
+                {% for propuesta, count in ranking_propuestas.items() %}
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6">{{ propuesta }}</td>
+                    <td class="py-3 px-6">{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Personas Adeudan -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold text-center mb-4">Personas que Adeudan Pagos</h2>
+        
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Nombre</th>
+                    <th class="py-3 px-6 text-left">Deuda Total</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm font-light">
+                {% for persona, total_deuda in personas %}
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6">{{ persona.nombre }}</td>
+                    <td class="py-3 px-6">${{ total_deuda }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Históricos de Cobros -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Histórico de Cobros</h1>
+    
+        <form method="GET" action="{{ url_for('reportes.index') }}">
+            <label for="jinete_id">Seleccionar Jinete:</label>
+            <select name="jinete_id" required>
+                <option value="">-- Seleccionar Jinete --</option>
+                {% for jinete in jinetes %}
+                    <option value="{{ jinete.id }}">{{ jinete.nombre }}</option>
+                {% endfor %}
+            </select>
+    
+            <label for="fecha_inicio">Fecha Inicio:</label>
+            <input type="date" name="fecha_inicio" required>
+    
+            <label for="fecha_fin">Fecha Fin:</label>
+            <input type="date" name="fecha_fin" required>
+    
+            <button type="submit">Consultar</button>
+        </form>
+    
+        {% if historico %}
+        <table class="min-w-full bg-white border border-gray-300 mt-4">
+            <thead>
+                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Fecha</th>
+                    <th class="py-3 px-6 text-left">Monto</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm font-light">
+                {% for cobro in historico %}
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6">{{ cobro.fecha_pago }}</td>
+                    <td class="py-3 px-6">{{ cobro.monto }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-gray-700 text-center mt-4">No se encontraron cobros para el Jinete seleccionado en el rango de fechas especificado.</p>
+        {% endif %}
+    </div>
+{% endblock %}
