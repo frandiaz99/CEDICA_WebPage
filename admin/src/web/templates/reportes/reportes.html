@@ -4,8 +4,6 @@
 
 {% block content %}
 <div class="bg-white p-6 rounded-lg shadow-md">
-    <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Módulo de Reportes</h1>
-
     <!-- Ranking -->
     <div class="bg-white p-4 rounded-lg shadow-lg mb-6">
         <h2 class="text-xl font-semibold text-center mb-4">Ranking de Propuestas de Trabajo Más Solicitadas</h2>
@@ -18,7 +16,7 @@
                 </tr>
             </thead>
             <tbody class="text-gray-600 text-sm font-light">
-                {% for propuesta, count in ranking_propuestas.items() %}
+                {% for propuesta, count in ranking_propuestas.items %}
                 <tr class="border-b border-gray-200 hover:bg-gray-100">
                     <td class="py-3 px-6">{{ propuesta }}</td>
                     <td class="py-3 px-6">{{ count }}</td>
@@ -26,6 +24,16 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% if ranking_propuestas.pages > 1 %}
+        <div class="flex justify-center mt-4">
+            {% if ranking_propuestas.has_prev %}
+                <a href="{{ url_for('reportes.index', page_ranking=ranking_propuestas.prev_num) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Anterior</a>
+            {% endif %}
+            {% if ranking_propuestas.has_next %}
+                <a href="{{ url_for('reportes.index', page_ranking=ranking_propuestas.next_num) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md ml-2">Siguiente</a>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
 
     <!-- Personas Adeudan -->
@@ -48,31 +56,43 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <div class="flex justify-center mt-4">
+            {% if personas.has_prev %}
+                <a href="{{ url_for('reportes.index', page_adeuda=personas.prev_num) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Anterior</a>
+            {% endif %}
+            {% if personas.has_next %}
+                <a href="{{ url_for('reportes.index', page_adeuda=personas.next_num) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md ml-2">Siguiente</a>
+            {% endif %}
+        </div>
     </div>
+
     
     <!-- Históricos de Cobros -->
     <div class="bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Histórico de Cobros</h1>
+        <h2 class="text-xl font-semibold text-center mb-4">Historial de Cobros</h2>
     
         <form method="GET" action="{{ url_for('reportes.index') }}">
             <label for="jinete_id">Seleccionar Jinete:</label>
-            <select name="jinete_id" required>
+            <select name="jinete_id">
                 <option value="">-- Seleccionar Jinete --</option>
                 {% for jinete in jinetes %}
-                    <option value="{{ jinete.id }}">{{ jinete.nombre }}</option>
+                    <option value="{{ jinete.id }}" {% if request.args.get('jinete_id') == jinete.id %}selected{% endif %}>
+                        {{ jinete.nombre }}
+                    </option>
                 {% endfor %}
             </select>
     
             <label for="fecha_inicio">Fecha Inicio:</label>
-            <input type="date" name="fecha_inicio" required>
+            <input type="date" name="fecha_inicio" value="{{ request.args.get('fecha_inicio') }}">
     
             <label for="fecha_fin">Fecha Fin:</label>
-            <input type="date" name="fecha_fin" required>
+            <input type="date" name="fecha_fin" value="{{ request.args.get('fecha_fin') }}">
     
             <button type="submit">Consultar</button>
         </form>
     
-        {% if historico %}
+        {% if historico.items %}
         <table class="min-w-full bg-white border border-gray-300 mt-4">
             <thead>
                 <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
@@ -81,7 +101,7 @@
                 </tr>
             </thead>
             <tbody class="text-gray-600 text-sm font-light">
-                {% for cobro in historico %}
+                {% for cobro in historico.items %}
                 <tr class="border-b border-gray-200 hover:bg-gray-100">
                     <td class="py-3 px-6">{{ cobro.fecha_pago }}</td>
                     <td class="py-3 px-6">{{ cobro.monto }}</td>
@@ -89,10 +109,21 @@
                 {% endfor %}
             </tbody>
         </table>
+    
+        <!-- Paginación -->
+        <div class="flex justify-center mt-4">
+            {% if historico.has_prev %}
+                <a href="{{ url_for('reportes.index', page_historico=historico.prev_num, jinete_id=request.args.get('jinete_id'), fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin')) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Anterior</a>
+            {% endif %}
+            
+            {% if historico.has_next %}
+                <a href="{{ url_for('reportes.index', page_historico=historico.next_num, jinete_id=request.args.get('jinete_id'), fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin')) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md ml-2">Siguiente</a>
+            {% endif %}
+        </div>
         {% else %}
         <p class="text-gray-700 text-center mt-4">No se encontraron cobros para el Jinete seleccionado en el rango de fechas especificado.</p>
         {% endif %}
-    </div>
+        </div>
 
 
     <!-- Graficos  -->
@@ -143,7 +174,7 @@
             <span>Sensorial</span>
         </div>
         <div class="flex items-center">
-            <div class="w-4 h-4 bg-teal-500 mr-2"></div>
+            <div class="w-4 h-4 bg-red-500 mr-2"></div>
             <span>Visceral</span>
         </div>
     </div>
@@ -151,20 +182,21 @@
 
 
 <!-- Ingreso Gráfico -->
-<form method="GET" action="{{ url_for('reportes.index') }}" class="mb-6">
-    <label for="criterio">Criterio:</label>
-    <select name="criterio" required>
-        <option value="anual" {% if criterio == 'anual' %}selected{% endif %}>Anual</option>
-        <option value="mensual" {% if criterio == 'mensual' %}selected{% endif %}>Mensual</option>
-    </select>
 
-    <!-- Campo de año visible solo si el criterio es mensual -->
-    <label for="anio">Año:</label>
-    <input type="number" name="anio" placeholder="Ej. 2024" value="{{ anio }}" min="2000" max="2100" {% if criterio != 'mensual' %}disabled{% endif %}>
-
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Consultar</button>
-</form>
 <div class="bg-white p-6 rounded-lg shadow-md flex justify-center mt-6">
+    <form method="GET" action="{{ url_for('reportes.index') }}" class="mb-6">
+        <label for="criterio">Criterio:</label>
+        <select name="criterio" required>
+            <option value="anual" {% if criterio == 'anual' %}selected{% endif %}>Anual</option>
+            <option value="mensual" {% if criterio == 'mensual' %}selected{% endif %}>Mensual</option>
+        </select>
+    
+        <!-- Campo de año visible solo si el criterio es mensual -->
+        <label for="anio">Año:</label>
+        <input type="number" name="anio" placeholder="Ej. 2024" value="{{ anio }}" min="2000" max="2100" {% if criterio != 'mensual' %}disabled{% endif %}>
+    
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Consultar</button>
+    </form>
     <div class="flex flex-col items-center w-1/2">
         <h1 class="text-2xl font-bold mb-4 text-gray-700 text-center">Ingresos Totales</h1>
         <canvas id="ingresosChart" style="max-width: 250px; max-height: 250px;"></canvas>
@@ -228,8 +260,8 @@ const becadosData = JSON.parse('{{ becados_data | tojson}}');
                     discapacidadData.Sensorial, 
                     discapacidadData.Visceral
                 ],
-                backgroundColor: ['#42A5F5', '#AB47BC', '#FFA726', '#26A69A'],
-                hoverBackgroundColor: ['#64B5F6', '#BA68C8', '#FFB74D', '#4DB6AC']
+                backgroundColor: ['#42A5F5', '#AB47BC', '#FF0000', '#26A69A'],
+                hoverBackgroundColor: ['#64B5F6', '#BA68C8', '#FF3333', '#4DB6AC']
             }]
         },
         options: {

@@ -10,29 +10,61 @@ import calendar
 
 reportes_bp = Blueprint("reportes", __name__, url_prefix="/reportes")
 
-def obtener_ranking_propuestas():
+def obtener_ranking_propuestas(page=1, per_page=10):
+    """
+    Obtiene el ranking de propuestas de trabajo para los Jinetes y Amazonas, 
+    basado en la cantidad de veces que cada propuesta se ha asociado.
+    
+    Args:
+        page (int): Número de página de la paginación.
+        per_page (int): Número de elementos por página.
+
+    Returns:
+        Pagination: Objeto de paginación con los resultados de las propuestas y sus conteos.
+    """
     ranking = (
         db.session.query(JineteAmazona.propuesta_trabajo, func.count(JineteAmazona.id).label("count"))
         .group_by(JineteAmazona.propuesta_trabajo)
         .order_by(desc("count"))
-        .all()
+        .paginate(page=page, per_page=per_page)
     )
-    return {propuesta: count for propuesta, count in ranking}
+    return ranking
 
-def obtener_personas_adeudan():
+def obtener_personas_adeudan(page=1, per_page=10):
+    """
+    Obtiene una lista de Jinetes y Amazonas que tienen deudas pendientes, 
+    junto con el monto total adeudado por cada persona.
+
+    Returns:
+        list: Una lista de tuplas con el Jinete o Amazona y su monto total de deuda.
+    """
     personas_adeudan = (
         db.session.query(JineteAmazona, func.sum(Cobro.monto).label('total_deuda'))
         .join(Cobro)  
         .filter(Cobro.en_deuda == True)  
         .group_by(JineteAmazona.id)  
         .order_by(desc("total_deuda"))
-        .all()
+        .paginate(page=page, per_page=per_page)
     )
     return personas_adeudan
 
-def obtener_historico_cobros(jinete_id=None, fecha_inicio=None, fecha_fin=None):
+def obtener_historico_cobros(jinete_id=None, fecha_inicio=None, fecha_fin=None, page=1, per_page=10):
+    """
+    Obtiene el historial de cobros con opción de filtro por jinete y rango de fechas, 
+    y con paginación.
+
+    Args:
+        jinete_id (int, optional): ID del Jinete o Amazona para filtrar los cobros.
+        fecha_inicio (date, optional): Fecha de inicio para el filtro de cobros.
+        fecha_fin (date, optional): Fecha de fin para el filtro de cobros.
+        page (int, optional): Número de página para la paginación. Default es 1.
+        per_page (int, optional): Cantidad de registros por página. Default es 10.
+
+    Returns:
+        Pagination: Objeto de paginación con los cobros que cumplen con los filtros especificados.
+    """
     query = db.session.query(Cobro)
-    
+
     if jinete_id:
         query = query.filter(Cobro.id_ja == jinete_id)
     if fecha_inicio:
@@ -40,15 +72,19 @@ def obtener_historico_cobros(jinete_id=None, fecha_inicio=None, fecha_fin=None):
     if fecha_fin:
         query = query.filter(Cobro.fecha_pago <= fecha_fin)
 
-    return query.all()
+    return query.paginate(page=page, per_page=per_page)
 
 def obtener_becados():
-    # Query to get the count of scholarship recipients
+    """
+    Obtiene la cantidad de Jinetes y Amazonas que están becados y no becados.
+
+    Returns:
+        dict: Un diccionario con el conteo de becados y no becados.
+    """
     becados_count = db.session.query(
         func.count(JineteAmazona.id).label("count")
     ).filter(JineteAmazona.becado == True).scalar()
     
-    # Total count of all Jinetes y Amazonas
     total_count = db.session.query(func.count(JineteAmazona.id)).scalar()
     no_becados_count = total_count - becados_count
     
@@ -57,8 +93,20 @@ def obtener_becados():
         "no_becados": no_becados_count
     }
 
-# Función para obtener los ingresos
 def obtener_ingresos(criterio="anual", anio=None):
+    """
+    Obtiene el total de ingresos agrupados por mes o por año, según el criterio especificado.
+
+    Args:
+        criterio (str, optional): Criterio de agrupación de ingresos, puede ser 'anual' o 'mensual'. Default es 'anual'.
+        anio (int, optional): Año específico para filtrar ingresos si el criterio es 'mensual'. Default es None.
+
+    Returns:
+        dict: Un diccionario con los ingresos agrupados por año o mes, según el criterio seleccionado.
+
+    Raises:
+        ValueError: Si el criterio no es 'anual' o 'mensual'.
+    """
     if criterio == "mensual" and anio:
         pagos = Pago.query.filter(extract('year', Pago.fecha_pago) == anio).all()
         ingresos_mensuales = {}
@@ -78,45 +126,57 @@ def obtener_ingresos(criterio="anual", anio=None):
         raise ValueError("El criterio debe ser 'anual' o 'mensual'.")
 
 def obtener_distribucion_discapacidad():
-    # Contar la cantidad de cada tipo de discapacidad
+    """
+    Obtiene la distribución de los tipos de discapacidad entre los Jinetes y Amazonas.
+
+    Returns:
+        dict: Un diccionario con los tipos de discapacidad ('Mental', 'Motora', 'Sensorial', 'Visceral') y su conteo correspondiente.
+    """
     discapacidades = db.session.query(JineteAmazona.tipo_discapacidad, db.func.count()).group_by(JineteAmazona.tipo_discapacidad).all()
     
-    # Inicializamos un diccionario para almacenar los resultados
     discapacidad_data = {'Mental': 0, 'Motora': 0, 'Sensorial': 0, 'Visceral': 0}
     
-    # Llenamos el diccionario con los datos de la consulta
     for discapacidad, count in discapacidades:
         if discapacidad in discapacidad_data:
             discapacidad_data[discapacidad] = count
 
     return discapacidad_data
 
+
 @reportes_bp.get("/")
 @check("reportes_index")
 def index():
-    ranking_propuestas = obtener_ranking_propuestas()
-    personas_adeudan = obtener_personas_adeudan()
+    page = request.args.get('page', 1, type=int)
+    per_page = 3  # Puedes ajustar esto según tus necesidades
+
+    page_ranking = request.args.get('page_ranking', 1, type=int)
+    ranking_propuestas = obtener_ranking_propuestas(page=page_ranking, per_page=per_page)
+
+    page_adeuda = request.args.get('page_adeuda', 1, type=int)
+    personas_adeudan = obtener_personas_adeudan(page=page_adeuda, per_page=per_page)
     jinetes = db.session.query(JineteAmazona).all()
     becados_data = obtener_becados()
     discapacidad_data = obtener_distribucion_discapacidad()
+    
 
-    # Obtener el criterio (por defecto es anual)
     criterio = request.args.get('criterio', 'anual')
     anio = request.args.get('anio', type=int) if criterio == "mensual" else None
 
-    # Si se envió el formulario, actualizamos el criterio y el año
     if request.method == 'POST':
         criterio = request.form.get('criterio')
         if criterio == 'mensual':
             anio = request.form.get('anio', type=int)
 
-    # Obtener los ingresos según el criterio
     ingresos = obtener_ingresos(criterio, anio)
+
+
     
+    jinete_id = request.args.get('jinete_id')
+    fecha_inicio = request.args.get('fecha_inicio')
+    fecha_fin = request.args.get('fecha_fin')
 
- 
-    historico = None  
-
+    page_historico = request.args.get('page_historico', 1, type=int)
+    historico = obtener_historico_cobros(jinete_id, fecha_inicio, fecha_fin, page=page_historico, per_page=per_page)
 
     jinete_id = request.args.get("jinete_id")
     fecha_inicio = request.args.get("fecha_inicio")
@@ -127,8 +187,8 @@ def index():
         try:
             fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d')
             fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d')
-       
-            historico = obtener_historico_cobros(jinete_id, fecha_inicio, fecha_fin)
+
+            
         except ValueError:
             flash("Por favor, ingrese fechas válidas.", "error")
 
@@ -145,5 +205,6 @@ def index():
                         discapacidad_data=discapacidad_data,
                         anio=anio,
                         criterio = criterio,
-                        historico=historico) 
+                        historico=historico
+                        ) 
 
