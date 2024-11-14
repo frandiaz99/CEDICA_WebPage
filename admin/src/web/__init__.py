@@ -20,7 +20,7 @@ from src.core.bcrypt import bcrypt
 from flask_session import Session
 from src.web.storage import storage
 from src.web import helpers
-
+from src.web.api.contacto import contacto_api_bp
 
 session = Session()
 
@@ -68,6 +68,8 @@ def create_app(env="development", static_folder="../../static"):
     app.register_blueprint(contacto_bp)
 
     app.register_blueprint(reportes_bp)
+
+    app.register_blueprint(contacto_api_bp)
 
     app.jinja_env.globals.update(is_authenticated=is_authenticated)
 
