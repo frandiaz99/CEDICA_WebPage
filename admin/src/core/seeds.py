@@ -142,22 +142,45 @@ def run():
 
     permisos_encuestre = [encuestre_index, encuestre_new, encuestre_destroy, encuestre_update, encuestre_show]
 
-    
+    #permisos modulo reporte
+    reportes_index = permiso.create_permiso(nombre="reportes_index")
     reportes_show = permiso.create_permiso(nombre="reportes_show")
 
+    # permisos modulo administracion
+    administracion_index = permiso.create_permiso(nombre="administracion_index")
+    administracion_new = permiso.create_permiso(nombre="administracion_new")
+    administracion_destroy = permiso.create_permiso(nombre="administracion_destroy")
+    administracion_update = permiso.create_permiso(nombre="administracion_update")
+    administracion_show = permiso.create_permiso(nombre="administracion_show")
+
+    permisos_administracion = [administracion_index, administracion_new, administracion_destroy, administracion_update, administracion_show]
+
+    #permisos modulo contacto 
+    contacto_index = permiso.create_permiso(nombre="contacto_index")
+    contacto_new = permiso.create_permiso(nombre="contacto_new")
+    contacto_destroy = permiso.create_permiso(nombre="contacto_destroy")
+    contacto_update = permiso.create_permiso(nombre="contacto_update")
+    contacto_show = permiso.create_permiso(nombre="contacto_show")
+
+    permisos_contacto = [contacto_index, contacto_new, contacto_destroy, contacto_update, contacto_show]
+
+
     # Asignar permisos a rol
-    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre, reportes_show))
+    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre, reportes_show, permisos_administracion, permisos_contacto, [reportes_show], [reportes_index]))
     rol_permiso.assign_permisos_to_rol(system_admin, permisos_system_admin)
     
-    permisos_administracion_rol = list(chain(permisos_equipo , permisos_ja , permisos_registro_cobros , permisos_registro_pagos , [encuestre_index] , [encuestre_show], reportes_show))
+    permisos_administracion_rol = list(chain(permisos_equipo , permisos_ja , permisos_registro_cobros , permisos_registro_pagos , [encuestre_index] , [encuestre_show], [reportes_show], [reportes_index], permisos_administracion, permisos_contacto))
     rol_permiso.assign_permisos_to_rol(administracion_rol, permisos_administracion_rol)
 
-    permisos_tecnica_rol = list(chain(permisos_ja , [registro_cobros_index] , [registro_cobros_show] , [encuestre_index] , [encuestre_show], reportes_show))
+    permisos_tecnica_rol = list(chain(permisos_ja , [registro_cobros_index] , [registro_cobros_show] , [encuestre_index] , [encuestre_show], [reportes_index], [reportes_show]))
     rol_permiso.assign_permisos_to_rol(tecnica_rol, permisos_tecnica_rol)
 
     permisos_encuestre_rol = list(chain([ja_index] , [ja_show] , permisos_encuestre))
     rol_permiso.assign_permisos_to_rol(encuestre_rol, permisos_encuestre_rol)
-    
+
+    permisos_editor_rol = list(chain([administracion_index], [administracion_show], [administracion_update], [administracion_new]))
+    rol_permiso.assign_permisos_to_rol(editor_rol, permisos_editor_rol)
+
     # Crear empleados y asociarlos con usuarios
     empleado1 = equipo.create_empleado(
         nombre="Federico", 
