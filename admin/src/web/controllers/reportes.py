@@ -107,20 +107,30 @@ def obtener_ingresos(criterio="anual", anio=None):
     Raises:
         ValueError: Si el criterio no es 'anual' o 'mensual'.
     """
-    if criterio == "mensual" and anio:
+    if criterio == "mensual":
+        if not anio:
+            flash("Debe seleccionar un año para el criterio mensual.", "danger") 
+            return redirect(url_for('users.index'))
+
         pagos = Pago.query.filter(extract('year', Pago.fecha_pago) == anio).all()
-        ingresos_mensuales = {}
+        ingresos_mensuales = {calendar.month_name[i]: 0 for i in range(1,13)}
         for pago in pagos:
             mes = pago.fecha_pago.month
             nombre_mes = calendar.month_name[mes]
-            ingresos_mensuales[nombre_mes] = ingresos_mensuales.get(nombre_mes, 0) + pago.monto
+            ingresos_mensuales[nombre_mes] += pago.monto
         return ingresos_mensuales
+    
     elif criterio == "anual":
-        pagos = Pago.query.all()
-        ingresos_anuales = {}
+        if not anio:
+            anio = datetime.now().year
+
+        inicio_rango = anio - 5
+
+        pagos = Pago.query.filter(extract('year', Pago.fecha_pago).between(inicio_rango, anio)).all()
+        ingresos_anuales = {year: 0 for year in range(inicio_rango, anio + 1)}
         for pago in pagos:
             anio_pago = pago.fecha_pago.year
-            ingresos_anuales[anio_pago] = ingresos_anuales.get(anio_pago, 0) + pago.monto
+            ingresos_anuales[anio_pago] += pago.monto
         return ingresos_anuales
     else:
         raise ValueError("El criterio debe ser 'anual' o 'mensual'.")
@@ -144,7 +154,7 @@ def obtener_distribucion_discapacidad():
 
 
 @reportes_bp.get("/")
-@check("reportes_index")
+@check("reportes_show")
 def index():
     page = request.args.get('page', 1, type=int)
     per_page = 3  # Puedes ajustar esto según tus necesidades

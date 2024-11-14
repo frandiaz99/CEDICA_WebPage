@@ -142,23 +142,17 @@ def run():
 
     permisos_encuestre = [encuestre_index, encuestre_new, encuestre_destroy, encuestre_update, encuestre_show]
 
-    # Permisos Admin
-    reportes_index = permiso.create_permiso(nombre="reportes_index")
-    reportes_new = permiso.create_permiso(nombre="reportes_new")
-    reportes_destroy = permiso.create_permiso(nombre="reportes_destroy")
-    reportes_update = permiso.create_permiso(nombre="reportes_update")
+    
     reportes_show = permiso.create_permiso(nombre="reportes_show")
 
-    permisos_reportes = [reportes_index, reportes_new, reportes_destroy, reportes_update, reportes_show]
-
     # Asignar permisos a rol
-    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre, permisos_reportes))
+    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre, reportes_show))
     rol_permiso.assign_permisos_to_rol(system_admin, permisos_system_admin)
     
-    permisos_administracion_rol = list(chain(permisos_equipo , permisos_ja , permisos_registro_cobros , permisos_registro_pagos , [encuestre_index] , [encuestre_show]))
+    permisos_administracion_rol = list(chain(permisos_equipo , permisos_ja , permisos_registro_cobros , permisos_registro_pagos , [encuestre_index] , [encuestre_show], reportes_show))
     rol_permiso.assign_permisos_to_rol(administracion_rol, permisos_administracion_rol)
 
-    permisos_tecnica_rol = list(chain(permisos_ja , [registro_cobros_index] , [registro_cobros_show] , [encuestre_index] , [encuestre_show]))
+    permisos_tecnica_rol = list(chain(permisos_ja , [registro_cobros_index] , [registro_cobros_show] , [encuestre_index] , [encuestre_show], reportes_show))
     rol_permiso.assign_permisos_to_rol(tecnica_rol, permisos_tecnica_rol)
 
     permisos_encuestre_rol = list(chain([ja_index] , [ja_show] , permisos_encuestre))
