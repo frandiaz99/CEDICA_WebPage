@@ -315,6 +315,7 @@ def editar_encuestre(id):
 )
 
 @encuestre_bp.route('/subir_documento', methods=['POST'])
+@check("encuestre_new")
 def subir_documento():
     """
     Permite seleccionar un documento. Valida los campos del documento, nombre, tamaño y extension. Y lo
@@ -517,6 +518,7 @@ def editar_documento(document_id):
 
 
 @encuestre_bp.route('/subir_enlace', methods=['POST'])
+@check("encuestre_new")
 def subir_enlace():
     """
     Registra un enlace en la base de datos en la tabla de documentos.

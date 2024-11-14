@@ -1,5 +1,6 @@
 from src.core import auth
 from src.core.auth import User
+from src.web.handlers.auth import check
 from flask import render_template, Blueprint, abort, request, flash, redirect, url_for, jsonify
 from sqlalchemy import asc, desc
 from src.web.handlers.auth import login_required
@@ -17,6 +18,7 @@ users_bp = Blueprint("users", __name__, url_prefix="/users")
 
 @users_bp.get("/")
 @login_required
+@check("user_index")
 def index():
     """
     Muestra la lista de usuarios que hay en el sistema, permitiendo filtrar por las diferentes opciones disponibles.
@@ -84,6 +86,7 @@ def index():
 
 @users_bp.route("/registrar_usuario", methods=['GET', 'POST'])
 @login_required
+@check("user_new")
 def crear_usuario():
     """
     Si el método es get, carga el template crear_usuario.html, es decir, la página de carga de cobros.
@@ -145,6 +148,7 @@ def crear_usuario():
 
 @users_bp.route('/detalle/<int:id>', methods=['GET'])
 @login_required
+@check("user_show")
 def detalle_usuario(id):
     """
     Muestra más información sobre un usuario en concreto, si es que el id del mismo existe.
@@ -162,6 +166,7 @@ def detalle_usuario(id):
 
 @users_bp.route('/bloquear_usuario#<int:id>', methods=['GET', 'POST'])
 @login_required
+@check("user_update")
 def bloquear_usuario(id):
     """
     Bloquea un usuario, si es que el id del mismo existe, y lo informa mediante un mensaje de éxito.
@@ -185,6 +190,7 @@ def bloquear_usuario(id):
 
 @users_bp.route('/desbloquear_usuario#<int:id>', methods=['GET', 'POST'])
 @login_required
+@check("user_update")
 def desbloquear_usuario(id):
     """
     Desloquea un usuario, si es que el id del mismo existe, y lo informa mediante un mensaje de éxito.
@@ -205,6 +211,7 @@ def desbloquear_usuario(id):
 
 @users_bp.route('/actualizar_usuario#<int:id>', methods=['GET', 'POST'])
 @login_required
+@check("user_update")
 def actualizar_usuario(id):
     """
     Si el metodo es get, carga la plantilla actualizar_usuario.html, es decir, la página para actualizar la info del usuario, si es que el mismo existe.
@@ -263,6 +270,7 @@ def actualizar_usuario(id):
 
 @users_bp.route('/eliminar_usuario#<int:id>', methods=['GET', 'POST'])
 @login_required
+@check("user_destroy")
 def eliminar_usuario(id):
     """
     Elimina al usuario pasado por parámetro, si es que existe.
