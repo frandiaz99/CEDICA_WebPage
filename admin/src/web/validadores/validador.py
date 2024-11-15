@@ -871,7 +871,7 @@ def validar_estado(estado):
     Returns:
         tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error si no lo es.
     """
-    estados_permitidos = ['pendiente', 'leido']
+    estados_permitidos = ['pendiente', 'leido', "en_proceso"]
     if estado not in estados_permitidos:
         return False, "El estado debe ser 'pendiente' o 'leido'."
     return True, ""
