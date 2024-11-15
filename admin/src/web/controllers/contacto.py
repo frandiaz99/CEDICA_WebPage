@@ -3,10 +3,12 @@ from src.core.database import db
 from sqlalchemy import asc, desc
 from src.core.contacto import Contacto
 from src.web.validadores.validador import ( validar_estado, validar_comentario )    
+from src.web.handlers.auth import check
 
 contacto_bp = Blueprint('contacto', __name__, url_prefix='/contacto')
 
 @contacto_bp.get("/")
+@check("contacto_index")
 def index():
     """
     Controlador para la página de inicio de contacto. Muestra una lista de contactos con
@@ -42,7 +44,9 @@ def index():
         total_paginas=total_paginas
     )
 
+
 @contacto_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
+@check("contacto_update")
 def editar_contacto(id):
     """
     Permite editar un contacto existente. Solo permite modificar el comentario y el estado.

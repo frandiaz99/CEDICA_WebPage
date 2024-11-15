@@ -21,7 +21,7 @@ from flask_session import Session
 from src.web.storage import storage
 from src.web import helpers
 from src.web.api.contacto import contacto_api_bp
-
+from flask_cors import CORS
 session = Session()
 
 def create_app(env="development", static_folder="../../static"):
@@ -34,6 +34,8 @@ def create_app(env="development", static_folder="../../static"):
     bcrypt.init_app(app)
 
     storage.init_app(app)
+
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
 
     @app.route("/")
     def login():

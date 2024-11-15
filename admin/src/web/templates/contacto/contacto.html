@@ -27,6 +27,7 @@
             <select name="estado" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
                 <option value="">Todos los estados</option>
                 <option value="pendiente" {% if estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                <option value="en_proceso" {% if estado == 'en_proceso' %}selected{% endif %}>En proceso</option>
                 <option value="leido" {% if estado == 'leido' %}selected{% endif %}>Leido</option>
             </select>
 
@@ -47,10 +48,10 @@
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Comentario</th>
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">
                         <a href="{{ url_for('contacto.index', estado=estado, order='asc') }}"
-                            class="text-gray-600 hover:underline">Fecha de Creación &#8593;</a>
+                            class="text-gray-600 hover:underline">Fecha de Creación &#8595;</a>
                         |
                         <a href="{{ url_for('contacto.index', estado=estado, order='desc') }}"
-                            class="text-gray-600 hover:underline">&#8595;</a>
+                            class="text-gray-600 hover:underline">&#8593;</a>
                     </th>
                     <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Acciones</th>
                 </tr>

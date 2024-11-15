@@ -1,11 +1,14 @@
+import requests
 from flask import Blueprint, request, jsonify
-from src.core import auth
+from src.web.schemas.contacto import create_contacto_schema, contacto_schema, contactos_schema
+from src.core.contacto import create_contacto 
 from src.web.handlers.auth import check
-from src.core import contacto
-from src.web.schemas.contacto import contactos_schema, create_contacto_schema, contacto_schema
+from src.core.contacto import contacto
 contacto_api_bp = Blueprint("contacto_api", __name__, url_prefix="/api/contacto")
+RECAPTCHA_SECRET_KEY = '6LfWlX8qAAAAAKtyOVroeG5-cxu15F8WUkVOY5Ss' 
 
 @contacto_api_bp.get("/")
+@check("contacto_index")
 def index():
     contactos = contacto.list_contactos()
     data = contactos_schema.dumps(contactos)
@@ -15,10 +18,24 @@ def index():
 @contacto_api_bp.post("/")
 def create():
     data = request.get_json()
-    errors = create_contacto_schema.validate(data)
-    if errors:
-        return jsonify(errors), 400
-    else:
-        new_contacto = create_contacto_schema.load(data)
-    
-    return contacto_schema.dumps(new_contacto), 201
+    recaptcha_response = data.get('recaptchaResponse')
+
+    secret_key = RECAPTCHA_SECRET_KEY
+
+    verify_url = 'https://www.google.com/recaptcha/api/siteverify'
+    verify_data = {
+        'secret': secret_key,
+        'response': recaptcha_response
+    }
+
+    verify_response = requests.post(verify_url, data=verify_data)
+    verify_result = verify_response.json()
+
+    if not verify_result.get('success'):
+        return jsonify({'error': 'reCAPTCHA validation failed'}), 400
+
+    data.pop('recaptchaResponse')
+    contacto_data = create_contacto_schema.load(data)
+    create_contacto(**contacto_data)
+
+    return jsonify({'success': True})
