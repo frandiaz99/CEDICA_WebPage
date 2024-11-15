@@ -166,7 +166,7 @@ def run():
 
 
     # Asignar permisos a rol
-    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre, reportes_show, permisos_administracion, permisos_contacto, [reportes_show], [reportes_index]))
+    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre, permisos_administracion, permisos_contacto, [reportes_show], [reportes_index]))
     rol_permiso.assign_permisos_to_rol(system_admin, permisos_system_admin)
     
     permisos_administracion_rol = list(chain(permisos_equipo , permisos_ja , permisos_registro_cobros , permisos_registro_pagos , [encuestre_index] , [encuestre_show], [reportes_show], [reportes_index], permisos_administracion, permisos_contacto))

@@ -24,6 +24,7 @@
 
 <script>
 import axios from 'axios';
+/*global grecaptcha*/
 export default {
   name: 'ContactoView',
   data() {
@@ -37,10 +38,9 @@ export default {
   },
   methods: {
     async submitForm() {
-      //eslint-disable-next-line no-undef 
       const recaptchaResponse = grecaptcha.getResponse();
       if (!recaptchaResponse) {
-        alert('Please complete the CAPTCHA');
+        alert('Por favor completar el CAPTCHA');
         return;
       }
 
@@ -54,12 +54,16 @@ export default {
       try {
         const response = await axios.post('/api/contacto', formData);
         if (response.data.success) {
-          alert('Message sent successfully');
+          alert('Mensaje enviado correctamente');
+          this.name = '';
+          this.email = '';
+          this.message = '';
+          grecaptcha.reset();
         } else {
-          alert('CAPTCHA validation failed');
+          alert('Fallo en la validación del CAPTCHA');
         }
       } catch (error) {
-        alert('Error sending message');
+        alert('Error enviando mensaje');
       }
     }
 
