@@ -3,7 +3,9 @@ from datetime import datetime
 from itertools import chain 
 
 def run():
-    # Crear issues
+    '''
+    Inserta los datos de prueba en la DB
+    '''
     issue1 = board.create_issue(
         email="mail1@gmail.com",
         title="Mi computadora no funciona",
