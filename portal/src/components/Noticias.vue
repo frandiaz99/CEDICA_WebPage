@@ -24,6 +24,7 @@
     },
     created() {
       // Cargar noticias desde la API aquí
+      
     },
   };
   </script>
