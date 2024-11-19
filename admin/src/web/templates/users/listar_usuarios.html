@@ -30,6 +30,7 @@
     <!-- Contenedor para el botón y filtros -->
     <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Botón de registro -->
+        {% if check_permission(session, "user_new") %}
         <div class="flex items-center justify-start text-center">
             <button type="button"
                 class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-all duration-200 ease-in-out transform hover:scale-105"
@@ -37,6 +38,7 @@
                 Registrar nuevo usuario
             </button>
         </div>
+        {% endif %}
 
         <!-- Formulario de búsqueda y filtros -->
         <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-2 w-full">
@@ -95,9 +97,14 @@
                 {% if users %}
                 {% for user in users %}
                 <tr class="hover:bg-gray-50">
+                    {% if check_permission(session, "user_show") %}
                     <td class="text-center py-2 border-b"><a target="_blank"
                             href="{{ url_for('users.detalle_usuario', id=user.id) }}"
                             class="text-center text-blue-600 hover:underline">{{ user.email }}</a></td>
+                    {% else %}
+                    <td class="text-center py-2 border-b"><a target="_blank"
+                        class="text-center text-blue-600 hover:underline">{{ user.email }}</a></td>
+                    {% endif %}
                     <td class="text-center py-2 border-b">{{ user.alias }}</td>
                     <td class="text-center py-2 border-b">{{ "Sí" if user.activo else "No" }}</td>
                     <td class="text-center py-2 border-b">{{ roles[user.rol_id].nombre if user.rol_id in roles else 'Sin
@@ -106,31 +113,37 @@
                     </td>
                     <td class="text-center py-2 border-b">{{ user.inserted_at.strftime('%d/%m/%Y') }}</td>
                     <td class="text-center py-2 px-4 border-b">
-                        {% if user.rol_id != 5 %}
-                        {% if user.activo %}
-
-                        <button type="button" onclick="bloquearUsuario('{{user.id}}')"
-                            class="text-center bg-gray-300 text-red-500 py-1 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Bloquear</button>
-                        {% else %}
-                        <button type="button" onclick="desbloquearUsuario('{{user.id}}')"
-                            class="text-center border-b bg-gray-300 text-green-600 py-1 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Desbloquear</button>
-                        {% endif %}
+                        {% if check_permission(session, "user_update") %}
+                            {% if user.rol_id != 5 %}
+                                {% if user.activo %}
+                        
+                                    <button type="button" onclick="bloquearUsuario('{{user.id}}')"
+                                        class="text-center bg-gray-300 text-red-500 py-1 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Bloquear</button>
+                                {% else %}
+                                    <button type="button" onclick="desbloquearUsuario('{{user.id}}')"
+                                        class="text-center border-b bg-gray-300 text-green-600 py-1 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Desbloquear</button>
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
                     </td>
                     <td class="text-center py-2 px-4 border-b">
                         {% if user.rol_id != 5 %}
+                        {% if check_permission(session, "user_update") %}
                         <button type="button" onclick="actualizarUsuario('{{user.id}}')"
                             class="text-center bg-gray-300 py-1 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Editar</button>
                         {% endif %}
+                        {% endif %}
                     </td>
                     <td class="text-center py-2 px-4 border-b">
                         {% if user.rol_id != 5 %}
+                        {% if check_permission(session, "user_destroy") %}
                         <form action="{{ url_for('users.eliminar_usuario', id=user.id) }}" method="POST">
                             <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
                                 onclick="return confirm('¿Estás seguro de que deseas eliminarlo? Esta acción no se puede deshacer.');">
                                 Eliminar
                             </button>
                         </form>
+                        {% endif %}
                         {% endif %}
                     </td>
                 </tr>

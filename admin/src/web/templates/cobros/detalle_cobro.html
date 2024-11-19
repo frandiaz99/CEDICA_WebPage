@@ -39,7 +39,7 @@
         <p><strong>Monto:</strong> {{ cobro.monto }}</p>
         <p><strong>En deuda:</strong> {{ "Sí" if cobro.en_deuda else "No" }}</p>
         <p><strong>Observaciones:</strong> {{ cobro.observaciones }}</p>
-        <p><strong>Nombre del beneficiario:</strong> {{ cobro.beneficiario }}</p>
+        <p><strong>Nombre del beneficiario:</strong> {{ cobro.beneficiario.nombre }} {{ cobro.beneficiario.apellido }}</p>
     </div>
 
     {% if check_permission(session, "registro_cobros_update") and check_permission(session, "registro_cobros_destroy")

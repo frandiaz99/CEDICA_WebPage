@@ -89,3 +89,24 @@ def editar_contacto(id):
         'contacto/editar_contacto.html', 
         contacto=contacto_aux,
     )
+
+@contacto_bp.route('/eliminar/<int:id>', methods=['POST'])
+@check("contacto_destroy")
+def eliminar_contacto(id):
+    """
+    Elimina un contacto de la base de datos.
+
+    :param id: ID del contacto a eliminar.
+    :return: Redirige a la página de índice del contacto.
+    """
+    contacto_aux = Contacto.query.get_or_404(id)
+
+    try:
+        db.session.delete(contacto_aux)
+        db.session.commit()
+        flash('Contacto eliminado correctamente.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar el contacto: {str(e)}', 'danger')
+
+    return redirect(url_for('contacto.index'))
