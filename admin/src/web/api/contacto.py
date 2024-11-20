@@ -20,7 +20,7 @@ def index():
 def create():
     data = request.get_json()
     recaptcha_response = data.get('recaptchaResponse')
-    RECAPTCHA_SECRET_KEY = current_app.config.get("RECAPTCHA_SECRET_KEY")
+    RECAPTCHA_SECRET_KEY = "6LfWlX8qAAAAAKtyOVroeG5-cxu15F8WUkVOY5Ss"
     secret_key = str(RECAPTCHA_SECRET_KEY)
 
     verify_url = 'https://www.google.com/recaptcha/api/siteverify'
