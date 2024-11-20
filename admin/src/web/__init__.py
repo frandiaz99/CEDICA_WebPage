@@ -46,7 +46,7 @@ def create_app(env="production", static_folder="../../static"):
     storage.init_app(app)
 
     # Configuración de CORS
-    CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
+    CORS(app, resources={r"/api/*": {"origins": ["http://localhost:8080", "https://grupo49.proyecto2024.linti.unlp.edu.ar/"]}})
 
     # Rutas base
     @app.route("/")
