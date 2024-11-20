@@ -7,7 +7,7 @@ from src.core.contacto import contacto
 from os import environ
 contacto_api_bp = Blueprint("contacto_api", __name__, url_prefix="/api/contacto")
 
-RECAPTCHA_SECRET_KEY = current_app.config.get("RECAPTCHA_SECRET_KEY")
+
 @contacto_api_bp.get("/")
 @check("contacto_index")
 def index():
@@ -20,7 +20,7 @@ def index():
 def create():
     data = request.get_json()
     recaptcha_response = data.get('recaptchaResponse')
-
+    RECAPTCHA_SECRET_KEY = current_app.config.get("RECAPTCHA_SECRET_KEY")
     secret_key = str(RECAPTCHA_SECRET_KEY)
 
     verify_url = 'https://www.google.com/recaptcha/api/siteverify'
