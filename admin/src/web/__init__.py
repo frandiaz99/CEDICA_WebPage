@@ -23,7 +23,7 @@ from src.web.api.contacto import contacto_api_bp
 # Inicialización de sesiones
 session = Session()
 
-def create_app(env="development", static_folder="../../static"):
+def create_app(env="production", static_folder="../../static"):
     """
     Crea e inicializa una instancia de Flask con configuración específica del entorno.
 
