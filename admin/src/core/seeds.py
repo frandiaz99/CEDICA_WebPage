@@ -3,7 +3,9 @@ from datetime import datetime
 from itertools import chain 
 
 def run():
-    # Crear issues
+    '''
+    Inserta los datos de prueba en la DB
+    '''
     issue1 = board.create_issue(
         email="mail1@gmail.com",
         title="Mi computadora no funciona",
@@ -166,7 +168,7 @@ def run():
 
 
     # Asignar permisos a rol
-    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre, reportes_show, permisos_administracion, permisos_contacto, [reportes_show], [reportes_index]))
+    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre, permisos_administracion, permisos_contacto, [reportes_show], [reportes_index]))
     rol_permiso.assign_permisos_to_rol(system_admin, permisos_system_admin)
     
     permisos_administracion_rol = list(chain(permisos_equipo , permisos_ja , permisos_registro_cobros , permisos_registro_pagos , [encuestre_index] , [encuestre_show], [reportes_show], [reportes_index], permisos_administracion, permisos_contacto))
@@ -651,9 +653,9 @@ def run():
     cobro1 = cobros.create_cobro(
         id_ja=jinete1.id,
         fecha_pago=datetime(2023, 1, 15),
-        tipo_pago="Efectivo",
+        tipo_pago="efectivo",
         monto=200.0,
-        beneficiario=empleado1.id,
+        beneficiario_id=empleado1.id,
         en_deuda=True,
         observaciones="Pago parcial de hipoterapia."
     )
@@ -661,9 +663,9 @@ def run():
     cobro2 = cobros.create_cobro(
         id_ja=jinete2.id,
         fecha_pago=datetime(2023, 2, 20),
-        tipo_pago="Transferencia",
+        tipo_pago="transferencia",
         monto=150.0,
-        beneficiario=empleado2.id,
+        beneficiario_id=empleado2.id,
         en_deuda=False,
         observaciones="Pago completo de monta terapéutica."
     )
@@ -671,9 +673,9 @@ def run():
     cobro3 = cobros.create_cobro(
         id_ja=jinete3.id,
         fecha_pago=datetime(2023, 3, 5),
-        tipo_pago="Tarjeta de Crédito",
+        tipo_pago="credito",
         monto=300.0,
-        beneficiario=empleado3.id,
+        beneficiario_id=empleado3.id,
         en_deuda=True,
         observaciones="Deuda pendiente de equinoterapia."
     )
@@ -681,9 +683,9 @@ def run():
     cobro4 = cobros.create_cobro(
         id_ja=jinete4.id,
         fecha_pago=datetime(2023, 4, 10),
-        tipo_pago="Cheque",
+        tipo_pago="cheque",
         monto=250.0,
-        beneficiario=empleado1.id,
+        beneficiario_id=empleado1.id,
         en_deuda=False,
         observaciones="Pago realizado para hipoterapia."
     )
@@ -691,9 +693,9 @@ def run():
     cobro5 = cobros.create_cobro(
         id_ja=jinete1.id,
         fecha_pago=datetime(2023, 5, 15),
-        tipo_pago="Efectivo",
+        tipo_pago="efectivo",
         monto=180.0,
-        beneficiario=empleado2.id,
+        beneficiario_id=empleado2.id,
         en_deuda=False,
         observaciones="Pago completo de servicios."
     )
@@ -701,9 +703,9 @@ def run():
     cobro6 = cobros.create_cobro(
         id_ja=jinete2.id,
         fecha_pago=datetime(2023, 6, 20),
-        tipo_pago="Transferencia",
+        tipo_pago="transferencia",
         monto=220.0,
-        beneficiario=empleado3.id,
+        beneficiario_id=empleado3.id,
         en_deuda=True,
         observaciones="Deuda de servicio de equinoterapia."
     )
@@ -711,9 +713,9 @@ def run():
     cobro7 = cobros.create_cobro(
         id_ja=jinete3.id,
         fecha_pago=datetime(2023, 7, 25),
-        tipo_pago="Tarjeta de Crédito",
+        tipo_pago="credito",
         monto=350.0,
-        beneficiario=empleado1.id,
+        beneficiario_id=empleado1.id,
         en_deuda=False,
         observaciones="Pago completo de equinoterapia."
     )
@@ -721,9 +723,9 @@ def run():
     cobro8 = cobros.create_cobro(
         id_ja=jinete4.id,
         fecha_pago=datetime(2023, 8, 30),
-        tipo_pago="Cheque",
+        tipo_pago="debito",
         monto=290.0,
-        beneficiario=empleado2.id,
+        beneficiario_id=empleado2.id,
         en_deuda=True,
         observaciones="Deuda pendiente de monta terapéutica."
     )

@@ -3,10 +3,12 @@ from src.core.database import db
 from sqlalchemy import asc, desc
 from src.core.contacto import Contacto
 from src.web.validadores.validador import ( validar_estado, validar_comentario )    
+from src.web.handlers.auth import check
 
 contacto_bp = Blueprint('contacto', __name__, url_prefix='/contacto')
 
 @contacto_bp.get("/")
+@check("contacto_index")
 def index():
     """
     Controlador para la página de inicio de contacto. Muestra una lista de contactos con
@@ -42,7 +44,9 @@ def index():
         total_paginas=total_paginas
     )
 
+
 @contacto_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
+@check("contacto_update")
 def editar_contacto(id):
     """
     Permite editar un contacto existente. Solo permite modificar el comentario y el estado.
@@ -85,3 +89,24 @@ def editar_contacto(id):
         'contacto/editar_contacto.html', 
         contacto=contacto_aux,
     )
+
+@contacto_bp.route('/eliminar/<int:id>', methods=['POST'])
+@check("contacto_destroy")
+def eliminar_contacto(id):
+    """
+    Elimina un contacto de la base de datos.
+
+    :param id: ID del contacto a eliminar.
+    :return: Redirige a la página de índice del contacto.
+    """
+    contacto_aux = Contacto.query.get_or_404(id)
+
+    try:
+        db.session.delete(contacto_aux)
+        db.session.commit()
+        flash('Contacto eliminado correctamente.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar el contacto: {str(e)}', 'danger')
+
+    return redirect(url_for('contacto.index'))

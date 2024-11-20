@@ -34,31 +34,41 @@
         {%endif%}
 
         <!-- Formulario de búsqueda y filtros -->
-        <form method="GET" action="{{ url_for('cobros.index') }}"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 w-full">
-            <input type="date" name="fecha_inicio"
-                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200"
-                placeholder="Fecha Inicio" value="{{ request.args.get('fecha_inicio') }}">
-            <input type="date" name="fecha_fin"
-                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200"
-                placeholder="Fecha Fin" value="{{ request.args.get('fecha_fin') }}">
-            <select name="tipo_pago"
-                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
-                <option value="">Todos</option>
-                <option value="efectivo" {% if request.args.get('tipo_pago')=='efectivo' %}selected{% endif %}>
-                    Efectivo</option>
-                <option value="credito" {% if request.args.get('tipo_pago')=='credito' %}selected{% endif %}>
-                    Tarjeta de crédito</option>
-                <option value="debito" {% if request.args.get('tipo_pago')=='debito' %}selected{% endif %}>Tarjeta de
-                    débito</option>
-            </select>
-            <input type="text" name="nombre" placeholder="Nombre"
-                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
-            <input type="text" name="apellido" placeholder="Apellido"
-                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
-            <button type="submit"
-                class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
-        </form>
+<form method="GET" action="{{ url_for('cobros.index') }}"
+class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2 w-full">
+<!-- Campos de búsqueda -->
+<input type="date" name="fecha_inicio"
+    class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200"
+    placeholder="Fecha Inicio" value="{{ request.args.get('fecha_inicio') }}">
+<input type="date" name="fecha_fin"
+    class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200"
+    placeholder="Fecha Fin" value="{{ request.args.get('fecha_fin') }}">
+<select name="tipo_pago"
+    class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+    <option value="">Todos</option>
+    <option value="efectivo" {% if request.args.get('tipo_pago')=='efectivo' %}selected{% endif %}>
+        Efectivo</option>
+    <option value="credito" {% if request.args.get('tipo_pago')=='credito' %}selected{% endif %}>
+        Tarjeta de crédito</option>
+    <option value="debito" {% if request.args.get('tipo_pago')=='debito' %}selected{% endif %}>
+        Tarjeta de débito</option>
+</select>
+<input type="text" name="nombre" placeholder="Nombre" value="{{ request.args.get('nombre') if request.args.get('nombre') is not none else '' }}"
+    class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+<input type="text" name="apellido" placeholder="Apellido" value="{{ request.args.get('apellido') if request.args.get('apellido') is not none else '' }}"
+    class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+
+<!-- Campo de ordenamiento -->
+<select name="orden"
+    class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+    <option value="asc" {% if request.args.get('orden') == 'asc' %}selected{% endif %}>Ascendente</option>
+    <option value="desc" {% if request.args.get('orden') == 'desc' %}selected{% endif %}>Descendente</option>
+</select>
+
+<button type="submit"
+    class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
+</form>
+
     </div>
 
     <!-- Tabla de resultados -->
@@ -98,7 +108,7 @@
                     <td class="px-4 py-2 border-b">{{ cobro.fecha_pago.strftime('%Y-%m-%d') }}</td>
                     <td class="px-4 py-2 border-b">{{ "Efectivo" if cobro.tipo_pago == "efectivo" else "Tarjeta de
                         crédito" if cobro.tipo_pago == "credito" else "Tarjeta de débito"}}</td>
-                    <td class="px-4 py-2 border-b">{{ cobro.beneficiario }}</td>
+                    <td class="px-4 py-2 border-b">{{ cobro.beneficiario.nombre if cobro.beneficiario else 'Sin asignar' }} {{ cobro.beneficiario.apellido if cobro.beneficiario else 'Sin asignar' }}</td>
                     <td class="px-4 py-2 border-b">{{ cobro.observaciones }}</td>
                     <td class="px-4 py-2 border-b">{{ "Sí" if cobro.en_deuda else "No" }}</td>
                     <td class="px-4 py-2 border-b">
@@ -114,6 +124,22 @@
                 {% endif %}
             </tbody>
         </table>
+    </div>
+
+    <div class="flex justify-between items-center mt-4">
+        <span class="text-gray-600">Página {{ pagina }} de {{ total_paginas }}</span>
+    
+        <div class="flex space-x-2">
+            {% if pagina > 1 %}
+            <a href="{{ url_for('cobros.index', pagina=pagina-1, fecha_inicio=fecha_inicio, fecha_fin=fecha_fin, tipo_pago=tipo_pago, orden=orden) }}"
+                class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Anterior</a>
+            {% endif %}
+    
+            {% if pagina < total_paginas %}
+            <a href="{{ url_for('cobros.index', pagina=pagina+1, fecha_inicio=fecha_inicio, fecha_fin=fecha_fin, tipo_pago=tipo_pago, orden=orden) }}"
+                class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Siguiente</a>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

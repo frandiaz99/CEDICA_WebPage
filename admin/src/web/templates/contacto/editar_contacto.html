@@ -3,6 +3,7 @@
 {% block title %}Editar Contacto{% endblock %}
 
 {% block content %}
+
 <body class="bg-gray-100">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -21,15 +22,19 @@
 
     <div class="max-w-4xl mx-auto mt-10">
         <h1 class="text-3xl font-bold text-center mb-6">Editar Contacto</h1>
-        <form class="bg-white p-6 rounded-lg shadow-lg" action="{{ url_for('contacto.editar_contacto', id=contacto.id) }}" method="POST">
+        <form id="main-form" class="bg-white p-6 rounded-lg shadow-lg"
+            action="{{ url_for('contacto.editar_contacto', id=contacto.id) }}" method="POST">
 
             <!-- Estado (Editable) -->
             <div class="mb-4">
                 <label for="estado" class="block text-sm font-medium text-gray-700">Estado</label>
                 <select id="estado" name="estado"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    <option value="pendiente" {% if contacto.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
-                    <option value="leido" {% if contacto.estado == 'leido' %}selected{% endif %}>Leído</option>
+                    <option value="pendiente" {% if contacto.estado=='pendiente' %}selected{% endif %}>Pendiente
+                    </option>
+                    <option value="leido" {% if contacto.estado=='leido' %}selected{% endif %}>Leído</option>
+                    <option value="en_proceso" {% if contacto.estado=='en_proceso' %}selected{% endif %}>En proceso
+                    </option>
                 </select>
             </div>
 
@@ -43,14 +48,17 @@
             <!-- Nombre Completo (Readonly) -->
             <div class="mb-4">
                 <label for="nombre_completo" class="block text-sm font-medium text-gray-700">Nombre Completo</label>
-                <input type="text" id="nombre_completo" name="nombre_completo" value="{{ contacto.nombre_completo }}" readonly
+                <input type="text" id="nombre_completo" name="nombre_completo" value="{{ contacto.nombre_completo }}"
+                    readonly
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-100">
             </div>
 
             <!-- Correo Electrónico (Readonly) -->
             <div class="mb-4">
-                <label for="correo_electronico" class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
-                <input type="email" id="correo_electronico" name="correo_electronico" value="{{ contacto.correo_electronico }}" readonly
+                <label for="correo_electronico" class="block text-sm font-medium text-gray-700">Correo
+                    Electrónico</label>
+                <input type="email" id="correo_electronico" name="correo_electronico"
+                    value="{{ contacto.correo_electronico }}" readonly
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-100">
             </div>
 
@@ -64,17 +72,26 @@
             <!-- Fecha de Inserción (Readonly) -->
             <div class="mb-4">
                 <label for="inserted_at" class="block text-sm font-medium text-gray-700">Fecha de Inserción</label>
-                <input type="text" id="inserted_at" name="inserted_at" value="{{ contacto.inserted_at.strftime('%d/%m/%Y') }}" readonly
+                <input type="text" id="inserted_at" name="inserted_at"
+                    value="{{ contacto.inserted_at.strftime('%d/%m/%Y') }}" readonly
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-gray-100">
             </div>
-
-            <div class="flex justify-between mt-6">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Guardar
+        </form>
+        <div class="flex justify-between mt-6">
+            <div>
+                <button type="submit" form="main-form" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Guardar
                     Cambios</button>
                 <a href="{{ url_for('contacto.index') }}"
                     class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400">Cancelar</a>
             </div>
-        </form>
+            <form action="{{ url_for('contacto.eliminar_contacto', id=contacto.id) }}" method="POST" class="mt-4">
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                    onclick="return confirm('¿Estás seguro de que deseas eliminar este contacto? Esta acción no se puede deshacer.');">
+                    Eliminar
+                </button>
+            </form>
+        </div>
+        
     </div>
 </body>
 {% endblock %}
