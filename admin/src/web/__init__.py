@@ -19,6 +19,7 @@ from src.core.bcrypt import bcrypt
 from src.web.storage import storage
 from src.web import helpers
 from src.web.api.contacto import contacto_api_bp
+from src.web.api.publicaciones import publicaciones_api_bp
 
 # Inicialización de sesiones
 session = Session()
@@ -80,6 +81,7 @@ def create_app(env="development", static_folder="../../static"):
     app.register_blueprint(contacto_bp)
     app.register_blueprint(reportes_bp)
     app.register_blueprint(contacto_api_bp)
+    app.register_blueprint(publicaciones_api_bp)
 
     # Funciones globales para Jinja2
     app.jinja_env.globals.update(is_authenticated=is_authenticated)

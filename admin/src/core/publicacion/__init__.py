@@ -1,4 +1,3 @@
-# src/core/equipo/__init__.py
 from flask import Blueprint
 from .publicacion import Publicacion
 from src.core.database import db

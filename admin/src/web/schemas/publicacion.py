@@ -5,6 +5,7 @@ class PublicacionSchema(Schema):
     titulo = fields.Str(required=True)
     autor = fields.Str(required=True)
     fecha_publicacion = fields.DateTime(format="%d/%m/%Y")
+    copete = fields.Str(required=True)
     contenido = fields.Str(required=True)
     inserted_at = fields.DateTime(format="%d/%m/%Y", dump_only=True)
     updated_at = fields.DateTime(format="%d/%m/%Y", dump_only=True)
@@ -14,4 +15,4 @@ class PublicacionSchema(Schema):
 
 publicacion_schema = PublicacionSchema()
 publicaciones_schema = PublicacionSchema(many=True)
-create_publicacion_schema = PublicacionSchema(only=("titulo", "contenido", "fecha_publicacion", "autor"))
+create_publicacion_schema = PublicacionSchema(only=("titulo", "autor", "fecha_publicacion", "copete", "contenido"))
