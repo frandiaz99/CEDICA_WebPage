@@ -22,7 +22,7 @@ def create():
     data = request.get_json()
     recaptcha_response = data.get('recaptchaResponse')
 
-    secret_key = RECAPTCHA_SECRET_KEY
+    secret_key = str(RECAPTCHA_SECRET_KEY)
 
     verify_url = 'https://www.google.com/recaptcha/api/siteverify'
     verify_data = {
