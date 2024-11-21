@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+
+{% block title %}Crear nueva publicación{% endblock %}
+
+{% block content %}
+
+<body class="bg-gray-100">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flex justify-center mt-4">
+        <div class="w-full max-w-2xl">
+            {% for category, message in messages %}
+            <div
+                class="{% if category == 'success' %}bg-green-500{% else %}bg-red-500{% endif %} bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                <p class="text-lg font-semibold">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="max-w-4xl mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Crear nueva publicación</h1>
+        <form class="bg-white p-6 rounded-lg shadow-lg" method="POST" action="{{ url_for('publicaciones.crear_publicacion') }}">
+
+            <!-- Titulo -->
+            <div class="mb-4">
+                <label for="titulo" class="block text-sm font-medium text-gray-700">Título</label>
+                <input type="text"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="titulo" name="titulo" placeholder="Ingrese el título">
+            </div>
+
+            <!-- Autor (el usuario que lo crea) -->
+            <input type="hidden" id="autor" name="autor" value="{{ session.user_alias }}">
+
+            <!-- Estado -->
+            <div class="mb-4">
+                <label for="estado" class="block text-sm font-medium text-gray-700">Estado</label>
+                <select
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="estado" name="estado" required>
+                    <option value="borrador">Borrador</option>
+                    <option value="publicado">Publicado</option>
+                    <option value="archivado">Archivado</option>
+                </select>
+            </div>
+
+            <!-- Copete -->
+            <div class="mb-4">
+                <label for="copete" class="block text-sm font-medium text-gray-700">Copete</label>
+                <input type="text"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="copete" name="copete" placeholder="Ingrese un breve resumen de la publicación"></textarea>
+            </div>
+
+            <!-- Contenido -->
+            <div class="mb-4">
+                <label for="contenido" class="block text-sm font-medium text-gray-700">Contenido</label>
+                <textarea
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    id="contenido" name="contenido" placeholder="Ingrese el contenido de la publicación" rows="12"></textarea>
+            </div>
+
+            <div class="flex justify-between">
+                <button type="submit"
+                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Confirmar</button>
+                <a href="{{ url_for('publicaciones.index') }}"
+                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</body>
+{% endblock %}

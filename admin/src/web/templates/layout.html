@@ -88,6 +88,10 @@
                             <a href="{{url_for('reportes.index')}}"
                                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Reportes</a>
                             {% endif %}
+                            {% if check_permission(session, "administracion_index") %}
+                            <a href="{{url_for('publicaciones.index')}}"
+                                class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Publicaciones</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

@@ -27,55 +27,64 @@
 
     <!-- Ver si conviene poner order_prop y order debajo de los otros 2, asi no confundimos los filtros para la busqueda y el resultado-->
 
-    <!-- Contenedor para el botón y filtros -->
     <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Botón de registro -->
-        {% if check_permission(session, "user_new") %}
-        <div class="flex items-center justify-start text-center">
+        <!-- Contenedor para botones -->
+        <div class="flex flex-col md:flex-row items-start justify-start gap-4">
+            {% if check_permission(session, "user_new") %}
             <button type="button"
                 class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-all duration-200 ease-in-out transform hover:scale-105"
                 onclick="registrarUsuario()">
                 Registrar nuevo usuario
             </button>
+            {% endif %}
+            {% if check_permission(session, "user_accept") %}
+            <button type="button"
+                class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-all duration-200 ease-in-out transform hover:scale-105"
+                onclick="aceptarUsuario()">
+                Usuarios pendientes
+            </button>
+            {% endif %}
         </div>
-        {% endif %}
-
-        <!-- Formulario de búsqueda y filtros -->
-        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-2 w-full">
-            <input type="text" name="search" placeholder="Buscar..." value="{{ search }}"
-                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
-
-            <label class="flex items-center justify-center text-center">Ordenar resultados por: </label>
-            <select name="filter_by"
-                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
-                <option value="email" {% if filter_by=='email' %}selected{% endif %}>Email</option>
-                <option value="alias" {% if filter_by=='alias' %}selected{% endif %}>Alias</option>
-                <option value="rol" {% if filter_by=='rol' %}selected{% endif %}>Rol</option>
-            </select>
-
-            <select name="actividad"
-                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
-                <option value="si" {% if actividad=='si' %}selected{% endif %}>Activo: Sí</option>
-                <option value="no" {% if actividad=='no' %}selected{% endif %}>Activo: No</option>
-                <option value="todos" {% if actividad=='todos' %}selected{% endif %}>Activo: Todos</option>
-            </select>
-
-            <select id="order_prop" name="order_prop"
-                class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
-                <option value="email" {% if filter_by=='email' %}selected{% endif %}>Email</option>
-                <option value="inserted_at" {% if order_prop=='inserted_at' %}selected{% endif %}>Fecha de Creación
-                </option>
-            </select>
-
-            <select name="order" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
-                <option value="asc" {% if order=='asc' %}selected{% endif %}>Ascendente</option>
-                <option value="desc" {% if order=='desc' %}selected{% endif %}>Descendente</option>
-            </select>
-
-            <button type="submit"
-                class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
-        </form>
+    
+        <!-- Contenedor para filtros -->
+        <div class="flex justify-end">
+            <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-2 w-full max-w-2xl">
+                <input type="text" name="search" placeholder="Buscar..." value="{{ search }}"
+                    class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+    
+                <label class="flex items-center justify-center text-center">Ordenar resultados por: </label>
+                <select name="filter_by"
+                    class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+                    <option value="email" {% if filter_by=='email' %}selected{% endif %}>Email</option>
+                    <option value="alias" {% if filter_by=='alias' %}selected{% endif %}>Alias</option>
+                    <option value="rol" {% if filter_by=='rol' %}selected{% endif %}>Rol</option>
+                </select>
+    
+                <select name="actividad"
+                    class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+                    <option value="si" {% if actividad=='si' %}selected{% endif %}>Activo: Sí</option>
+                    <option value="no" {% if actividad=='no' %}selected{% endif %}>Activo: No</option>
+                    <option value="todos" {% if actividad=='todos' %}selected{% endif %}>Activo: Todos</option>
+                </select>
+    
+                <select id="order_prop" name="order_prop"
+                    class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+                    <option value="email" {% if filter_by=='email' %}selected{% endif %}>Email</option>
+                    <option value="inserted_at" {% if order_prop=='inserted_at' %}selected{% endif %}>Fecha de Creación
+                    </option>
+                </select>
+    
+                <select name="order" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+                    <option value="asc" {% if order=='asc' %}selected{% endif %}>Ascendente</option>
+                    <option value="desc" {% if order=='desc' %}selected{% endif %}>Descendente</option>
+                </select>
+    
+                <button type="submit"
+                    class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
+            </form>
+        </div>
     </div>
+    
 
     <!-- Tabla de resultados -->
     <div class="overflow-x-auto">
@@ -189,6 +198,9 @@
 
     function registrarUsuario() {
         window.location.href = "{{ url_for('users.crear_usuario') }}";
+    }
+    function aceptarUsuario() {
+        window.location.href = "{{ url_for('users.index_google') }}";
     }
 </script>
 

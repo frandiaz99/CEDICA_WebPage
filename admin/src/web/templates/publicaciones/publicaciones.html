@@ -1,0 +1,159 @@
+{% extends "layout.html" %}
+
+{% block title %}Publicaciones{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flex justify-center mt-4">
+        <div class="w-full max-w-2xl">
+            {% for category, message in messages %}
+            <div
+                class="{% if category == 'success' %}bg-green-500{% else %}bg-red-500{% endif %} bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                <p class="text-lg font-semibold">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+    <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Listado de publicaciones</h1>
+
+    <!-- Contenedor para el botón y filtros -->
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Botón de registro -->
+        {% if check_permission(session, "administracion_new") %}
+        <div class="flex justify-start">
+            <a href="{{ url_for('publicaciones.crear_publicacion') }}"
+                class="bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-all duration-200 ease-in-out transform hover:scale-105">
+                Crear una publicación
+            </a>
+        </div>
+        {% endif %}
+        <!-- Formulario de búsqueda y filtros -->
+        <form method="GET" class="inline-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2">
+            <select name="estado" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+                <option value="">Todos los estados</option>
+                <option value="borrador" {% if estado == 'borrador' %}selected{% endif %}>Borrador</option>
+                <option value="publicado" {% if estado == 'publicado' %}selected{% endif %}>Publicado</option>
+                <option value="archivado" {% if estado == 'archivado' %}selected{% endif %}>Archivado</option>
+            </select>
+            <button type="submit"
+                class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
+        </form>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg text-center">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Título</th>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Autor</th>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Estado</th>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">
+                        <a href="{{ url_for('publicaciones.index', estado=estado, order='asc') }}"
+                            class="text-gray-600 hover:underline">Fecha de Creación &#8595;</a>
+                        |
+                        <a href="{{ url_for('publicaciones.index', estado=estado, order='desc') }}"
+                            class="text-gray-600 hover:underline">&#8593;</a>
+                    </th>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Fecha de publicación</th>                 
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Fecha de actualización</th>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Copete</th>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Contenido</th>
+                    <th class="px-4 py-2 col-span-2 border-b text-gray-600 font-medium text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="text-center items-center">
+                {% for publicacion in publicaciones %}
+                <tr class="hover:bg-gray-50 text-center items-center">
+                    {% if publicacion.titulo %}
+                        <td class="px-4 py-2 border-b">{{ publicacion.titulo }}</td>
+                    {% else %}
+                        <td class="px-4 py-2 border-b"> - </td>
+                    {% endif %}
+
+                    {% if publicacion.autor %}
+                        <td class="px-4 py-2 border-b">{{ publicacion.autor }}</td>
+                    {% else %}
+                        <td class="px-4 py-2 border-b"> - </td>
+                    {% endif %}
+
+                    {% if publicacion.estado %}
+                        <td class="px-4 py-2 border-b">{{ publicacion.estado }}</td>
+                    {% else %}
+                        <td class="px-4 py-2 border-b"> - </td>
+                    {% endif %}
+
+                    {% if publicacion.inserted_at %}
+                        <td class="px-4 py-2 border-b">{{ publicacion.inserted_at.strftime('%d/%m/%Y') }}</td>
+                    {% else %}
+                        <td class="px-4 py-2 border-b"> - </td>
+                    {% endif %}
+
+                    {% if publicacion.fecha_publicacion %}
+                        <td class="px-4 py-2 border-b">{{ publicacion.fecha_publicacion.strftime('%d/%m/%Y') }}</td>
+                    {% else %}
+                    <td class="px-4 py-2 border-b"> - </td>
+                    {% endif %}
+
+                    {% if publicacion.updated_at %}
+                        <td class="px-4 py-2 border-b">{{ publicacion.updated_at.strftime('%d/%m/%Y') }}</td>
+                    {% else %}
+                        <td class="px-4 py-2 border-b"> - </td>
+                    {% endif %}
+                    
+                    {% if publicacion.copete %}
+                        <td class="px-4 py-2 border-b">{{ publicacion.copete }}</td>
+                    {% else %}
+                        <td class="px-4 py-2 border-b"> - </td>
+                    {% endif %}
+
+                    {% if publicacion.contenido %}
+                        <td class="px-4 py-2 border-b">{{ publicacion.contenido[:80] }}...</td>
+                    {% else %}
+                        <td class="px-4 py-2 border-b"> - </td>
+                    {% endif %}
+
+                    <td class="px-4 py-2 border-b items-center">
+                        <div class="inline-block items-center text-center gap-2">
+                            {% if check_permission(session, "administracion_update") %}
+                            <a href="{{ url_for('publicaciones.editar_publicacion', id=publicacion.id) }}" 
+                                class="text-blue-500 hover:text-blue-700 underline">Editar</a>
+                            {% endif %}
+                            {% if check_permission(session, "administracion_show") %}
+                            <a href="{{ url_for('publicaciones.detalle_publicacion', id=publicacion.id) }}" 
+                                class="text-blue-500 hover:text-blue-700 underline">Ver</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if not publicaciones %}
+            <br>
+            <p>No hay publicaciones.</p>
+        {% endif %}
+    </div>
+    {% if total_paginas > 0 %}
+        <div class="flex justify-between items-center mt-4">
+            <span class="text-gray-600">Página {{ pagina }} de {{ total_paginas }}</span>
+
+            <div class="flex space-x-2">
+                {% if pagina > 1 %}
+                <a href="{{ url_for('publicaciones.index', pagina=pagina-1, estado=estado, order=order) }}"
+                    class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Anterior</a>
+                {% endif %}
+
+                {% if pagina < total_paginas %}
+                <a href="{{ url_for('publicaciones.index', pagina=pagina+1, estado=estado, order=order) }}"
+                    class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Siguiente</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

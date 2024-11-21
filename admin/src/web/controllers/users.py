@@ -35,7 +35,7 @@ def index():
     order_prop = request.args.get('order_prop', 'email')
     pagina = request.args.get('pagina', 1, type=int)
 
-    query = User.query
+    query = User.query.filter(User.aceptado_google== True)
 
     if search:
         if filter_by == 'email':
@@ -81,6 +81,50 @@ def index():
         pagina=pagina,
         total_paginas=total_paginas
     )
+
+
+@users_bp.get("/usuarios_google")
+@login_required
+@check("user_accept")
+def index_google():
+    """
+    Muestra la lista de usuarios pendientes de aceptación por Google.
+
+    Este endpoint obtiene a los usuarios que no han sido aceptados vía Google,
+    paginando los resultados para una visualización más cómoda. Además, se incluyen
+    los roles disponibles para su uso en la vista.
+
+    Returns:
+        Response: Renderiza la plantilla `users/listar_usuarios_google.html` con los datos
+        de los usuarios, roles, página actual y total de páginas.
+    """
+    # Obtener los roles del sistema y construir un diccionario para un acceso más rápido
+    roles = auth.list_roles()
+    roles_dict = {role.id: role for role in roles}
+
+    registros_por_pagina = 10  # Número de registros mostrados por página
+    pagina = request.args.get('pagina', 1, type=int)  # Página actual, por defecto la primera
+
+    # Filtrar usuarios que no han sido aceptados vía Google
+    users = User.query.filter(User.aceptado_google == False)
+    total_registros = users.count()  # Total de registros encontrados
+
+    # Calcular el desplazamiento para la paginación
+    offset = (pagina - 1) * registros_por_pagina
+    users = users.offset(offset).limit(registros_por_pagina).all()  # Obtener registros de la página actual
+
+    # Calcular el número total de páginas
+    total_paginas = ceil(total_registros / registros_por_pagina)
+
+    # Renderizar la plantilla con los datos necesarios
+    return render_template(
+        "users/listar_usuarios_google.html", 
+        users=users, 
+        roles=roles_dict,
+        pagina=pagina,
+        total_paginas=total_paginas
+    )
+
 
 
 
@@ -244,7 +288,7 @@ def actualizar_usuario(id):
             flash('El email ingresado ya tiene una cuenta asociada.', 'danger')
             return redirect(url_for('users.actualizar_usuario', id=id))
         
-        if (activo == 'Sí'):
+        if (activo == 'si'):
             activo = True
         else:
             activo = False
@@ -254,11 +298,12 @@ def actualizar_usuario(id):
         user.activo = activo
         user.rol = rol_encontrado
         user.updated_at = datetime.now()
+        user.aceptado_google = True
 
         try:
             db.session.commit()
             flash('El usuario ha sido actualizado.', 'success')
-            return redirect(url_for('users.actualizar_usuario', id=id))
+            return redirect(url_for('users.index'))
         except Exception as e:
             db.session.rollback()
             flash(f'Error al actualizar el usuario: {str(e)}', 'danger')

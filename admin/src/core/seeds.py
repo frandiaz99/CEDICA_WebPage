@@ -1,4 +1,4 @@
-from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso, cobros, contacto, jinetes_amazonas, cobros
+from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso, contacto, jinetes_amazonas, cobros
 from datetime import datetime
 from itertools import chain 
 
@@ -41,7 +41,7 @@ def run():
     hhh = auth.create_user(alias="hhh", email="hhh@gmail.com", password="1234", activo=False)  
     iii = auth.create_user(alias="iii", email="iii@gmail.com", password="1234", activo=False)    
     jjj = auth.create_user(alias="jjjj", email="jjj@gmail.com", password="1234", activo=True)    
-    kkkk = auth.create_user(alias="kkk", email="kkk@gmail.com", password="1234", activo=False)            
+    kkk = auth.create_user(alias="kkk", email="kkk@gmail.com", password="1234", activo=False)            
 
     # Asignar issues a usuarios
     board.assign_user(issue1, fede)
@@ -81,6 +81,7 @@ def run():
     auth.assign_rol(hhh, administracion_rol)
     auth.assign_rol(iii, tecnica_rol)
     auth.assign_rol(jjj, voluntariado_rol)
+    auth.assign_rol(kkk, editor_rol)
 
     #Creo permisos
     user_index = permiso.create_permiso(nombre="user_index")
@@ -166,12 +167,13 @@ def run():
 
     permisos_contacto = [contacto_index, contacto_new, contacto_destroy, contacto_update, contacto_show]
 
+    permiso_accept = permiso.create_permiso(nombre="user_accept")
 
     # Asignar permisos a rol
-    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre, permisos_administracion, permisos_contacto, [reportes_show], [reportes_index]))
+    permisos_system_admin = list(chain(permisos_user,  permisos_issue , permisos_equipo , permisos_registro_cobros , permisos_registro_pagos , permisos_ja , permisos_encuestre, permisos_administracion, permisos_contacto, [reportes_show], [reportes_index], [permiso_accept]))
     rol_permiso.assign_permisos_to_rol(system_admin, permisos_system_admin)
     
-    permisos_administracion_rol = list(chain(permisos_equipo , permisos_ja , permisos_registro_cobros , permisos_registro_pagos , [encuestre_index] , [encuestre_show], [reportes_show], [reportes_index], permisos_administracion, permisos_contacto))
+    permisos_administracion_rol = list(chain(permisos_equipo , permisos_ja , permisos_registro_cobros , permisos_registro_pagos , [encuestre_index] , [encuestre_show], [reportes_show], [reportes_index], permisos_administracion, permisos_contacto, [permiso_accept]))
     rol_permiso.assign_permisos_to_rol(administracion_rol, permisos_administracion_rol)
 
     permisos_tecnica_rol = list(chain(permisos_ja , [registro_cobros_index] , [registro_cobros_show] , [encuestre_index] , [encuestre_show], [reportes_index], [reportes_show]))
