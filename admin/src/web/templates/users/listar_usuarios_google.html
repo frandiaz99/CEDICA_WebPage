@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block title %}Usuarios Google{% endblock %}
+
+<head>
+</head>
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flex justify-center mt-4">
+    <div class="w-full max-w-2xl">
+        {% for category, message in messages %}
+        <div
+            class="bg-{{category == 'success' and 'green' or 'red'}}-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+            <p class="text-lg font-semibold">{{ message }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Lista de usuarios pendientes</h1>
+
+    <!-- Ver si conviene poner order_prop y order debajo de los otros 2, asi no confundimos los filtros para la busqueda y el resultado-->
+
+    <!-- Tabla de resultados -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium">Email</th>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium">Alias</th>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium">Fecha de Creación</th>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium w-44">Aceptar Usuario</th>
+                    <th class="py-2 border-b text-center text-gray-600 font-medium w-44">Rechazar usuario</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if users %}
+                {% for user in users %}
+                <tr class="hover:bg-gray-50">
+                    <td class="text-center py-2 border-b">{{ user.email }}</td>
+                    <td class="text-center py-2 border-b">{{ user.alias }}</td>
+                    <td class="text-center py-2 border-b">{{ user.inserted_at.strftime('%d/%m/%Y') }}</td>
+                    <td class="text-center py-2 px-4 border-b">
+                        {% if check_permission(session, "user_accept") %}
+                        <button type="button" onclick="actualizarUsuario('{{user.id}}')"
+                            class="text-center bg-gray-300 py-1 rounded-md hover:bg-gray-400 hover:text-white w-full transition-colors duration-200">Aceptar</button>
+                        {% endif %}
+                    </td>
+                    <td class="text-center py-2 px-4 border-b">
+                        {% if user.rol_id != 5 %}
+                        {% if check_permission(session, "user_destroy") %}
+                        <form action="{{ url_for('users.eliminar_usuario', id=user.id) }}" method="POST">
+                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                                onclick="return confirm('¿Estás seguro de que deseas rechazarlo? Esta acción no se puede deshacer.');">
+                                Rechazar
+                            </button>
+                        </form>
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="2">No hay usuarios registrados con google pendientes.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="flex justify-between items-center mt-4">
+        <span class="text-gray-600">Página {{ pagina }} de {{ total_paginas }}</span>
+
+        <div class="flex space-x-2">
+            {% if pagina > 1 %}
+            <a href="{{ url_for('users.index_google', pagina=pagina-1) }}"
+                class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Anterior</a>
+            {% endif %}
+
+            {% if pagina < total_paginas %} <a
+                href="{{ url_for('users.index_google', pagina=pagina+1) }}"
+                class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Siguiente</a>
+                {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function actualizarUsuario(id) {
+        window.location.href = "{{ url_for('users.actualizar_usuario', id=0) }}".replace(/0/, id);
+    }
+</script>
+
+{% endblock %}

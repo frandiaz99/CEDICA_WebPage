@@ -21,6 +21,7 @@ from src.web.storage import storage
 from src.web import helpers
 from src.web.api.contacto import contacto_api_bp
 from src.web.api.publicaciones import publicaciones_api_bp
+from src.core.oauth import oauth, google
 
 # Inicialización de sesiones
 session = Session()
@@ -47,8 +48,14 @@ def create_app(env="development", static_folder="../../static"):
     bcrypt.init_app(app)
     storage.init_app(app)
 
+    # Inicialización para el login con google
+    oauth.init_app(app)
+    google.client_id = app.config.get('GOOGLE_CLIENT_ID')
+    google.client_secret = app.config.get('GOOGLE_CLIENT_SECRET')
+    google.server_metadata_url = app.config.get('GOOGLE_DISCOVERY_URI')
+
     # Configuración de CORS
-    CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
+    CORS(app, resources={r"/api/*": {"origins": ["http://localhost:8080", "https://grupo49.proyecto2024.linti.unlp.edu.ar/"]}})
 
     # Rutas base
     @app.route("/")
