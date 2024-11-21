@@ -24,7 +24,7 @@ from src.core.oauth import oauth, google
 # Inicialización de sesiones
 session = Session()
 
-def create_app(env="development", static_folder="../../static"):
+def create_app(env="production", static_folder="../../static"):
     """
     Crea e inicializa una instancia de Flask con configuración específica del entorno.
 
@@ -53,7 +53,7 @@ def create_app(env="development", static_folder="../../static"):
     google.server_metadata_url = app.config.get('GOOGLE_DISCOVERY_URI')
 
     # Configuración de CORS
-    CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
+    CORS(app, resources={r"/api/*": {"origins": ["http://localhost:8080", "https://grupo49.proyecto2024.linti.unlp.edu.ar/"]}})
 
     # Rutas base
     @app.route("/")

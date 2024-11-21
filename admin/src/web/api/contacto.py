@@ -1,5 +1,5 @@
 import requests
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from src.web.schemas.contacto import create_contacto_schema, contacto_schema, contactos_schema
 from src.core.contacto import create_contacto 
 from src.web.handlers.auth import check
@@ -7,8 +7,7 @@ from src.core.contacto import contacto
 from os import environ
 contacto_api_bp = Blueprint("contacto_api", __name__, url_prefix="/api/contacto")
 
-# RECAPTCHA_SECRET_KEY = environ.get("RECAPTCHA_SECRET_KEY") 
-RECAPTCHA_SECRET_KEY = "6LfWlX8qAAAAAKtyOVroeG5-cxu15F8WUkVOY5Ss"
+
 @contacto_api_bp.get("/")
 @check("contacto_index")
 def index():
@@ -21,8 +20,8 @@ def index():
 def create():
     data = request.get_json()
     recaptcha_response = data.get('recaptchaResponse')
-
-    secret_key = RECAPTCHA_SECRET_KEY
+    RECAPTCHA_SECRET_KEY = current_app.config.get("RECAPTCHA_SECRET_KEY")
+    secret_key = str(RECAPTCHA_SECRET_KEY)
 
     verify_url = 'https://www.google.com/recaptcha/api/siteverify'
     verify_data = {
