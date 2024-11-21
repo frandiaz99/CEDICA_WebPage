@@ -28,21 +28,8 @@
             <!-- Titulo (Editable) -->
             <div class="mb-4">
                 <label for="titulo" class="block text-sm font-medium text-gray-700">Título</label>
-                <textarea id="titulo" name="titulo" 
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">{{ publicacion.titulo }}</textarea>
-            </div>
-
-            <!-- Autor -->
-            <div class="mb-4">
-                <label for="autor" class="block text-sm font-medium text-gray-700">Autor</label>
-                <select
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    id="autor" name="autor" required>
-                    
-                    {% for autor in autores %}
-                    <option value="{{ autor.id }}" {% if publicacion.autor== autor.alias %}selected{% endif %}>{{ autor.alias }}</option>
-                    {% endfor %}
-                </select>
+                <input type="text" id="titulo" name="titulo" value="{{ publicacion.titulo }}"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
 
             <!-- Estado (Editable) -->
@@ -62,7 +49,7 @@
                 <label for="fecha_publicacion" class="block text-sm font-medium text-gray-700">Fecha de publicación</label>
                 <input type="date"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    id="fecha_publicacion" name="fecha_publicacion" value="{{ publicacion.fecha_publicacion }}" max="{{ fecha_hoy }}">
+                    id="fecha_publicacion" name="fecha_publicacion" value="{{ publicacion.fecha_publicacion }}" min="{{ fecha_min }}" max="{{ fecha_hoy }}">
             </div>
 
             <!-- Copete -->
@@ -70,7 +57,7 @@
                 <label for="copete" class="block text-sm font-medium text-gray-700">Copete</label>
                 <input type="text"
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    id="copete" name="copete" value="{{ publicacion.copete }}" placeholder="Ingrese un breve resumen de la publicación" required>
+                    id="copete" name="copete" value="{{ publicacion.copete }}" placeholder="Ingrese un breve resumen de la publicación">
             </div>
 
             <!-- Contenido -->
@@ -78,7 +65,7 @@
                 <label for="contenido" class="block text-sm font-medium text-gray-700">Contenido</label>
                 <textarea
                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    id="contenido" name="contenido" placeholder="Ingrese el contenido de la publicación" rows="12" required>{{ publicacion.contenido }}</textarea>
+                    id="contenido" name="contenido" placeholder="Ingrese el contenido de la publicación" rows="12">{{ publicacion.contenido }}</textarea>
             </div>
         </form>
 

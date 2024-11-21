@@ -23,12 +23,33 @@
 
         <!-- Sección de Información General -->
         <div id="infoSection" class="bg-white p-6 rounded-lg shadow-lg text-center items-center">
-            <h2 class="text-2xl text-center font-semibold mb-4">{{publicacion.titulo}}</h2>
-            <p class="text-gray-400">Creado por: {{ publicacion.autor }} -- {{ publicacion.inserted_at.strftime('%d/%m/%Y') }} </p>
-            <p class="text-gray-400">Publicado por: {{ publicacion.autor }} -- {{ publicacion.fecha_publicacion.strftime('%d/%m/%Y') }} </p>
-            <p class="text-gray-400">Actualizado por: {{ publicacion.autor }} -- {{ publicacion.updated_at.strftime('%d/%m/%Y') }} </p>
-            <br><hr><br>
-            <p>{{ publicacion.contenido }}</p>
+            {% if publicacion.titulo %}
+                <h2 class="text-2xl text-center font-semibold mb-4">{{publicacion.titulo}}</h2>
+            {% else %}
+                <h2 class="text-2xl text-center font-semibold mb-4">Publicación sin título</h2>
+            {% endif %}
+
+            <p class="text-blue-300 mb-5 mt-5">Creado por: {{ publicacion.autor }} - {{ publicacion.inserted_at.strftime('%d/%m/%Y') }} </p>
+
+            <p class="text-gray-400 text-sm mb-0.5">Estado actual: {{ publicacion.estado }} </p>
+
+            {% if publicacion.fecha_publicacion %}
+                <p class="text-gray-400 text-sm mb-0.5">Publicado el {{ publicacion.fecha_publicacion.strftime('%d/%m/%Y') }} </p>
+            {% endif %}
+
+            {% if publicacion.updated_at %}
+                <p class="text-gray-400 italic text-sm">Actualizado el {{ publicacion.updated_at.strftime('%d/%m/%Y') }} </p>
+            {% endif %}
+
+            <hr class="mt-5 mb-5">
+
+            {% if publicacion.contenido %}
+                <p>{{ publicacion.contenido }}</p>
+            {% else %}
+
+                <p>Esta publicación no tiene contenido.</p>
+            {% endif %}
+            
         </div>
 
         <div class="flex justify-center mt-6 space-x-4">

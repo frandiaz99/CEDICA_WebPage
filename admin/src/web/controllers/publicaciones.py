@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, request, abort, flash, url_for, redirect, current_app, send_file, session
+from flask import Blueprint, render_template, request, abort, flash, url_for, redirect
 from src.core.database import db
 from sqlalchemy import asc, desc
 from datetime import datetime
 from src.core.publicacion import Publicacion
 from src.core.auth import User
-from src.web.validadores.validador import ( validar_estado_publicacion, validar_fecha_publicacion, validar_comentario, validar_descripcion )    
+from src.web.validadores.validador import validar_fecha_publicacion, validar_contenido, validar_titulo, validar_copete   
 from src.web.handlers.auth import check
 
 publicaciones_bp = Blueprint('publicaciones', __name__, url_prefix='/publicaciones')
@@ -55,33 +55,37 @@ def crear_publicacion():
     """
     if request.method == 'POST':
         titulo = request.form.get('titulo')
-        id_autor = request.form['autor']
+        alias_autor = request.form['autor']
         estado = request.form.get('estado')
-        fecha_publicacion = request.form['fecha_publicacion']
         copete = request.form.get('copete')
         contenido = request.form.get('contenido')
 
-        # Validar los campos del formulario
-        validadores = [
-            (validar_fecha_publicacion, [fecha_publicacion]),
-            (validar_descripcion, [contenido]),
-        ]
-
-        # Validar cada campo
-        for validar_funcion, args in validadores:
-            es_valido, mensaje_error = validar_funcion(*args)
-            if not es_valido:
-                flash(mensaje_error, 'danger')
+        fecha_publicacion = None
+        if estado == "publicado":
+            fecha_publicacion = datetime.today().date().strftime('%Y-%m-%d')
+            validadores = [
+                (validar_fecha_publicacion, [fecha_publicacion]),
+                (validar_titulo, [titulo]),
+                (validar_copete, [copete]),
+                (validar_contenido, [contenido])
+            ]
+            mensajes_error = []
+            for validar_funcion, args in validadores:
+                es_valido, mensaje_error = validar_funcion(*args)
+                if not es_valido:
+                    # Agregar mensaje de error a la lista
+                    mensajes_error.append(mensaje_error)
+            if mensajes_error:
+                for mensaje in mensajes_error:
+                    flash(mensaje, 'danger')
                 return redirect(url_for('publicaciones.crear_publicacion'))
-            
-        alias_autor = User.query.filter_by(id=id_autor).first().alias
 
         # Crear y guardar
         nueva_publicacion = Publicacion(
             titulo=titulo,
             autor=alias_autor,
             estado=estado,
-            fecha_publicacion=datetime.strptime(fecha_publicacion, '%Y-%m-%d'),
+            fecha_publicacion=fecha_publicacion,
             copete=copete,
             contenido=contenido
         )
@@ -114,34 +118,38 @@ def editar_publicacion(id):
 
     if request.method == 'POST':
         titulo = request.form.get('titulo')
-        id_autor = request.form['autor']
         estado = request.form.get('estado')
         fecha_publicacion = request.form['fecha_publicacion']
         copete = request.form.get('copete')
         contenido = request.form.get('contenido')
 
-        # Validar los campos del formulario
-        validadores = [
-            (validar_fecha_publicacion, [fecha_publicacion]),
-            (validar_descripcion, [contenido]),
-        ]
+        if fecha_publicacion == "":
+            fecha_publicacion = None
 
-        # Validar cada campo
-        for validar_funcion, args in validadores:
-            es_valido, mensaje_error = validar_funcion(*args)
-            if not es_valido:
-                flash(mensaje_error, 'danger')
-                return redirect(url_for('publicaciones.editar_publicacion', id=id))
-            
-        alias_autor = User.query.filter_by(id=id_autor).first().alias
+        if estado == "publicado":
+            validadores = [
+                (validar_fecha_publicacion, [fecha_publicacion]),
+                (validar_titulo, [titulo]),
+                (validar_copete, [copete]),
+                (validar_contenido, [contenido])
+            ]
+            mensajes_error = []
+            for validar_funcion, args in validadores:
+                es_valido, mensaje_error = validar_funcion(*args)
+                if not es_valido:
+                    # Agregar mensaje de error a la lista
+                    mensajes_error.append(mensaje_error)
+            if mensajes_error:
+                for mensaje in mensajes_error:
+                    flash(mensaje, 'danger')
+                return redirect(url_for('publicaciones.crear_publicacion'))
 
         publicacion_aux.titulo = titulo
-        publicacion_aux.autor = alias_autor
         publicacion_aux.estado = estado
         publicacion_aux.fecha_publicacion = fecha_publicacion
+        publicacion_aux.updated_at = datetime.today().date()
         publicacion_aux.copete = copete
         publicacion_aux.contenido = contenido
-        publicacion_aux.updated_at = datetime.today().date()
 
         try:
             db.session.commit()
@@ -157,7 +165,9 @@ def editar_publicacion(id):
     return render_template(
         'publicaciones/editar_publicacion.html', 
         publicacion=publicacion_aux,
-        autores=autores
+        autores=autores,
+        fecha_hoy=datetime.today().date(),
+        fecha_min=publicacion_aux.inserted_at.strftime('%Y-%m-%d')
     )
 
 @publicaciones_bp.route('/detalle/<int:id>', methods=['GET'])

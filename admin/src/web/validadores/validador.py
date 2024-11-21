@@ -419,12 +419,59 @@ def validar_fecha_publicacion(fecha_publicacion):
         tuple: (bool, str) Retorna un booleano indicando si es válida y un mensaje de error.
     """
     try:
-        fecha_publicacion = datetime.strptime(fecha_publicacion, '%Y-%m-%d')
-        if fecha_publicacion <= datetime.today():
-            return True, ""
-        return False, "La fecha de la publicacion no puede ser mayor a la de hoy."
+        if fecha_publicacion:   
+            fecha_publicacion = datetime.strptime(fecha_publicacion, '%Y-%m-%d')
+            if fecha_publicacion <= datetime.today():
+                return True, ""
+            return False, "La fecha de la publicacion no puede ser mayor a la de hoy."
+        return False, "La fecha no puede estar vacía."
     except ValueError:
         return False, "La fecha no tiene un formato válido."
+
+
+def validar_titulo(titulo):
+    """
+    Verifica si el titulo no está vacío.
+
+    Args:
+        descripcion (str): el titulo a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if validar_vacio(titulo):
+        return True, ""
+    return False, "El titulo no puede estar vacío."
+
+
+def validar_copete(copete):
+    """
+    Verifica si el copete no está vacío.
+
+    Args:
+        descripcion (str): el copete a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if validar_vacio(copete):
+        return True, ""
+    return False, "El copete no puede estar vacío."
+
+
+def validar_contenido(contenido):
+    """
+    Verifica si el contenido no está vacío.
+
+    Args:
+        descripcion (str): el contenido a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if validar_vacio(contenido):
+        return True, ""
+    return False, "El contenido no puede estar vacío."
 
 
 def validar_descripcion(descripcion):
