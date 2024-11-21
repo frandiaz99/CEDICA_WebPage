@@ -407,6 +407,24 @@ def validar_fecha_pago(fecha_pago_str):
         return False, "La fecha de pago no puede ser futura."
     except ValueError:
         return False, "La fecha de pago no tiene un formato válido. Debe ser YYYY-MM-DD."
+    
+def validar_fecha_publicacion(fecha_publicacion):
+    """
+    Valida si la fecha de pago es válida y no es futura.
+
+    Args:
+        fecha_pago_str (str): La fecha de pago a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válida y un mensaje de error.
+    """
+    try:
+        fecha_publicacion = datetime.strptime(fecha_publicacion, '%Y-%m-%d')
+        if fecha_publicacion <= datetime.today():
+            return True, ""
+        return False, "La fecha de la publicacion no puede ser mayor a la de hoy."
+    except ValueError:
+        return False, "La fecha no tiene un formato válido."
 
 
 def validar_descripcion(descripcion):
@@ -859,6 +877,21 @@ def validar_rol(rol):
     tipos_permitidos = ['1', '2', '3', '4']
     if rol not in tipos_permitidos:
         return False, f"El tipo de rol debe ser uno de los siguientes: Tecnica, Encuestre, Voluntariado o Administracion."
+    return True, ""
+
+def validar_estado_publicacion(estado):
+    """
+    Valida que el estado sea 'borrador', 'archivado' o 'publicado'.
+    
+    Args:
+        estado (str): Estado a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error si no lo es.
+    """
+    estados_permitidos = ['borrador', 'archivado', "publicado"]
+    if estado not in estados_permitidos:
+        return False, "El estado debe ser 'borrador', 'archivado' o 'publicado'."
     return True, ""
 
 def validar_estado(estado):

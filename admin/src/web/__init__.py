@@ -12,6 +12,7 @@ from src.web.controllers.jinetes_amazonas import jinete_amazonas_bp
 from src.web.controllers.cobros import cobros_bp
 from src.web.controllers.contacto import contacto_bp
 from src.web.controllers.reportes import reportes_bp
+from src.web.controllers.publicaciones import publicaciones_bp
 from src.web.handlers.auth import is_authenticated, check_permission
 from src.core import database, seeds
 from src.core.config import config
@@ -19,6 +20,7 @@ from src.core.bcrypt import bcrypt
 from src.web.storage import storage
 from src.web import helpers
 from src.web.api.contacto import contacto_api_bp
+from src.web.api.publicaciones import publicaciones_api_bp
 
 # Inicialización de sesiones
 session = Session()
@@ -79,7 +81,9 @@ def create_app(env="production", static_folder="../../static"):
     app.register_blueprint(jinete_amazonas_bp)
     app.register_blueprint(contacto_bp)
     app.register_blueprint(reportes_bp)
+    app.register_blueprint(publicaciones_bp)
     app.register_blueprint(contacto_api_bp)
+    app.register_blueprint(publicaciones_api_bp)
 
     # Funciones globales para Jinja2
     app.jinja_env.globals.update(is_authenticated=is_authenticated)
