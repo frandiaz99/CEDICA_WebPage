@@ -25,7 +25,7 @@ from src.web.api.publicaciones import publicaciones_api_bp
 # Inicialización de sesiones
 session = Session()
 
-def create_app(env="production", static_folder="../../static"):
+def create_app(env="development", static_folder="../../static"):
     """
     Crea e inicializa una instancia de Flask con configuración específica del entorno.
 
