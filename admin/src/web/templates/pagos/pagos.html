@@ -58,18 +58,18 @@
         <table class="min-w-full bg-white shadow-md rounded-lg text-center">
             <thead class="bg-gray-100">
                 <tr>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Beneficiario</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Monto</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Beneficiario</th>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Monto</th>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">
                         <a href="{{ url_for('pagos.index', fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin'), tipo_pago=request.args.get('tipo_pago'), orden='asc') }}"
                             class="text-gray-600 hover:underline">Fecha de Pago &#8593;</a>
                         |
                         <a href="{{ url_for('pagos.index', fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin'), tipo_pago=request.args.get('tipo_pago'), orden='desc') }}"
                             class="text-gray-600 hover:underline">Fecha de Pago &#8595;</a>
                     </th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Tipo de Pago</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Descripción</th>
-                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Acciones</th>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Tipo de Pago</th>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Descripción</th>
+                    <th class="px-4 py-2 border-b text-gray-600 font-medium text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>

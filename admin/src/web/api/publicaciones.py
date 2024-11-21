@@ -1,4 +1,3 @@
-import requests
 from flask import Blueprint, request, jsonify
 from src.web.schemas.publicacion import create_publicacion_schema, publicaciones_schema
 from src.core import publicacion

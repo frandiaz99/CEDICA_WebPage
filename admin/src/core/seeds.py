@@ -41,7 +41,7 @@ def run():
     hhh = auth.create_user(alias="hhh", email="hhh@gmail.com", password="1234", activo=False)  
     iii = auth.create_user(alias="iii", email="iii@gmail.com", password="1234", activo=False)    
     jjj = auth.create_user(alias="jjjj", email="jjj@gmail.com", password="1234", activo=True)    
-    kkkk = auth.create_user(alias="kkk", email="kkk@gmail.com", password="1234", activo=False)            
+    kkk = auth.create_user(alias="kkk", email="kkk@gmail.com", password="1234", activo=False)            
 
     # Asignar issues a usuarios
     board.assign_user(issue1, fede)
@@ -81,6 +81,7 @@ def run():
     auth.assign_rol(hhh, administracion_rol)
     auth.assign_rol(iii, tecnica_rol)
     auth.assign_rol(jjj, voluntariado_rol)
+    auth.assign_rol(kkk, editor_rol)
 
     #Creo permisos
     user_index = permiso.create_permiso(nombre="user_index")
@@ -734,7 +735,7 @@ def run():
     #Creacion publicaciones prueba
     publicacion1 = publicacion.create_publicacion(
         titulo="Publicacion 1",
-        autor="Fede",
+        autor=fede.alias,
         copete="Copete 1",
         contenido="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
         estado="publicado"
@@ -742,7 +743,7 @@ def run():
 
     publicacion2 = publicacion.create_publicacion(
         titulo="Publicacion 2",
-        autor="Miguel",
+        autor=miguel.alias,
         copete="Copete 2",
         contenido="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?",
         estado="publicado"

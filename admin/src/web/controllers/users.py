@@ -244,7 +244,7 @@ def actualizar_usuario(id):
             flash('El email ingresado ya tiene una cuenta asociada.', 'danger')
             return redirect(url_for('users.actualizar_usuario', id=id))
         
-        if (activo == 'Sí'):
+        if (activo == 'si'):
             activo = True
         else:
             activo = False
@@ -258,7 +258,7 @@ def actualizar_usuario(id):
         try:
             db.session.commit()
             flash('El usuario ha sido actualizado.', 'success')
-            return redirect(url_for('users.actualizar_usuario', id=id))
+            return redirect(url_for('users.index'))
         except Exception as e:
             db.session.rollback()
             flash(f'Error al actualizar el usuario: {str(e)}', 'danger')

@@ -7,11 +7,11 @@ class Publicacion(db.Model):
     __tablename__ = 'publicaciones'
 
     id = db.Column(db.Integer, primary_key=True)
-    titulo = db.Column(db.String(100), nullable=False)
+    titulo = db.Column(db.String(100), nullable=True)
     autor = db.Column(db.String(40), nullable=False)
     fecha_publicacion = db.Column(db.Date, nullable=False, default=datetime.now)
-    copete = db.Column(db.String(100), nullable=False)
-    contenido = db.Column(db.String(3000), nullable=False)
+    copete = db.Column(db.String(100), nullable=True)
+    contenido = db.Column(db.String(3000), nullable=True)
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     estado = db.Column(db.String(15), nullable=False)
