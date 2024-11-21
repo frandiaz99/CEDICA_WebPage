@@ -11,9 +11,9 @@
         <button @click="openModal(noticia)" class="text-blue-500">Ver noticia completa</button>
       </li>
     </ul>
-    
+
     <!-- Mostrar un mensaje si no hay noticias -->
-    <p v-if="!noticias.length">No hay noticias nuevas.</p>
+    <p v-if="!noticiasPublicadas.length">No hay noticias nuevas.</p>
 
     <!-- Modal de detalles de la noticia -->
     <DetalleNoticia
