@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 from src.core.equipo import Empleado
 from src.core.encuestre import Encuestre
+from src.core.auth import User
 
 def validar_string(string):
     """
@@ -349,10 +350,25 @@ def validar_tipo_pago(tipo_pago):
     Returns:
         tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
     """
-    tipos_validos = ['honorarios', 'proveedor', 'gastos varios', 'efectivo', 'debito', 'credito']
+    tipos_validos = ['honorarios', 'proveedor', 'gastos_varios']
     if tipo_pago in tipos_validos:
         return True, ""
     return False, "Tipo de pago no es válido."
+
+def validar_tipo_cobro(tipo_cobro):
+    """
+    Verifica si el tipo de cobro es uno de los válidos.
+
+    Args:
+        tipo_cobro(str): El tipo de pago a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    tipos_validos = ['efectivo', 'credito', 'debito']
+    if tipo_cobro in tipos_validos:
+        return True, ""
+    return False, "Tipo de cobro no es válido."
 
 
 def validar_monto(monto):
@@ -391,6 +407,71 @@ def validar_fecha_pago(fecha_pago_str):
         return False, "La fecha de pago no puede ser futura."
     except ValueError:
         return False, "La fecha de pago no tiene un formato válido. Debe ser YYYY-MM-DD."
+    
+def validar_fecha_publicacion(fecha_publicacion):
+    """
+    Valida si la fecha de pago es válida y no es futura.
+
+    Args:
+        fecha_pago_str (str): La fecha de pago a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válida y un mensaje de error.
+    """
+    try:
+        if fecha_publicacion:   
+            fecha_publicacion = datetime.strptime(fecha_publicacion, '%Y-%m-%d')
+            if fecha_publicacion <= datetime.today():
+                return True, ""
+            return False, "La fecha de la publicacion no puede ser mayor a la de hoy."
+        return False, "La fecha no puede estar vacía."
+    except ValueError:
+        return False, "La fecha no tiene un formato válido."
+
+
+def validar_titulo(titulo):
+    """
+    Verifica si el titulo no está vacío.
+
+    Args:
+        descripcion (str): el titulo a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if validar_vacio(titulo):
+        return True, ""
+    return False, "El titulo no puede estar vacío."
+
+
+def validar_copete(copete):
+    """
+    Verifica si el copete no está vacío.
+
+    Args:
+        descripcion (str): el copete a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if validar_vacio(copete):
+        return True, ""
+    return False, "El copete no puede estar vacío."
+
+
+def validar_contenido(contenido):
+    """
+    Verifica si el contenido no está vacío.
+
+    Args:
+        descripcion (str): el contenido a validar.
+
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error.
+    """
+    if validar_vacio(contenido):
+        return True, ""
+    return False, "El contenido no puede estar vacío."
 
 
 def validar_descripcion(descripcion):
@@ -470,7 +551,7 @@ def validar_sexo(sexo):
         turple: (bool,str) Retorna un booleano indicando si es válida y un mensaje de error.
     
     """
-    sexos_permitidos = ['masculino', 'femenino']
+    sexos_permitidos = ['Macho', 'Hembra']
     if sexo not in sexos_permitidos:
         return False, f"El sexo debe ser uno de los siguientes: {', '.join(sexos_permitidos)}."
     return True, ""
@@ -517,7 +598,7 @@ def validar_compra_donacion(compra_donacion):
         turple: (bool,str) Retorna un booleano indicando si es válida y un mensaje de error.
     
     """
-    tipos = ['compra', 'donacion']
+    tipos = ['Compra', 'Donacion']
     if compra_donacion not in tipos:
         return False, f"El tipo debe ser uno de los siguientes: {', '.join(tipos)}."
     return True, ""
@@ -538,7 +619,7 @@ def validar_tipo_ja_asignado(tipo_ja_asignado):
     return True, ""
 
 def validar_entrenadores_conductores(entrenadores_conductores_ids):
-    """Valida que los entrenadores/condcutores formen parte del equipo.
+    """Valida que los entrenadores/conductores formen parte del equipo.
     
     Args: 
         entrenadores_cnductores_ids(int): tipo a validar
@@ -804,4 +885,87 @@ def validar_conductor(conductor_id):
     if not conductor:
         return False, "Debe seleccionar un conductor válido."
     
+    return True, ""
+
+
+def chequear_email_repetido (email):
+    """
+    Verifica si el mail está registrado en el sistema.
+
+    - param email: mail del usuario a chequear.
+    - return: si existe, devuelve False y str indicando el error. Caso contrario, devuelve True.
+    """
+    queryUser = User.query  
+    if (queryUser.filter(User.email == email).all()):
+        return False, "El mail ya corresponde a un usuario registrado"
+    return True, ""
+
+def validar_cont_coinciden(cont1,cont2):
+    """
+    Verifica las contrasenas son coincidentes.
+
+    - param1 cont1: primer contrasena ingresada.
+    - param2 cont2: segunda contrasena ingresada
+    - return: si coinciden devuelve True, caso contradio False y un str las constrasenas no coinciden.
+    """
+    if (cont1 == cont2):
+        return True, ""
+    return False, "Las contrasenas no coinciden"
+
+def validar_rol(rol):
+    """Valida que se seleccione uno de los roles para el usuario.
+    
+    Args:
+        rol (int): Tipo de rol.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válida y un mensaje de error.
+    """
+    tipos_permitidos = ['1', '2', '3', '4']
+    if rol not in tipos_permitidos:
+        return False, f"El tipo de rol debe ser uno de los siguientes: Tecnica, Encuestre, Voluntariado o Administracion."
+    return True, ""
+
+def validar_estado_publicacion(estado):
+    """
+    Valida que el estado sea 'borrador', 'archivado' o 'publicado'.
+    
+    Args:
+        estado (str): Estado a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error si no lo es.
+    """
+    estados_permitidos = ['borrador', 'archivado', "publicado"]
+    if estado not in estados_permitidos:
+        return False, "El estado debe ser 'borrador', 'archivado' o 'publicado'."
+    return True, ""
+
+def validar_estado(estado):
+    """
+    Valida que el estado sea 'pendiente' o 'leido'.
+    
+    Args:
+        estado (str): Estado a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error si no lo es.
+    """
+    estados_permitidos = ['pendiente', 'leido', "en_proceso"]
+    if estado not in estados_permitidos:
+        return False, "El estado debe ser 'pendiente' o 'leido'."
+    return True, ""
+
+def validar_comentario(comentario):
+    """
+    Valida que el comentario sea una cadena de texto no vacía.
+    
+    Args:
+        comentario (str): Comentario a validar.
+    
+    Returns:
+        tuple: (bool, str) Retorna un booleano indicando si es válido y un mensaje de error si no lo es.
+    """
+    if not isinstance(comentario, str) or not comentario.strip():
+        return False, "El comentario no puede estar vacío."
     return True, ""

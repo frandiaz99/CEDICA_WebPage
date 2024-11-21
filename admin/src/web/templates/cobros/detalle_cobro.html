@@ -5,6 +5,21 @@
 {% block content %}
 
 <body class="bg-gray-100"></body>
+{% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div class="flex justify-center mt-4">
+        <div class="w-full max-w-2xl">
+            {% for category, message in messages %}
+            <div
+                class="bg-{{category == 'success' and 'green' or 'red'}}-500 bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                <p class="text-lg font-semibold">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% set messages = None %}
+    {% endwith %}
 <div class="max-w-4xl mx-auto mt-10">
     <h1 class="text-3xl font-bold text-center mb-6">Detalle del cobro</h1>
 
@@ -24,7 +39,7 @@
         <p><strong>Monto:</strong> {{ cobro.monto }}</p>
         <p><strong>En deuda:</strong> {{ "Sí" if cobro.en_deuda else "No" }}</p>
         <p><strong>Observaciones:</strong> {{ cobro.observaciones }}</p>
-        <p><strong>Nombre del beneficiario:</strong> {{ cobro.beneficiario }}</p>
+        <p><strong>Nombre del beneficiario:</strong> {{ cobro.beneficiario.nombre }} {{ cobro.beneficiario.apellido }}</p>
     </div>
 
     {% if check_permission(session, "registro_cobros_update") and check_permission(session, "registro_cobros_destroy")

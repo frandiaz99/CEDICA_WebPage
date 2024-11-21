@@ -1,3 +1,4 @@
+from io import BytesIO
 import os
 from flask import Blueprint, render_template, jsonify, request, abort, flash, url_for, redirect, current_app, send_file
 from sqlalchemy import asc, desc
@@ -185,19 +186,19 @@ def registrar_encuestre():
         tipo_ja_asignado = request.form.get('tipo_ja_asignado')
         entrenadores_conductores_ids = request.form.getlist('entrenadores_conductores')
 
-        if not (nombre and sexo and raza and pelaje and compra_donacion and sede_asignada and entrenadores_conductores_ids and tipo_ja_asignado):
+        #if not (nombre and sexo and raza and pelaje and compra_donacion and sede_asignada and entrenadores_conductores_ids and tipo_ja_asignado):
             
-            flash(' Faltan completar campos', 'danger')
+            #flash(' Faltan completar campos', 'danger')
             
-            return render_template('encuestre/registrar_encuestre.html',
-                nombre=nombre,
-                sexo=sexo,
-                raza=raza,
-                pelaje=pelaje,
-                compra_donacion=compra_donacion,
-                sede_asignada=sede_asignada,
-                tipo_ja_asignado=tipo_ja_asignado
-            )
+            #return render_template('encuestre/registrar_encuestre.html',
+            #    nombre=nombre,
+            #    sexo=sexo,
+            #    raza=raza,
+            #    pelaje=pelaje,
+            #    compra_donacion=compra_donacion,
+            #    sede_asignada=sede_asignada,
+            #    tipo_ja_asignado=tipo_ja_asignado
+            #)
             #return redirect(url_for('encuestre.registrar_encuestre'))
 
         validadores = [
@@ -246,7 +247,7 @@ def registrar_encuestre():
             print(f'Error {str(e)}')
             return redirect(url_for('encuestre.registrar_encuestre'))
     
-    empleados = Empleado.query.filter(Empleado.puesto_laboral.in_(['Entrenador de caballos', 'Conductor'])).all()
+    empleados = Empleado.query.filter(Empleado.puesto_laboral.in_(['Entrenador de Caballos', 'Conductor'])).all()
     fecha_hoy = datetime.now().strftime('%Y-%m-%d')
 
     return render_template('encuestre/registrar_encuestre.html', empleados=empleados, fecha_hoy=fecha_hoy)
@@ -314,6 +315,7 @@ def editar_encuestre(id):
 )
 
 @encuestre_bp.route('/subir_documento', methods=['POST'])
+@check("encuestre_new")
 def subir_documento():
     """
     Permite seleccionar un documento. Valida los campos del documento, nombre, tamaño y extension. Y lo
@@ -474,9 +476,40 @@ def editar_documento(document_id):
         abort(404) 
     
     if request.method == 'POST':
-        documento.titulo = request.form['nombre']    
-        documento.tipo = request.form['tipo_documento']
-        
+        if(documento.is_document):
+
+            objeto_anterior =  f'documentos_encuestres/{documento.titulo}'
+
+            documento.titulo = request.form['nombre']    
+            documento.tipo = request.form['tipo_documento']
+
+            objeto_nuevo =  f'documentos_encuestres/{documento.titulo}'
+
+            try: 
+                client = current_app.storage.client
+
+                response = client.get_object('grupo49', objeto_anterior)
+                file_data = response.read() 
+                file_stream = BytesIO(file_data)
+                
+                client.put_object(
+                    'grupo49', 
+                    objeto_nuevo, 
+                    file_stream, 
+                    length=len(file_data), 
+                    content_type=response.headers.get('Content-Type')
+                )
+                
+            
+                client.remove_object('grupo49', objeto_anterior)
+            except Exception as e:
+                flash(f'Error al renombrar el archivo en MinIO: {str(e)}', 'error')
+                return redirect(url_for('encuestre.editar_documento', document_id=document_id))
+
+
+        else: 
+            documento.titulo = request.form['nombre']    
+            documento.tipo = request.form['tipo_documento']
         db.session.commit()
         flash('Los cambios se han guardado exitosamente.', 'success')
         return redirect(url_for('encuestre.detalle_encuestre', id=encuestre.id))
@@ -485,6 +518,7 @@ def editar_documento(document_id):
 
 
 @encuestre_bp.route('/subir_enlace', methods=['POST'])
+@check("encuestre_new")
 def subir_enlace():
     """
     Registra un enlace en la base de datos en la tabla de documentos.

@@ -1,0 +1,339 @@
+{% extends "layout.html" %}
+
+{% block title %}Reportes{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    <!-- Ranking -->
+    <div class="bg-white p-4 rounded-lg shadow-lg mb-6">
+        <h2 class="text-xl font-semibold text-center mb-4">Ranking de Propuestas de Trabajo Más Solicitadas</h2>
+        
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Propuesta</th>
+                    <th class="py-3 px-6 text-left">Solicitudes</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm font-light">
+                {% for propuesta, count in ranking_propuestas.items %}
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6">{{ propuesta }}</td>
+                    <td class="py-3 px-6">{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if ranking_propuestas.pages > 1 %}
+        <div class="flex justify-center mt-4">
+            {% if ranking_propuestas.has_prev %}
+                <a href="{{ url_for('reportes.index', page_ranking=ranking_propuestas.prev_num) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Anterior</a>
+            {% endif %}
+            {% if ranking_propuestas.has_next %}
+                <a href="{{ url_for('reportes.index', page_ranking=ranking_propuestas.next_num) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md ml-2">Siguiente</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold text-center mb-4">Personas que Adeudan Pagos</h2>
+        
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Nombre</th>
+                    <th class="py-3 px-6 text-left">Deuda Total</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm font-light">
+                {% for persona, total_deuda in personas %}
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6">{{ persona.nombre }}</td>
+                    <td class="py-3 px-6">${{ total_deuda }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="flex justify-center mt-4">
+            {% if personas.has_prev %}
+                <a href="{{ url_for('reportes.index', page_adeuda=personas.prev_num) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Anterior</a>
+            {% endif %}
+            {% if personas.has_next %}
+                <a href="{{ url_for('reportes.index', page_adeuda=personas.next_num) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md ml-2">Siguiente</a>
+            {% endif %}
+        </div>
+    </div>
+
+    
+ 
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold text-center mb-4">Historial de Cobros</h2>
+    
+        <form method="GET" action="{{ url_for('reportes.index') }}">
+            <label for="jinete_id">Seleccionar Jinete:</label>
+            <select name="jinete_id">
+                <option value="">-- Seleccionar Jinete --</option>
+                {% for jinete in jinetes %}
+                    <option value="{{ jinete.id }}" {% if request.args.get('jinete_id') == jinete.id %}selected{% endif %}>
+                        {{ jinete.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+    
+            <label for="fecha_inicio">Fecha Inicio:</label>
+            <input type="date" name="fecha_inicio" value="{{ request.args.get('fecha_inicio') }}">
+    
+            <label for="fecha_fin">Fecha Fin:</label>
+            <input type="date" name="fecha_fin" value="{{ request.args.get('fecha_fin') }}">
+    
+            <button type="submit">Consultar</button>
+        </form>
+    
+        {% if historico.items %}
+        <table class="min-w-full bg-white border border-gray-300 mt-4">
+            <thead>
+                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Fecha</th>
+                    <th class="py-3 px-6 text-left">Monto</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm font-light">
+                {% for cobro in historico.items %}
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6">{{ cobro.fecha_pago }}</td>
+                    <td class="py-3 px-6">{{ cobro.monto }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    
+        
+        <div class="flex justify-center mt-4">
+            {% if historico.has_prev %}
+                <a href="{{ url_for('reportes.index', page_historico=historico.prev_num, jinete_id=request.args.get('jinete_id'), fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin')) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Anterior</a>
+            {% endif %}
+            
+            {% if historico.has_next %}
+                <a href="{{ url_for('reportes.index', page_historico=historico.next_num, jinete_id=request.args.get('jinete_id'), fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin')) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md ml-2">Siguiente</a>
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="text-gray-700 text-center mt-4">No se encontraron cobros para el Jinete seleccionado en el rango de fechas especificado.</p>
+        {% endif %}
+        </div>
+
+
+  
+    <div class="bg-white p-6 rounded-lg shadow-md flex justify-center">
+        <div class="flex flex-col items-center w-1/2">  
+            <h1 class="text-2xl font-bold mb-4 text-gray-700 text-center">Cantidad de Jinetes y Amazonas Becados</h1>
+            
+       
+            <canvas id="becadosChart" style="max-width: 250px; max-height: 250px;"></canvas>
+        </div>
+        
+      
+        <div class="flex flex-col justify-center items-start ml-8">
+            <div class="flex items-center mb-2">
+                <div class="w-4 h-4 bg-green-500 mr-2"></div>
+                <span>Becados</span>
+            </div>
+            <div class="flex items-center">
+                <div class="w-4 h-4 bg-red-500 mr-2"></div>
+                <span>No Becados</span>
+            </div>
+        </div>
+    </div>
+    
+
+
+  
+<div class="bg-white p-6 rounded-lg shadow-md flex justify-center mt-8">
+    <div class="flex flex-col items-center w-1/2">
+        <h1 class="text-2xl font-bold mb-4 text-gray-700 text-center">Distribución de Tipos de Discapacidad</h1>
+        
+       
+        <canvas id="discapacidadChart" style="max-width: 250px; max-height: 250px;"></canvas>
+    </div>
+    
+  
+    <div class="flex flex-col justify-center items-start ml-8">
+        <div class="flex items-center mb-2">
+            <div class="w-4 h-4 bg-blue-500 mr-2"></div>
+            <span>Mental</span>
+        </div>
+        <div class="flex items-center mb-2">
+            <div class="w-4 h-4 bg-purple-500 mr-2"></div>
+            <span>Motora</span>
+        </div>
+        <div class="flex items-center mb-2">
+            <div class="w-4 h-4 bg-orange-500 mr-2"></div>
+            <span>Sensorial</span>
+        </div>
+        <div class="flex items-center">
+            <div class="w-4 h-4 bg-red-500 mr-2"></div>
+            <span>Visceral</span>
+        </div>
+    </div>
+</div>
+
+
+<!-- Ingreso Gráfico -->
+
+<div class="bg-white p-6 rounded-lg shadow-md flex justify-center mt-6">
+    <form method="GET" action="{{ url_for('reportes.index') }}" class="mb-6 flex items-center">
+        <label for="criterio" class="mr-2">Criterio:</label>
+        <select name="criterio" id="criterio" required class="mr-4">
+            <option value="anual" {% if criterio == 'anual' %}selected{% endif %}>Anual</option>
+            <option value="mensual" {% if criterio == 'mensual' %}selected{% endif %}>Mensual</option>
+        </select>
+
+        <div class="flex items-center">
+            <label for="anio" class="mr-2">Año:</label>
+            <input type="number" name="anio" id="anio" placeholder="Ej. 2024" value="{{ anio }}" min="2000" max="2100" {% if criterio != 'mensual' %}disabled{% endif %} class="mr-4">
+            <button type="submit" id="consultarBtn" class="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-500 disabled:bg-gray-400" disabled>Consultar</button>
+        </div>
+    </form>
+    <div class="flex flex-col items-center w-full"> <!-- Cambié w-1/2 a w-full -->
+        <h1 class="text-2xl font-bold mb-4 text-gray-700 text-center">Ingresos Totales</h1>
+        <!-- Aumenté el tamaño del gráfico para que ocupe más espacio -->
+        <canvas id="ingresosChart" style="width: 100%; height: 400px;"></canvas>
+    </div>
+</div>
+
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    function toggleButtonState() {
+        const criterio = document.getElementById('criterio').value;
+        const anio = document.getElementById('anio').value;
+        const botonConsultar = document.getElementById('consultarBtn');
+        
+        // Si el criterio es 'mensual' y no se ha ingresado el año, deshabilitar el botón
+        if (criterio === 'mensual' && !anio) {
+            botonConsultar.disabled = true;
+        } else {
+            botonConsultar.disabled = false;
+        }
+    }
+
+    // Escuchar cambios en el select de criterio y en el input de año
+    document.getElementById('criterio').addEventListener('change', toggleButtonState);
+    document.getElementById('anio').addEventListener('input', toggleButtonState);
+
+    // Llamar a la función al cargar la página para inicializar el estado del botón
+    toggleButtonState();
+
+
+    document.querySelector('[name="criterio"]').addEventListener('change', function () {
+        const anioField = document.querySelector('[name="anio"]');
+        anioField.disabled = this.value !== 'mensual';
+    });
+
+const becadosData = JSON.parse('{{ becados_data | tojson}}');
+        const ctx = document.getElementById('becadosChart').getContext('2d');
+    
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Becados', 'No Becados'],
+                datasets: [{
+                    data: [becadosData.becados, becadosData.no_becados],
+                    backgroundColor: ['#4CAF50', '#FF5722'], 
+                    hoverBackgroundColor: ['#66BB6A', '#FF7043']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false  
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const total = tooltipItem.dataset.data.reduce((sum, value) => sum + value, 0);
+                                const currentValue = tooltipItem.raw;
+                                const percentage = ((currentValue / total) * 100).toFixed(1);
+                                return `${tooltipItem.label}: ${percentage}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    
+    const discapacidadData = JSON.parse('{{ discapacidad_data | tojson }}');
+    const ctxDiscapacidad = document.getElementById('discapacidadChart').getContext('2d');
+
+    new Chart(ctxDiscapacidad, {
+        type: 'pie',
+        data: {
+            labels: ['Mental', 'Motora', 'Sensorial', 'Visceral'],
+            datasets: [{
+                data: [
+                    discapacidadData.Mental, 
+                    discapacidadData.Motora, 
+                    discapacidadData.Sensorial, 
+                    discapacidadData.Visceral
+                ],
+                backgroundColor: ['#42A5F5', '#AB47BC', '#FF0000', '#26A69A'],
+                hoverBackgroundColor: ['#64B5F6', '#BA68C8', '#FF3333', '#4DB6AC']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false  
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            const total = tooltipItem.dataset.data.reduce((sum, value) => sum + value, 0);
+                            const currentValue = tooltipItem.raw;
+                            const percentage = ((currentValue / total) * 100).toFixed(1);
+                            return `${tooltipItem.label}: ${percentage}%`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    
+    const ingresosData = JSON.parse('{{ ingresos_data | tojson }}');
+    const ctxIngresos = document.getElementById('ingresosChart').getContext('2d');
+    new Chart(ctxIngresos, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(ingresosData),
+            datasets: [{
+                label: 'Ingresos',
+                data: Object.values(ingresosData),
+                backgroundColor: '#4CAF50',
+                hoverBackgroundColor: '#66BB6A'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: { 
+                    title: { display: true, text: 'Año/Mes' }
+                },
+                y: {
+                    title: { display: true, text: 'Monto (en $)' },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

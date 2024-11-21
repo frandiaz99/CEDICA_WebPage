@@ -1,3 +1,4 @@
+from io import BytesIO
 import io
 from flask import Blueprint, render_template, jsonify, request, abort, flash, send_file, url_for, redirect, current_app
 from src.core.database import db
@@ -27,6 +28,22 @@ jinete_amazonas_bp = Blueprint('jinetes_amazonas', __name__, url_prefix='/jinete
 @jinete_amazonas_bp.get("/")
 @check("ja_index")
 def index():
+    """
+    Muestra una lista paginada de todos los Jinetes y Amazonas con capacidades de búsqueda y orden.
+
+    Esta función obtiene parámetros de búsqueda, filtro y orden desde la URL, construye una consulta dinámica
+    y muestra los resultados paginados.
+
+    Parámetros obtenidos de la URL:
+        - search (str): Cadena de texto para buscar por nombre, apellido, dni o profesionales que los atienden.
+        - filter_by (str): Filtro por el cual buscar (nombre, apellido, dni, profesionales_atienden).
+        - order (str): Orden de los resultados (asc o desc).
+        - order_prop (str): Propiedad por la cual ordenar (nombre, apellido, etc.).
+        - pagina (int): Número de página para la paginación.
+
+    Returns:
+        Renderiza el template "jinetes_amazonas/jinetes_amazonas.html" con los resultados filtrados y paginados.
+    """
     registros_por_pagina = 5
 
     # Parámetros de búsqueda y orden desde la URL
@@ -39,6 +56,7 @@ def index():
     # Construcción de la query
     query = jinetes_amazonas.JineteAmazona.query
 
+    # Filtros de búsqueda
     if search:
         if filter_by == 'nombre':
             query = query.filter(jinetes_amazonas.JineteAmazona.nombre.ilike(f'%{search}%'))
@@ -49,18 +67,20 @@ def index():
         elif filter_by == 'profesionales_atienden':
             query = query.filter(jinetes_amazonas.JineteAmazona.profesionales_atienden.ilike(f'%{search}%'))
     
+    # Orden de resultados
     if order_prop != filter_by:
         if order == 'asc':
             query = query.order_by(asc(getattr(jinetes_amazonas.JineteAmazona, order_prop)))
         else:
             query = query.order_by(desc(getattr(jinetes_amazonas.JineteAmazona, order_prop)))
 
-    # Si se quiere ordenar por nombre o apellido adicionalmente
+    # Orden adicional por nombre o apellido
     if order_prop == 'nombre':
         query = query.order_by(asc(jinetes_amazonas.JineteAmazona.nombre)) if order == 'asc' else query.order_by(desc(jinetes_amazonas.JineteAmazona.nombre))
     elif order_prop == 'apellido':
         query = query.order_by(asc(jinetes_amazonas.JineteAmazona.apellido)) if order == 'asc' else query.order_by(desc(jinetes_amazonas.JineteAmazona.apellido))
-    
+
+    # Paginación
     pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
     jinetes = pagination.items
     total_paginas = pagination.pages
@@ -76,13 +96,37 @@ def index():
         total_paginas=total_paginas
     )
 
+
 # Ver detalles de un Jinete o Amazona
 @jinete_amazonas_bp.get("/detalle/<int:id>")
 @check("ja_show")
 def detalle(id):
+    """
+    Muestra los detalles de un Jinete o Amazona, incluyendo los documentos asociados.
+
+    Busca el Jinete o Amazona por su ID, así como los documentos asociados, y permite filtrar
+    y ordenar estos documentos. También obtiene los datos relacionados de otras entidades, como el
+    caballo, auxiliar de pista, profesor terapeuta y conductor.
+
+    Args:
+        id (int): ID del Jinete o Amazona.
+
+    Parámetros obtenidos de la URL:
+        - search (str): Cadena de texto para buscar documentos por título.
+        - tipo (str): Filtro por tipo de documento.
+        - filter_by (str): Filtro por el cual buscar los documentos (por defecto es título).
+        - order (str): Orden de los documentos (asc o desc).
+        - order_prop (str): Propiedad por la cual ordenar los documentos (por defecto es título).
+        - pagina (int): Número de página para la paginación de los documentos.
+
+    Returns:
+        Renderiza el template "jinetes_amazonas/detalle.html" con los detalles del Jinete o Amazona y los documentos filtrados.
+    """
     jinete_amazonas_aux = jinetes_amazonas.JineteAmazona.query.get(id)
     if not jinete_amazonas_aux:
         abort(404)
+
+    # Query para documentos asociados
     query = documento_jinete.DocumentoJinete.query.filter_by(jinete_amazonas_id=id)
 
     registros_por_pagina = 2
@@ -90,36 +134,40 @@ def detalle(id):
     # Obtener parámetros de búsqueda y orden desde la URL
     search = request.args.get('search', '')
     tipo = request.args.get('tipo', '')  # Filtro por tipo de documento
-    filter_by = request.args.get('filter_by', 'titulo')  # Por defecto 'nombre'
+    filter_by = request.args.get('filter_by', 'titulo')  # Por defecto 'titulo'
     order = request.args.get('order', 'asc')  # Por defecto ascendente
     order_prop = request.args.get('order_prop', 'titulo')
     pagina = request.args.get('pagina', 1, type=int)
     
+    # Filtro de búsqueda en los documentos
     if search:
         if filter_by == 'titulo':
             query = query.filter(documento_jinete.DocumentoJinete.titulo.ilike(f'%{search}%'))
     
+    # Filtro por tipo de documento
     if tipo:
         query = query.filter(documento_jinete.DocumentoJinete.tipo == tipo)
     
+    # Orden de los documentos
     if order_prop != filter_by:
         if order == 'asc':
             query = query.order_by(asc(getattr(documento_jinete.DocumentoJinete, order_prop)))
         else:
             query = query.order_by(desc(getattr(documento_jinete.DocumentoJinete, order_prop)))
 
-    # Si se quiere ordenar por nombre, apellido o fecha de creación adicionalmente
+    # Orden adicional por título o fecha de subida
     if order_prop == 'titulo':
         query = query.order_by(asc(documento_jinete.DocumentoJinete.titulo)) if order == 'asc' else query.order_by(desc(documento_jinete.DocumentoJinete.titulo))
     elif order_prop == 'fecha_subida':
         query = query.order_by(asc(documento_jinete.DocumentoJinete.inserted_at)) if order == 'asc' else query.order_by(desc(documento_jinete.DocumentoJinete.inserted_at))
 
+    # Paginación de los documentos
     pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
-    
     documentos_filtrados = pagination.items
     total_paginas = pagination.pages
 
-    caballo= Encuestre.query.get(jinete_amazonas_aux.caballo)
+    # Obtener datos relacionados
+    caballo = Encuestre.query.get(jinete_amazonas_aux.caballo)
     auxiliar_pista = Empleado.query.get(jinete_amazonas_aux.auxiliar_pista)
     profesor_terapeuta = Empleado.query.get(jinete_amazonas_aux.profesor_terapeuta)
     conductor = Empleado.query.get(jinete_amazonas_aux.conductor)
@@ -127,10 +175,10 @@ def detalle(id):
     return render_template(
         'jinetes_amazonas/detalle.html', 
         jinete=jinete_amazonas_aux,
-        caballo= caballo,
-        auxiliar_pista= auxiliar_pista,
-        profesor_terapeuta= profesor_terapeuta,
-        conductor= conductor,
+        caballo=caballo,
+        auxiliar_pista=auxiliar_pista,
+        profesor_terapeuta=profesor_terapeuta,
+        conductor=conductor,
         documentos=documentos_filtrados,
         search=search, 
         tipo=tipo,
@@ -139,13 +187,20 @@ def detalle(id):
         order_prop=order_prop,
         pagina=pagina,
         total_paginas=total_paginas
-
     )
+
 
 # Registrar un nuevo Jinete o Amazona
 @jinete_amazonas_bp.route("/registrar", methods=['GET', 'POST'])
 @check("ja_new")
 def registrar():
+    """
+    Controlador para registrar un nuevo Jinete o Amazona.
+    - Si la solicitud es GET: Muestra el formulario de registro.
+    - Si la solicitud es POST: Procesa los datos del formulario y los valida antes de guardarlos en la base de datos.
+
+    :return: Redirige a la página de detalles del jinete/amazona registrado o muestra mensajes de error
+    """
     if request.method == 'POST':
         # Recoger los datos del formulario
         nombre = request.form.get('nombre')
@@ -370,6 +425,13 @@ def registrar():
 @jinete_amazonas_bp.route("/editar/<int:id>", methods=['GET', 'POST'])
 @check("ja_update")
 def editar(id):
+
+    """
+    Edita los datos de un jinete/amazona existente.
+
+    :param id: ID del jinete/amazona a editar.
+    :return: Redirige a la página de detalles del jinete/amazona editado o muestra mensajes de error.
+    """
     jinete_amazonas_aux = jinetes_amazonas.JineteAmazona.query.get_or_404(id)
     
     if request.method == 'POST':
@@ -584,6 +646,16 @@ def editar(id):
 
 @jinete_amazonas_bp.route('/filtrar_caballos', methods=['GET'])
 def filtrar_caballos():
+    """
+    Controlador para filtrar caballos según la propuesta de trabajo y la sede.
+    
+    Este endpoint permite a los usuarios filtrar los caballos disponibles en 
+    la base de datos basándose en la propuesta de trabajo o en la sede asignada.
+    
+
+    Returns:
+        JSON: Lista de caballos filtrados con su id y nombre.
+    """
     propuesta_trabajo = request.args.get('propuesta_trabajo')
     sede = request.args.get('sede')     
 
@@ -612,6 +684,12 @@ def filtrar_caballos():
 @jinete_amazonas_bp.route("/eliminar/<int:id>", methods=['POST'])
 @check("ja_destroy")
 def eliminar(id):
+    """
+    Elimina un Jinete o Amazona de la base de datos.
+
+    :param id: ID del jinete/amazona a eliminar.
+    :return: Redirige a la página de índice de jinetes y amazonas.
+    """
     jinete_amazonas_aux = jinetes_amazonas.JineteAmazona.query.get_or_404(id)
     
     try:
@@ -628,7 +706,12 @@ def eliminar(id):
 @jinete_amazonas_bp.route('/subir_documento', methods=['POST'])
 @check("ja_new")
 def subir_documento():
+    """
+    Permite seleccionar un documento. Valida los campos del documento, nombre, tamaño y extension. Y lo
+    asocia al jinete/amazona accedido
 
+    :return: Redirige a la página de detalles del jinete/amazona o muestra mensajes de error.
+    """
     MAX_FILE_SIZE = 16 * 1024 * 1024
 
     if 'file' not in request.files:
@@ -688,7 +771,7 @@ def descargar_documento(document_id):
     Descargar documento existente o redirige al enlace.
     
     :param documento_id: ID del documento/enlace a descargar.
-    :return: Redirige al enlace del documento o al detalle del ecuestre, dependiendo si es un enlace o un documento o retorna error. 
+    :return: Redirige al enlace del documento o al detalle del jinete/amazona, dependiendo si es un enlace o un documento o retorna error. 
     """
     documento = documento_jinete.DocumentoJinete.query.get_or_404(document_id)
 
@@ -720,7 +803,12 @@ def descargar_documento(document_id):
 @jinete_amazonas_bp.route('/eliminar_documento/<int:document_id>', methods=['POST'])
 @check("ja_destroy")
 def eliminar_documento(document_id):
-
+    """
+    Elimina el documento o enlace existente.
+    
+    :param documento_id: ID del documento/enlace a descargar.
+    :return: Redirige al detalle del jinete/amazona o retorna error.
+    """
     documento = documento_jinete.DocumentoJinete.query.get_or_404(document_id)
 
     if documento.is_document:
@@ -739,6 +827,11 @@ def eliminar_documento(document_id):
 
 
 def eliminar_de_minio(file):
+    """
+    Elimina el documento existente de minio.
+    
+    :param file: titulo del documento.
+    """
     client = current_app.storage.client
     object_name = f'documentos_jinetes_amazonas/{file}'
     client.remove_object('grupo49', object_name)
@@ -747,6 +840,12 @@ def eliminar_de_minio(file):
 @jinete_amazonas_bp.route('/editar_documento/<int:document_id>', methods=['POST', 'GET'])
 @check("ja_update")
 def editar_documento(document_id):
+    """
+    Edita el documento o enlace existente.
+    
+    :param documento_id: ID del documento/enlace a descargar.
+    :return: Redirige a la plantilla encuestre/editar_documento.html  si el método es get, y si el métodoe es post al detalle del jinete/amazona o retorna error.
+    """
     documento = documento_jinete.DocumentoJinete.query.get_or_404(document_id)
     jinete_amazonas = documento_jinete.DocumentoJinete.get_jinete_by_document_id(document_id)
     tipo = documento.tipo
@@ -754,9 +853,38 @@ def editar_documento(document_id):
         abort(404)
 
     if request.method == 'POST':
-        # Obtener datos del formulario
-        documento.titulo = request.form['nombre']
-        documento.tipo = request.form['tipo_documento']
+        if(documento.is_document):
+
+            objeto_anterior =  f'documentos_jinetes_amazonas/{documento.titulo}'
+
+            documento.titulo = request.form['nombre']    
+            documento.tipo = request.form['tipo_documento']
+
+            objeto_nuevo =  f'documentos_jinetes_amazonas/{documento.titulo}'
+
+            try: 
+                client = current_app.storage.client
+
+                response = client.get_object('grupo49', objeto_anterior)
+                file_data = response.read() 
+                file_stream = BytesIO(file_data)
+                
+                client.put_object(
+                    'grupo49', 
+                    objeto_nuevo, 
+                    file_stream, 
+                    length=len(file_data), 
+                    content_type=response.headers.get('Content-Type')
+                )
+                
+            
+                client.remove_object('grupo49', objeto_anterior)
+            except Exception as e:
+                flash(f'Error al renombrar el archivo en MinIO: {str(e)}', 'error')
+                return redirect(url_for('jinetes_amazonas.editar_documento', document_id=document_id))
+        else:  
+            documento.titulo = request.form['nombre']
+            documento.tipo = request.form['tipo_documento']
 
         # Guardar cambios en la base de datos
         db.session.commit()
@@ -769,6 +897,11 @@ def editar_documento(document_id):
 @jinete_amazonas_bp.route('/subir_enlace', methods=['POST'])
 @check("ja_new")
 def subir_enlace():
+    """
+    Registra un enlace en la base de datos en la tabla de documentos.
+
+    :return: Redirige al detalle del jinete/amazona o retorna error.
+    """
     jinete_amazonas_id = request.form.get('jinete_amazonas_id')
     jinete_amazonas_aux = jinetes_amazonas.JineteAmazona.query.get(jinete_amazonas_id)
     tipo_enlace = request.form.get('tipo_documento')

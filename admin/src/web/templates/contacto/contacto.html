@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+
+{% block title %}Consultas de Contacto{% endblock %}
+
+{% block content %}
+<div class="bg-white p-6 rounded-lg shadow-md">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flex justify-center mt-4">
+        <div class="w-full max-w-2xl">
+            {% for category, message in messages %}
+            <div
+                class="{% if category == 'success' %}bg-green-500{% else %}bg-red-500{% endif %} bg-opacity-75 text-white text-center py-4 px-6 mb-4 rounded-lg shadow-lg">
+                <p class="text-lg font-semibold">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
+    <h1 class="text-3xl font-bold mb-6 text-gray-700 text-center">Consultas de Contacto</h1>
+
+    <!-- Contenedor para el botón y filtros -->
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Formulario de búsqueda y filtros -->
+        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full">
+            <select name="estado" class="border border-gray-300 rounded px-3 py-2 w-full focus:ring focus:ring-blue-200">
+                <option value="">Todos los estados</option>
+                <option value="pendiente" {% if estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                <option value="en_proceso" {% if estado == 'en_proceso' %}selected{% endif %}>En proceso</option>
+                <option value="leido" {% if estado == 'leido' %}selected{% endif %}>Leido</option>
+            </select>
+
+            <button type="submit"
+                class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 w-full transition-colors duration-200">Buscar</button>
+        </form>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded-lg text-center">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Nombre Completo</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Correo Electrónico</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Mensaje</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Estado</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Comentario</th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">
+                        <a href="{{ url_for('contacto.index', estado=estado, order='asc') }}"
+                            class="text-gray-600 hover:underline">Fecha de Creación &#8595;</a>
+                        |
+                        <a href="{{ url_for('contacto.index', estado=estado, order='desc') }}"
+                            class="text-gray-600 hover:underline">&#8593;</a>
+                    </th>
+                    <th class="px-4 py-2 border-b text-left text-gray-600 font-medium text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contacto in contactos %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 border-b">{{ contacto.nombre_completo }}</td>
+                    <td class="px-4 py-2 border-b">{{ contacto.correo_electronico }}</td>
+                    <td class="px-4 py-2 border-b">{{ contacto.mensaje }}</td>
+                    <td class="px-4 py-2 border-b">{{ contacto.estado }}</td>
+                    <td class="px-4 py-2 border-b">{{ contacto.comentario or "Sin comentarios" }}</td>
+                    <td class="px-4 py-2 border-b">{{ contacto.inserted_at.strftime('%d/%m/%Y') }}</td>
+                    <td class="px-4 py-2 border-b">
+                        <a href="{{ url_for('contacto.editar_contacto', id=contacto.id) }}" 
+                            class="text-blue-500 hover:text-blue-700 underline">Editar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="flex justify-between items-center mt-4">
+        <span class="text-gray-600">Página {{ pagina }} de {{ total_paginas }}</span>
+
+        <div class="flex space-x-2">
+            {% if pagina > 1 %}
+            <a href="{{ url_for('contacto.index', pagina=pagina-1, estado=estado, order=order) }}"
+                class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Anterior</a>
+            {% endif %}
+
+            {% if pagina < total_paginas %}
+            <a href="{{ url_for('contacto.index', pagina=pagina+1, estado=estado, order=order) }}"
+                class="bg-gray-300 text-gray-700 px-3 py-1 rounded-md hover:bg-gray-400">Siguiente</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

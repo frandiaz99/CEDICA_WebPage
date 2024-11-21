@@ -8,6 +8,7 @@ class User(db.Model):
     password = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     activo =  db.Column(db.Boolean, nullable=False, default=True)
+    aceptado_google= db.Column(db.Boolean, nullable=False, default=True)
     issues = db.relationship("Issue", back_populates="user")
     inserted_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
