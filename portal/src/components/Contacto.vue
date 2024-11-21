@@ -52,7 +52,7 @@ export default {
       };
 
       try {
-        const response = await axios.post('https://admin-grupo49.proyecto2024.linti.unlp.edu.ar/api/contacto', formData);
+        const response = await axios.post('https://admin-grupo49.proyecto2024.linti.unlp.edu.ar/api/contacto/', formData);
         if (response.data.success) {
           alert('Mensaje enviado correctamente');
           this.name = '';
