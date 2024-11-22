@@ -43,7 +43,7 @@ export default {
   async created() {
     try {
       // Hacer la solicitud GET usando async/await
-      const response = await axios.get('http://127.0.0.1:5000/api/publicaciones');
+      const response = await axios.get('https://admin-grupo49.proyecto2024.linti.unlp.edu.ar/api/publicaciones');
       this.noticias = response.data;
     } catch (error) {
       console.error('Hubo un error al cargar las noticias:', error);
