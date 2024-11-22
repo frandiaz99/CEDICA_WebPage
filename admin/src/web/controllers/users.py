@@ -306,7 +306,7 @@ def actualizar_usuario(id):
             flash('El usuario ha sido actualizado.', 'success')
             if aceptado_google:
                 return redirect(url_for('users.index'))
-            return redirect(url_for('user.index_google'))
+            return redirect(url_for('users.index_google'))
         except Exception as e:
             db.session.rollback()
             flash(f'Error al actualizar el usuario: {str(e)}', 'danger')
@@ -338,4 +338,4 @@ def eliminar_usuario(id):
         flash(f'Error al eliminar el usuario: {str(e)}', 'danger')
     if aceptado_google:
         return redirect(url_for('users.index'))
-    return redirect(url_for('user.index_google'))
+    return redirect(url_for('users.index_google'))
