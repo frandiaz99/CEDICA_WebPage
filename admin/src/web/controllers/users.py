@@ -293,6 +293,7 @@ def actualizar_usuario(id):
         else:
             activo = False
 
+        aceptado_google = user.aceptado_google
         user.alias = alias
         user.email = email
         user.activo = activo
@@ -303,7 +304,9 @@ def actualizar_usuario(id):
         try:
             db.session.commit()
             flash('El usuario ha sido actualizado.', 'success')
-            return redirect(url_for('users.index'))
+            if aceptado_google:
+                return redirect(url_for('users.index'))
+            return redirect(url_for('user.index_google'))
         except Exception as e:
             db.session.rollback()
             flash(f'Error al actualizar el usuario: {str(e)}', 'danger')
@@ -325,7 +328,7 @@ def eliminar_usuario(id):
     user = auth.User.query.get(id)
     if user is None:
         abort(404)
-    
+    aceptado_google= user.aceptado_google
     try:
         db.session.delete(user)
         db.session.commit()
@@ -333,5 +336,6 @@ def eliminar_usuario(id):
     except Exception as e:
         db.session.rollback()
         flash(f'Error al eliminar el usuario: {str(e)}', 'danger')
-
-    return redirect(url_for('users.index'))
+    if aceptado_google:
+        return redirect(url_for('users.index'))
+    return redirect(url_for('user.index_google'))
