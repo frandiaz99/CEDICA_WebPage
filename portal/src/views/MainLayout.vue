@@ -65,7 +65,7 @@ export default {
 </script>
 
 <style scoped>
-
+/* Fondo con imagen */
 .bg-overlay {
   background-image: url('https://images.pexels.com/photos/265216/pexels-photo-265216.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
   background-size: cover;
@@ -73,46 +73,46 @@ export default {
   background-attachment: fixed;
 }
 
-
+/* Fondo de Noticias y Contacto */
 .bg-news-contact {
-  background-color: rgba(255, 255, 255, 0.); 
-  backdrop-filter: blur(4px); 
-  border: 1px solid rgba(0, 0, 0, 0.1); 
+  background-color: rgba(255, 255, 255, 0.); /* Fondo blanco semitransparente */
+  backdrop-filter: blur(4px); /* Desenfoque del fondo */
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Borde suave */
 }
 
-
+/* Scroll suave */
 html {
   scroll-behavior: smooth;
 }
 
-
+/* Relieve para destacar secciones */
 .shadow-lg {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
 .rounded-lg {
-  border-radius: 12px;
+  border-radius: 12px; /* Bordes redondeados */
 }
 
-
+/* Fondo del header fijo */
 header {
-  background: linear-gradient(90deg, #2c3e50, #34495e); 
+  background: linear-gradient(90deg, #2c3e50, #34495e); /* Degradado atractivo */
 }
 
-
+/* Estilo del texto en el navegador */
 nav a {
-  font-family: 'Poppins', sans-serif; 
-  letter-spacing: 0.05em; 
-  text-transform: uppercase; 
-  color: #f8f9fa;
+  font-family: 'Poppins', sans-serif; /* Fuente moderna */
+  letter-spacing: 0.05em; /* Espaciado entre letras */
+  text-transform: uppercase; /* Texto en mayúsculas */
+  color: #f8f9fa; /* Blanco suave */
 }
 
-
+/* Hover en enlaces */
 nav a:hover {
-  color: grey; 
+  color: grey; /* Amarillo vibrante */
 }
 
-
+/* Suavizado y transiciones */
 nav a {
   transition: color 0.3s ease, transform 0.3s ease;
 }

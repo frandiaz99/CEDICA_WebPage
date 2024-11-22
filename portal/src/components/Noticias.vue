@@ -59,7 +59,7 @@
 
 <script>
 import axios from 'axios';
-import DetalleNoticia from './DetalleNoticia.vue'; 
+import DetalleNoticia from './DetalleNoticia.vue'; // Importamos el componente modal
 
 export default {
   components: {
@@ -71,8 +71,8 @@ export default {
       error: null,
       isModalOpen: false,
       selectedNoticia: null,
-      paginaActual: 1, 
-      noticiasPorPagina: 4 
+      paginaActual: 1, // Página actual
+      noticiasPorPagina: 4 // Cambiamos a 6 noticias por página
     };
   },
   async created() {
@@ -85,17 +85,17 @@ export default {
     }
   },
   computed: {
-    
+    // Filtrar solo las noticias publicadas
     noticiasPublicadas() {
       return this.noticias.filter(noticia => noticia.estado === 'publicado');
     },
-    
+    // Calcular las noticias a mostrar en la página actual
     noticiasPaginadas() {
       const inicio = (this.paginaActual - 1) * this.noticiasPorPagina;
       const fin = inicio + this.noticiasPorPagina;
       return this.noticiasPublicadas.slice(inicio, fin);
     },
-    
+    // Calcular el número total de páginas
     totalPaginas() {
       return Math.ceil(this.noticiasPublicadas.length / this.noticiasPorPagina);
     }

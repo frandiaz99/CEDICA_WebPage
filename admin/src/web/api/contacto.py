@@ -21,7 +21,6 @@ def index():
     return data, 200
 
 @contacto_api_bp.post("/")
-@check("contacto_new")
 def create():
     """
     Endpoint para crear un nuevo contacto.
