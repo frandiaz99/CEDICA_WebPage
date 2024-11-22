@@ -72,30 +72,41 @@
     <div class="bg-white p-6 rounded-lg shadow-md">
         <h2 class="text-xl font-semibold text-center mb-4">Historial de Cobros</h2>
     
-        <form method="GET" action="{{ url_for('reportes.index') }}">
-            <label for="jinete_id">Seleccionar Jinete:</label>
-            <select name="jinete_id">
-                <option value="">-- Seleccionar Jinete --</option>
-                {% for jinete in jinetes %}
-                    <option value="{{ jinete.id }}" {% if request.args.get('jinete_id') == jinete.id %}selected{% endif %}>
-                        {{ jinete.nombre }}
-                    </option>
-                {% endfor %}
-            </select>
-    
-            <label for="fecha_inicio">Fecha Inicio:</label>
-            <input type="date" name="fecha_inicio" value="{{ request.args.get('fecha_inicio') }}">
-    
-            <label for="fecha_fin">Fecha Fin:</label>
-            <input type="date" name="fecha_fin" value="{{ request.args.get('fecha_fin') }}">
-    
+        <form id="form-reporte" method="GET" action="{{ url_for('reportes.index') }}">
+            <div>
+                <label for="empleado_id">Seleccionar Beneficiario:</label>
+                <select id="empleado_id" name="empleado_id">
+                    <option value="">-- Seleccionar Beneficiario --</option>
+                    {% for empleado in empleados %}
+                        <option value="{{ empleado.id }}" 
+                            {% if request.args.get('empleado_id') == empleado.id %}selected{% endif %}>
+                            {{ empleado.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            <div>
+                <label for="fecha_inicio">Fecha Inicio:</label>
+                <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ request.args.get('fecha_inicio') }}">
+            </div>
+        
+            <div>
+                <label for="fecha_fin">Fecha Fin:</label>
+                <input type="date" id="fecha_fin" name="fecha_fin" value="{{ request.args.get('fecha_fin') }}">
+            </div>
+        
             <button type="submit">Consultar</button>
+        
+            <!-- Contenedor para mensajes de error -->
+            <div id="error-mensaje" style="color: red; display: none; margin-top: 10px;"></div>
         </form>
     
         {% if historico.items %}
         <table class="min-w-full bg-white border border-gray-300 mt-4">
             <thead>
                 <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Beneficiario</th>
                     <th class="py-3 px-6 text-left">Fecha</th>
                     <th class="py-3 px-6 text-left">Monto</th>
                 </tr>
@@ -103,6 +114,7 @@
             <tbody class="text-gray-600 text-sm font-light">
                 {% for cobro in historico.items %}
                 <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6">{{ cobro.beneficiario.nombre }}</td>
                     <td class="py-3 px-6">{{ cobro.fecha_pago }}</td>
                     <td class="py-3 px-6">{{ cobro.monto }}</td>
                 </tr>
@@ -113,11 +125,11 @@
         
         <div class="flex justify-center mt-4">
             {% if historico.has_prev %}
-                <a href="{{ url_for('reportes.index', page_historico=historico.prev_num, jinete_id=request.args.get('jinete_id'), fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin')) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Anterior</a>
+                <a href="{{ url_for('reportes.index', page_historico=historico.prev_num, empleado_id=request.args.get('empleado_id'), fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin')) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Anterior</a>
             {% endif %}
             
             {% if historico.has_next %}
-                <a href="{{ url_for('reportes.index', page_historico=historico.next_num, jinete_id=request.args.get('jinete_id'), fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin')) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md ml-2">Siguiente</a>
+                <a href="{{ url_for('reportes.index', page_historico=historico.next_num, empleado_id=request.args.get('empleado_id'), fecha_inicio=request.args.get('fecha_inicio'), fecha_fin=request.args.get('fecha_fin')) }}" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md ml-2">Siguiente</a>
             {% endif %}
         </div>
         {% else %}
@@ -209,6 +221,25 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+
+document.getElementById('form-reporte').addEventListener('submit', function(event) {
+        const errorMensaje = document.getElementById('error-mensaje');
+        errorMensaje.style.display = 'none'; // Oculta cualquier mensaje anterior
+
+        // Obtener los valores seleccionados
+        const empleadoId = document.getElementById('empleado_id').value;
+        const fechaInicio = document.getElementById('fecha_inicio').value;
+        const fechaFin = document.getElementById('fecha_fin').value;
+
+        // Validación para las fechas
+        if (fechaInicio && fechaFin && new Date(fechaInicio) > new Date(fechaFin)) {
+            errorMensaje.textContent = 'La fecha de inicio no puede ser mayor que la fecha final.';
+            errorMensaje.style.display = 'block';
+            event.preventDefault(); // Evitar el envío
+            return;
+        }
+    });
+
     function toggleButtonState() {
         const criterio = document.getElementById('criterio').value;
         const anio = document.getElementById('anio').value;

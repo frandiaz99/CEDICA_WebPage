@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from src.web.handlers.auth import check
 from src.core.jinetes_amazonas import JineteAmazona
+from src.core.equipo import Empleado
 from src.core.cobros import Cobro
 from src.core.registro_pagos import Pago
 from src.core.database import db
@@ -48,13 +49,13 @@ def obtener_personas_adeudan(page=1, per_page=10):
     )
     return personas_adeudan
 
-def obtener_historico_cobros(jinete_id=None, fecha_inicio=None, fecha_fin=None, page=1, per_page=10):
+def obtener_historico_cobros(empleado_id=None, fecha_inicio=None, fecha_fin=None, page=1, per_page=10):
     """
-    Obtiene el historial de cobros con opción de filtro por jinete y rango de fechas, 
+    Obtiene el historial de cobros con opción de filtro por beneficiario y rango de fechas, 
     y con paginación.
 
     Args:
-        jinete_id (int, optional): ID del Jinete o Amazona para filtrar los cobros.
+        empleado_id (int, optional): ID del Empleado (beneficiario) para filtrar los cobros.
         fecha_inicio (date, optional): Fecha de inicio para el filtro de cobros.
         fecha_fin (date, optional): Fecha de fin para el filtro de cobros.
         page (int, optional): Número de página para la paginación. Default es 1.
@@ -63,10 +64,11 @@ def obtener_historico_cobros(jinete_id=None, fecha_inicio=None, fecha_fin=None, 
     Returns:
         Pagination: Objeto de paginación con los cobros que cumplen con los filtros especificados.
     """
+
     query = db.session.query(Cobro)
 
-    if jinete_id:
-        query = query.filter(Cobro.id_ja == jinete_id)
+    if empleado_id:
+        query = query.filter(Cobro.beneficiario_id == empleado_id)
     if fecha_inicio:
         query = query.filter(Cobro.fecha_pago >= fecha_inicio)
     if fecha_fin:
@@ -164,6 +166,7 @@ def index():
 
     page_adeuda = request.args.get('page_adeuda', 1, type=int)
     personas_adeudan = obtener_personas_adeudan(page=page_adeuda, per_page=per_page)
+    empleados = db.session.query(Empleado).all()
     jinetes = db.session.query(JineteAmazona).all()
     becados_data = obtener_becados()
     discapacidad_data = obtener_distribucion_discapacidad()
@@ -180,13 +183,13 @@ def index():
     ingresos = obtener_ingresos(criterio, anio)
 
 
-    
+    empleado_id = request.args.get('empleado_id')
     jinete_id = request.args.get('jinete_id')
     fecha_inicio = request.args.get('fecha_inicio')
     fecha_fin = request.args.get('fecha_fin')
 
     page_historico = request.args.get('page_historico', 1, type=int)
-    historico = obtener_historico_cobros(jinete_id, fecha_inicio, fecha_fin, page=page_historico, per_page=per_page)
+    historico = obtener_historico_cobros(empleado_id, fecha_inicio, fecha_fin, page=page_historico, per_page=per_page)
 
     jinete_id = request.args.get("jinete_id")
     fecha_inicio = request.args.get("fecha_inicio")
@@ -207,6 +210,7 @@ def index():
     print("Historico: ", historico)
 
     return render_template("reportes/reportes.html", 
+                        empleados = empleados, 
                         jinetes = jinetes, 
                         ranking_propuestas=ranking_propuestas, 
                         personas=personas_adeudan,
