@@ -24,7 +24,7 @@
 
 <script>
 import axios from 'axios';
-/*global grecaptcha*/
+
 export default {
   name: 'ContactoView',
   data() {

@@ -39,7 +39,7 @@ def index():
     else:
         query = query.order_by(Pago.fecha_pago.asc())
 
-    # Paginación después de aplicar filtros y ordenación
+    
     pagination = query.paginate(page=pagina, per_page=registros_por_pagina)
     pagos = pagination.items
     total_paginas = pagination.pages

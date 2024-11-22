@@ -21,9 +21,9 @@
 
 <script>
 export default {
-  props: ['noticia'],  // Recibe la noticia que se seleccionó
+  props: ['noticia'],  
   methods: {
-    // Emitir el evento para cerrar el modal
+    
     closeModal() {
       this.$emit('close');
     }
@@ -32,7 +32,7 @@ export default {
 </script>
 
 <style scoped>
-/* Estilos para el modal */
+
 .modal-overlay {
   position: fixed;
   top: 0;
