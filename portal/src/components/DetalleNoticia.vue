@@ -5,8 +5,8 @@
       <h4 class="text-gray-600 mb-5">Autor: {{noticia.autor}}</h4>
       <hr>
       <p class="text-blue-300 mb-1 mt-5">Creado el {{noticia.inserted_at}}</p>
-      <p class="text-blue-300 mb-1">Publicado el {{noticia.fecha_publicacion}}</p>
-      <p class="text-blue-300 mb-5">Actualizado el {{noticia.updated_at}}</p>
+      <p class="text-gray-400 mb-1">Publicado el {{noticia.fecha_publicacion}}</p>
+      <p v-if="noticia.updated_at" class="text-gray-400 mb-5">Actualizado el {{noticia.updated_at}}</p>
       <hr>
       <!-- Contenedor del contenido con scroll -->
       <div class="mt-4 max-h-70 overflow-y-auto">
