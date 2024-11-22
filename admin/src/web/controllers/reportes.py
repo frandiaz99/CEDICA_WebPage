@@ -158,8 +158,20 @@ def obtener_distribucion_discapacidad():
 @reportes_bp.get("/")
 @check("reportes_show")
 def index():
+
+    """
+    Ruta principal para la generación y visualización de reportes.
+
+    Esta vista permite obtener y mostrar diversos reportes relacionados con
+    empleados, jinetes, ingresos, historial de cobros, y datos estadísticos. 
+    Se manejan parámetros de paginación y criterios temporales para filtrar la información.
+
+    Returns:
+        Renderiza la plantilla "reportes/reportes.html" con los datos necesarios para la visualización de reportes.
+    """
+
     page = request.args.get('page', 1, type=int)
-    per_page = 3  # Puedes ajustar esto según tus necesidades
+    per_page = 5 
 
     page_ranking = request.args.get('page_ranking', 1, type=int)
     ranking_propuestas = obtener_ranking_propuestas(page=page_ranking, per_page=per_page)
