@@ -1,4 +1,4 @@
-from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso, contacto, jinetes_amazonas, cobros
+from src.core import board, auth, equipo, encuestre, encuestre_empleado, permiso, rol_permiso, contacto, jinetes_amazonas, cobros, publicacion
 from datetime import datetime
 from itertools import chain 
 
@@ -730,4 +730,139 @@ def run():
         beneficiario_id=empleado2.id,
         en_deuda=True,
         observaciones="Deuda pendiente de monta terapéutica."
+    )
+
+    publi1 = publicacion.create_publicacion(
+    titulo="Avance tecnológico en la región",
+    autor=fede.alias,
+    fecha_publicacion=datetime(2023, 8, 30),
+    copete="Un nuevo desarrollo promete revolucionar la industria local.",
+    contenido=(
+        "En un giro sorprendente, se ha presentado un avance tecnológico que promete "
+        "cambiar la forma en que las empresas locales operan. Este nuevo desarrollo busca "
+        "incrementar la eficiencia y reducir costos en diversos sectores. Los expertos opinan "
+        "que podría ser el inicio de una nueva era para la región."
+    ),
+    estado="publicado"
+    )
+
+    publi2 = publicacion.create_publicacion(
+        titulo="La economía mundial en alerta",
+        autor=miguel.alias,
+        fecha_publicacion=datetime(2023, 8, 30),
+        copete="Preocupaciones sobre una posible recesión global.",
+        contenido=(
+            "El panorama económico global enfrenta desafíos significativos. Con el aumento "
+            "de la inflación y la incertidumbre en los mercados financieros, los analistas "
+            "advierten sobre una posible recesión. Las principales economías ya están tomando "
+            "medidas para mitigar los riesgos."
+        ),
+        estado="publicado"
+    )
+
+    publi3 = publicacion.create_publicacion(
+        titulo="Descubrimiento arqueológico histórico",
+        autor=ddd.alias,
+        fecha_publicacion=datetime(2023, 8, 30),
+        copete="Un hallazgo que podría reescribir la historia conocida.",
+        contenido=(
+            "Arqueólogos han desenterrado restos de una civilización perdida en un remoto "
+            "desierto. Este descubrimiento incluye artefactos y escrituras que desafían nuestra "
+            "comprensión actual de la historia. Los investigadores ya están trabajando para "
+            "descifrar el significado de estos hallazgos."
+        ),
+        estado="archivado"
+    )
+
+    publi4 = publicacion.create_publicacion(
+        titulo="Crisis climática: acciones urgentes",
+        autor=fede.alias,
+        fecha_publicacion=datetime(2023, 8, 30),
+        copete="Los líderes mundiales llaman a actuar de inmediato.",
+        contenido=(
+            "Durante la última cumbre climática, se presentaron datos alarmantes sobre el impacto "
+            "del cambio climático en las comunidades vulnerables. Los líderes mundiales han "
+            "instado a los países a tomar medidas inmediatas para reducir las emisiones de carbono "
+            "y fomentar el uso de energías renovables."
+        ),
+        estado="publicado"
+    )
+
+    publi5 = publicacion.create_publicacion(
+        titulo="Innovación en el sector salud",
+        autor=kkk.alias,
+        fecha_publicacion=datetime(2023, 8, 30),
+        copete="Una nueva tecnología promete mejorar la calidad de vida.",
+        contenido=(
+            "Un grupo de científicos ha desarrollado un dispositivo que podría revolucionar el "
+            "diagnóstico temprano de enfermedades. Esta innovación combina inteligencia artificial "
+            "y técnicas avanzadas de análisis de datos para detectar condiciones médicas con mayor "
+            "precisión y rapidez."
+        ),
+        estado="borrador"
+    )
+
+    publi6 = publicacion.create_publicacion(
+        titulo="Deportes: hazaña histórica",
+        autor=miguel.alias,
+        fecha_publicacion=datetime(2023, 8, 30),
+        copete="Un equipo logra lo imposible en una competencia internacional.",
+        contenido=(
+            "El equipo nacional ha sorprendido al mundo al ganar un campeonato internacional, "
+            "superando a los favoritos en una competencia emocionante. Los fanáticos celebran este "
+            "logro como un momento inolvidable en la historia deportiva del país."
+        ),
+        estado="archivado"
+    )
+
+    publi7 = publicacion.create_publicacion(
+        titulo="Educación: reforma en marcha",
+        autor=ddd.alias,
+        fecha_publicacion=datetime(2023, 8, 30),
+        copete="Cambios significativos en el sistema educativo.",
+        contenido=(
+            "El gobierno ha anunciado una reforma educativa destinada a mejorar la calidad de la "
+            "educación en todos los niveles. Este proyecto incluye la capacitación de maestros, "
+            "nuevos materiales educativos y una mayor inversión en infraestructura escolar."
+        ),
+        estado="publicado"
+    )
+
+    publi8 = publicacion.create_publicacion(
+        titulo="Cultura: festival internacional",
+        autor=fede.alias,
+        fecha_publicacion=datetime(2023, 8, 30),
+        copete="Artistas de todo el mundo se reúnen en un evento único.",
+        contenido=(
+            "La ciudad se prepara para recibir a cientos de artistas internacionales en un festival "
+            "que promete ser uno de los eventos culturales más destacados del año. Música, teatro y "
+            "arte visual se combinarán en una celebración de creatividad y diversidad."
+        ),
+        estado="publicado"
+    )
+
+    publi9 = publicacion.create_publicacion(
+        titulo="Tecnología: el futuro de la IA",
+        autor=kkk.alias,
+        fecha_publicacion=datetime(2023, 8, 30),
+        copete="Un avance en inteligencia artificial que sorprende al mundo.",
+        contenido=(
+            "Investigadores han desarrollado un sistema de inteligencia artificial capaz de realizar "
+            "tareas complejas con una eficiencia sin precedentes. Este avance plantea preguntas sobre "
+            "el impacto de la IA en la sociedad y el futuro del trabajo humano."
+        ),
+        estado="publicado"
+    )
+
+    publi10 = publicacion.create_publicacion(
+        titulo="Seguridad: nuevos protocolos",
+        autor=miguel.alias,
+        fecha_publicacion=datetime(2023, 8, 30),
+        copete="Medidas innovadoras para proteger a las comunidades.",
+        contenido=(
+            "En respuesta a los recientes incidentes de seguridad, las autoridades han implementado "
+            "nuevos protocolos para garantizar la protección de las comunidades. Estas medidas incluyen "
+            "tecnología avanzada y una mayor cooperación entre agencias de seguridad."
+        ),
+        estado="publicado"
     )
